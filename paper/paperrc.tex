@@ -1,0 +1,145 @@
+%%% paperrc.tex -- Paper Run Control
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\enableprivate
+
+\let\verbatimsize=\ninepoint
+
+\def\literalfont{\tt}
+\let\listtagfont\literalfont
+
+\pdef\begindiagnostics#1#2{\pdef@@beginlist{\inset\symbolic#1}{#2}}
+\def\enddiagnostics{\endlist}
+\let\tag@@begindisagnostics=\tag@@beginlist
+
+\pdef\begincslist#1#2{%
+  \begingroup
+  \def\list@I{%
+    \let\cslist@keep=\item
+    \let\item=\cslist@item
+  }%
+  \pdef@@beginlist{\tag\literal#1}{#2}%
+}
+\def\endcslist{\endlist\endgroup\noindent\ignorespaces}
+
+\def\cslist@item#1{\cslist@keep{\string#1}}
+
+\let\tag@@begincslist=\tag@@beginlist
+
+
+\pdef\beginvalues#1#2{%
+  \pdef@@beginlist{\tag#1}{#2}%
+  \let\listtagfont=\rm
+%  \leftline{\it Valeurs repères}%
+%  \smallskip
+%  \nobreak
+}
+\def\endvalues{\endlist}
+\let\tag@@beginvalues=\tag@@beginlist
+
+\begingroup
+\mkother\^^M%
+\gdef\domainxarg#1#2^^M{\def\domainline{#2}#1}%
+\endgroup%
+
+\def\domaintable@A{\domainxarg\domaintable@B}
+\def\domaintable@B{%
+  \ifx\domainline\domaintable@E
+     \def\domaintable@N{\enddomaintable}%
+  \else
+     \def\domaintable@N{%
+       \expandafter\domaintable@C\domainline\stop
+       \domainxarg\domaintable@B
+     }%
+  \fi
+  \domaintable@N
+}
+
+\def\domaintable@C#1 #2\stop{%
+  {\domainfont\char#1}&\li{\string #2}%
+  \global\advance\rnA by 1
+  \rnB=\rnA
+  \divide\rnB by 3
+  \multiply\rnB by 3
+  \global\advance\rnA by -\rnB
+  \ifnum\rnA=0\relax\def\next{\cr}\else\def\next{&}\fi
+  \next
+}
+
+\def\begindomaintable#1{%
+  \medskip
+  \begingroup
+  \rnA=0
+  \def\domainfont{#1}%
+  \mkother\^^M
+  \def\domaintable@E{\enddomaintable}%
+  \halign\bgroup
+    \qquad\hfil##\hfil&\quad##\hfil&
+    \qquad\hfil##\hfil&\quad##\hfil&
+    \qquad\hfil##\hfil&\quad##\hfil\cr
+      \domainxarg\domaintable@A
+}
+
+\def\enddomaintable{\cr\egroup\endgroup\medbreak\noindent\ignorewhitespace}
+
+
+\begingroup
+\mkother\^^M%
+\gdef\chartablexarg#1#2^^M{\def\chartableline{#2}#1}%
+\endgroup%
+
+\def\chartable@A{\chartablexarg\chartable@B}
+\def\chartable@B{%
+  \ifx\chartableline\chartable@E
+     \def\chartable@N{\endchartable}%
+  \else
+     \def\chartable@N{%
+       \expandafter\chartable@C\chartableline\stop
+       \chartablexarg\chartable@B
+     }%
+  \fi
+  \chartable@N
+}
+
+\def\chartable@C#1#2 #3\stop{%
+  \if#1x\else
+    \em{\tlcircumflex\negthinspace\tlcircumflex#1#2}%
+  \fi
+  &{\mainfontselect\csname #3\endcsname}%
+  &\li{\tlbackslash\string #3}%
+  \cr
+}
+
+\def\beginchartable{%
+  \medskip
+  \begingroup
+  \mkother\^^M
+  \def\chartable@E{\endchartable}%
+  \halign\bgroup
+    \qquad##\hfil&\quad\hfil##\hfil&\qquad##\hfil\cr
+  \chartablexarg\chartable@A
+}
+
+\def\endchartable{\cr\egroup\endgroup\medbreak\noindent\ignorewhitespace}
+
+\disableprivate
+
+%%% End of file `paperrc.tex'

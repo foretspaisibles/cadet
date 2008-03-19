@@ -1,0 +1,1205 @@
+%%% fontes.tex -- Utiliser FSS pour BHRID TeX
+
+% Author: Michael Grünewald
+% Date: Thu Sep 14 21:40:38 CEST 2006
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\class bhridpaper
+\enablehverbatim
+
+\title Les fontes de caractères et BHRID \TeX
+\author Michael Grünewald
+
+Nous présentons l'utilisation des fontes de caractères avec Sugar
+Cane. Ces explications sont destinées aux préparateurs de classes de
+documents, et sont probablement inutiles à l'utilisateur ordinaire.
+
+Pour utiliser une fonte avec BHRID \TeX, il faut lier son nom externe,
+le radical du fichier TFM utilisé par \TeX, avec une description
+symbolique de cette fonte. Cette opération est la déclaration de la
+fonte, il s'agit d'une inscription administrative. Une fois cette
+déclaration accomplie, on peut utiliser la fonte dans un document en
+faisant de cette fonte la fonte courante. Cette opération est la
+sélection de la fonte.
+
+
+\section Déclaration et sélection des fontes
+
+La commande |\fontmatch| est utilisée pour réaliser l'inscription
+administrative d'une fonte. Pour cette déclaration, il est nécessaire
+de connaître le nom du ou des fichier TFM décrivant cette fonte pour
+\TeX, et les attributs de cette fonte. Les attributs sont
+\beginlist
+\item la disposition des caractères dans la fonte
+      \em{(font~encoding)};
+\item un nom court pour la famille des caractères \em{(font~family)};
+\item un nom court pour un paramètre combinant la graisse et l'étendue
+      des caractères \em{(font~series)};
+\item un nom court pour la forme des caractères.
+\endlist
+Nous discutons ces élements ci-dessous, puis donnons plusieurs
+exemples d'utilisation de la commande |\fontmatch|.
+
+
+\formalpar Disposition des caractères
+
+Les fichiers décrivant les fontes électroniques utilisés par \TeX\ ont
+256 positions pouvant chacune contenir la description d'un
+caractère. Dans des fontes éléctroniques différentes, les dispositions
+de caractères sont parfois différentes. Dans la fonte~\em{Computer
+Modern Roman}~\li{cmr10}, seules les~$128$ premières positions sont
+utilisées, elles recèlent des caractères utilisés ordinairement dans
+un texte anglais, et des accents sans lettres pour composer
+d'éventuels caractères manquants. Dans la fonte~\em{Latin Modern
+Roman}~\li{cork-lmr10}, les~$256$ positions sont utilisées par des
+caractères apparaissant dans les textes composés dans de nombreuses
+langues d'\nm{Europe}, utilisant un alphabet suffisamment proche de
+l'alphabet latin. Les caractères situés dans les~$128$ premières
+positions ne sont pas les mêmes pour~\li{cmr10} et
+pour~\li{cork-lmr10}, de plus ces fontes ne décrivent pas le même
+ensemble de caractères; pour ces deux raisons ces deux fontes ont des
+dispositions de caractèrs différentes. L'exemple des fontes recelant
+uniquement des symboles spéciaux comme les~\em{Zapf Dingbats} dessinés
+par~\nm{H.~Zapf} ou les fontes destinées à la préparation de formules
+mathématique présente des fontes dont la disposition de caractères
+s'éloigne singulièrement de celle des fontes destinées au texte.
+
+Pour produire le résultat escompté, certaines commandes doivent
+sélectionner une fonte à la disposition des caractères appropriée, par
+exemple les commandes produisant un signe de section, etc. Les valeurs
+utilisées par BHRID \TeX\ pour la disposition des caractères sont les
+suivantes.
+\beginlist\tag
+\item{T1}	text 1
+\item{S1}	symbol 1
+\item{ML}	math letter
+\item{MS}	math symbol
+\item{MX}	math extension
+\smallskip
+\item{OT1}	original \TeX\ text 1 encoding
+\item{OML}	original \TeX\ math letter
+\item{OMS}	original \TeX\ math symbol
+\item{OMX}	original \TeX\ math extension
+\smallskip
+\item{U}	unknown
+\item{Xxx}	expert encoding
+\item{XZD}	Zapf's dingbats
+\item{Lxx}	local encoding
+\endlist
+Nous utilisons des identificateurs formés de un à trois caractères,
+tous les identificateurs sont réservés par BHRID \TeX, hormis les
+identificateurs à trois lettres dont la première est un~\li{L} qui
+sont réservés pour l'utilisateur.
+
+
+\formalpar Nom court pour la famille de caractères
+
+Quelques exemples
+\beginlist\tag
+\item{lmr}	Latin Modern Roman
+\item{lmss}	Latin Modern Sans Serifs
+\item{lmtt}	Latin Modern Typewriter Type
+\item{cmr}	Computer Modern Roman
+\item{cmmi}	Computer Modern Math Italics
+\item{zd}	Zapf's Dingbats
+\endlist
+Plusieurs dessins de caractères coexistent au sein d'une même famille
+de caractères. Par exemple, les familles de caractères destinées à la
+préparation du texte comportent généralement des caractères romains,
+des caractères italiques, des caractères gras, des caractères gras
+italiques, et parfois de petites capitales; bien que les dessins des
+romain et des italiques soient très différents, ils sont visuellement
+compatibles et sont à ce titre regroupés dans une famille.
+
+\formalpar Graisse et étendue des caractères
+
+Les deux données de l'étendue et de la graisse des caractères sont
+rassemblées dans un seul paramètre.
+\beginlist\tag
+\item{m}	medium, parfois appelé \em{book} ou livre, la graisse
+		des caractères~usuels
+\item{b}	bold
+\item{s}	semi bold
+\smallskip
+\item{c}	condensed, caractères resserés, par exemple pour les~titres
+\item{x}	extended, caractères écartés
+\smallskip
+\item{bx}	bold extended
+\endlist
+Lorsque, comme dans le dernier exemple, une valeur du paramètre
+mentionne à la fois la graisse et l'extension des caractères, la
+description de la graisse figure toujours en premier.
+
+\formalpar Forme des caractères
+
+Nous utilisons les noms courts suivants pour les formes de caractères
+\beginlist\tag
+\item{n}	\em{naturel}, caractères ordinaires
+\item{i}	\em{italique}, caractères italiques
+\item{o}	\em{oblique}, caractères obliques,
+		à ne pas confondre avec les italiques
+\item{N}	\em{Naturel}, petites capitales naturelles
+\item{I}	\em{Italique}, petites capitales italiques
+\item{O}	\em{Oblique}, petites capitales obliques
+\smallskip
+\item{u}	\em{unslanted italics}, italiques droites
+\endlist
+Les italiques droites ne sont pas normalement utilisées, mais elles
+sont présentes avec \TeX\ afin d'insister sur la différence de dessin
+entre les caractères italiques et les caractères romains. La forme de
+caractères~\li{u} n'est pas utilisée dans BHRID~\TeX, mais elle cet
+identifiant lui est réservée.
+
+
+\formalpar Taille nominale d'une fonte
+
+Les dessins des caractères d'une fonte ont une taille nominale, par
+exemple le fichier \li{cork-lmr10} décrit pour \TeX\ la fonte Latin
+Modern Roman à la taille nominale~$10$pt. En principe la taille
+nominale de la fonte correspond à la hauteur de la majuscule~\li{X}
+et à la taille du tiret long, obtenue en \TeX\ par~\li{-{}-{}-}, mais
+il arrive souvent que la taille nominale de la fonte soit différente
+de la taille de ces deux derniers caractères; en outre des fontes de
+caractères d'aspect visuel très voisins peuvent avoir des tailles
+nominales relativement très différentes, et ce, qu'elles proviennent
+ou non de fondeurs différents. La taille nominale des fontes de
+caractères indique quels caractères ont des dimensions visuellement
+compatibles; ainsi, si l'on souhaite utiliser conjointement des
+romaines et des italiques dans un même paragraphe de texte, on peut
+par exemple choisir les romaines Latin Modern Roman $10$pt et les
+italiques Latin Modern Roman Italic $10$pt, ces deux fontes de
+caractères affichent la même taille nominale de caractères,
+proviennent du même fondeur et font partie de la même famille Latin
+Modern, elles ont donc des dimensions visuellement compatibles. Il est
+important de souligner que des fontes de caractères de taille nominale
+identiques mais appartenant à des familles différentes peuvent ne pas
+avoir des dimensions visuellement compatibles, même si elles
+proviennent de la même fonderie.
+
+
+\formalpar Sélection d'une fonte
+
+La commande~|\fontwish T1/lmr/m/n/10pt \as\tenrm| demande à BHRID \TeX
+de trouver une fonte resemblant le plus possible à la fonte dont la
+description est donnée, et fait de |\tenrm| une séquence de contrôle
+déclenchant l'utilisation de la fonte obtenue. Si, par exemple, la
+fonte obtenue dans les données administratives est décrite par le
+fichier \li{cork-lrm10}, un résultat équivalent peut être obtenu par
+|\font\tenrm=cork-lmr10|.
+
+On peut demander une fonte sans préciser explicitement tous les
+paramètres la décrivant. Pour cela, BHRID \TeX\ prévoit cinq commandes
+\begincode
+\fontpage
+\fontfamily
+\fontseries
+\fontshape
+\fontsize
+\endcode
+qui chargent une valeur dans une mémoire appropriée, on écrit par
+exemple |\fontpage{S1}| ou |\fontseries{b}|. Ces commandes sont les
+\em{modificateurs des paramètres de sélection}, les mémoires qu'ils
+altèrent sont les \em{paramètres de sélection}. On demande alors une
+fonte particulière au moyen de la forme spéciale
+\begincode
+\fontwish\selection\as\tenrm
+\endcode
+la séquence |\selection| n'est pas réservée par BHRID \TeX, elle peut
+être utilisée dans des jeux de macros, mais elle revêt ici une
+signification spéciale. Au début d'un \em{job} traité avec BHRID \TeX,
+tout se passe comme si les commandes
+\begincode
+\fontpage{T1}
+\fontfamily{lmr}
+\fontseries{m}
+\fontshape{n}
+\fontsize{10pt}
+\endcode
+avaient été évaluées; dans ce contexte, l'appel
+\begincode
+\fontwish\selection\as\tenrm
+\endcode
+équivaut au suivant
+\begincode
+\fontwish T1/lmr/m/n/10pt \as\tenrm
+\endcode
+Certaines macros peuvent modifier les fontes utilisées pour préparer
+le texte avec BHRID \TeX\ et la famille de caractères romains en
+vigueur peut porter un nom court différent de~\li{lmr}. Une macro
+arrangeant les choses pour que des fontes différentes soient utilisées
+doit redéfinir les séquences
+\begincode
+\fontrmfamily
+\fontsffamily
+\fontttfamily
+\endcode
+pour qu'elles représentent les noms courts appropriés.
+
+\formalpar Paramètres de sélection des fontes et groupes
+
+Les paramètres de sélection des fontes sont restaurés à la fin du
+groupe en cours. Il peut néanmoins être utile de sauvegarder
+l'ensemble de ces paramètres, BHRID \TeX\ prévoit donc une commande de
+sauvegarde et une commande de restauration, on dit par exemple
+\begincode
+\fontselectionsave\myselection
+...
+\fontselectionload\myselection
+\endcode
+La mémoire utilisée dans l'exemple est relative au niveau de
+regroupement courant, les mémoires sont détruites ou restaurées à la
+fin du niveau de groupement courant.
+
+
+\formalpar Noms pour les commandes modifiant les paramètres %
+ de sélection des fontes
+
+BHRID \TeX\ réserve la séquence |\fontcurrent|, elle est utilisée par
+la commande |\fontselect|, dont la définition est
+\begincode
+\def\fontselect{\fontwish\selection\as\fontcurrent\fontcurrent}
+\endcode
+Les noms de séquences |\...fontselect| doivent toujours être utilisés
+pour des commandes qui modifient et rendent active |\fontcurrent|,
+comme par exemple |\tlfontselect| qui sélectionne la fonte pour le
+texte ordinaire, là où la commande |\tlfont| ne fait que modifier les
+paramètres de chargement.
+
+
+
+\formalpar Inscription administrative des fontes
+
+Nous discutons plusieurs exemples d'utilisation de la
+commande~|\fontmatch|. La déclaration
+\begincode
+\fontmatch T1/lmr/m/n \with
+|  5pt cork-lmr5
+|  6pt cork-lmr6
+|  7pt cork-lmr7
+|  8pt cork-lmr8
+|  9pt cork-lmr9
+| 10pt cork-lmr10
+| 12pt cork-lmr12
+| 17pt cork-lmr17
+\stop
+\endcode
+enregistre administrativement~$8$ fichiers de fontes \TeX\ dans le
+système BHRID \TeX, la commande |\fontmatch| est ainsi faite qu'elle
+permet de déclarer plusieurs fichiers en même temps lorsque dans leurs
+descriptions, seule varie la taille nominale.
+
+Il est possible d'indiquer un facteur d'aggrandissement, en millièmes,
+de la façon suivante:
+\begincode
+\fontmatch T1/pcr/m/n \with
+| 10pt 988 pcrr8t
+\stop
+\endcode
+Dans cet exemple, la taille demandée à \TeX\ est la taille nominale
+multipliée par~$988/1000$, soit $10 \cdot 988/1000 = 9,88$ en points
+d'imprimeur. Avec cette déclaration, la commande
+\begincode
+\fontwish T1/pcr/n/n/10pt\as\courierten
+\endcode
+équivaut à
+\begincode
+\font\courierten=pcrr8t at 9.88pt
+\endcode
+Lorsqu'on sélectionne une fonte dans une taille nominale qui n'a pas
+été déclarée, une fonte dans autre taille est sélectionnée
+automatiquement, et sa taille est ajustée pour obtenir la taille
+nominale souhaitée.
+
+Lorsque la commande |\fontmatch T1/lmr/m/n \with...| est exécutée, une
+séquence de contrôle |\fontmatch T1/lmr/m/n| est créee (l'espace est
+dans la séquence, comme on peut l'obtenir grâce à |\csname|); cette
+séquence est une lsite dont chaque élément est un triplet refletant
+chaque ligne de la déclaration |\fontmatch|. Voici une correspondance
+ligne/triplet.
+\begindisplay
+\halign{#\hfil\quad&#\hfil\cr
+\li{10pt 988 cork-lmr10}&\li{(10pt,988,cork-lmr10)}\cr
+\li{10pt cork-lmr10}&\li{(10pt,0,cork-lmr10)}\cr
+\li{* 988 cork-lmr10}&\li{(0pt,988,cork-lmr10)}\cr
+\li{* cork-lmr10}&\li{(0pt,0,cork-lmr10)}\cr
+}
+\enddisplay
+Les triplets sont de la
+forme~\li{(taille\_nominale,ajustement,tfm)}. Le champ
+\li{taille\_nominale} a \li{0pt} comme valeur à sémantique spéciale,
+elle signifie que ce fichier \li{tfm} doit être utilisé avec un
+ajustement pour toutes les tailles nominales n'apparaissant pas
+explicitement dans la liste; le champ \li{ajustement} a \li{0} comme
+valeur à sémantique spéciale, elle révèle simplement une absence
+de demande d'ajustement.
+
+\formalpar Procédure de sélection d'une fonte
+Il se peut que l'utilisateur réclame à l'administration une fonte dont
+la description ne correspond à aucune des fontes enregistrées auprès
+d'elle. Dans ce cas les paramètres de la requète sont \qu{dégradés}
+peu à peu jusqu'à obtenir des valeurs désignant une fonte connue de
+l'adminsitration. Le mécanisme de dégradation est mis en ½uvre par la
+fonction |\fontwish@Y|, celle-ci à pour rôle de rappeler~|\fontwish@A|
+avec un nouveau jeu de paramètres. Les appels successifs à
+|\fontwish@Y| font converger l'argument de |\fontwish@A| vers
+|\fontwish@A{T1}{lmtt}{m}{n}| sans modifier la taille nominale.
+
+La première dégradation appliquée consiste à remplacer la forme \li{I}
+par la forme \li{O}, ainsi lorsque des petites capitales obliques sont
+déclarées, elles peuvent aussi servir de petites capitales pour les
+italiques. La seconde dégradation appliquée consiste à remplacer la
+graisse \li{bx} en~\li{b}, la troisième transforme \li{bc} en \li{b}.
+
+
+\formalpar Liaison de fontes
+
+Lorsqu'une fonte a fait l'objet d'une inscription administrative, on
+peut utiliser cette information avec un nouveau nom, par exemple si on
+décide que les fontes dont la description est \li{T1/lmr/bx/n} doit
+utiliser les mêmes dessins que les fontes dont la description est
+\li{T1/lmr/b/n}, vous pouvez obtenir ce résultat en déclarant
+\begincode
+\fontbind{T1/lmr/bx/n}\with{T1/lmr/b/n}
+\endcode
+Remarquez que la liaison dans cet exemple est en fait réalisée
+implicitement par le système de dégradations des paramètres pour
+|\fontwish|. L'exemple illustre cependant l'utilisation pour laquelle
+la commande~|\fontbind| a été conçue.
+
+
+
+\section Fontes de caractères et mode horizontal
+
+Le mode horizontal de \TeX\ est celui dans lequel ce dernier prépare
+les lignes d'un paragraphe. On discute ici des commandes spécifiques à
+l'utilisation des fontes dans pour le texte du paragraphe.
+
+
+\formalpar Afficher un caractère arbitraire d'une fonte
+
+Si la séquence |\tenrm| sélectionne une certaine fonte, on peut
+afficher n'importe lequel des~$256$ caractères de celle-ci au moyen de
+la commande~|\fontchar| qui prolonge la commande |\char| de~\TeX. On
+dit par exemple
+\begincode
+\fontchar\tenrm"41
+\fontchar\tenrm'101
+\fontchar\tenrm 65
+\endcode
+et ces commandes sont équivalentes à~|{\tenrm\char"41}|. On peut
+utiliser~|\fontchar| avec |\tenrm| après une déclaration ressemblant
+aux suivantes:
+\begincode
+\fontwish T1/lmr/m/n/10pt \as\tenrm
+\def\tenrm{...\fontselect}
+\endcode
+mais les autres usages sont à éviter.
+
+
+\formalpar Nommer un caractère arbitraire
+
+La séquence~|\fontchardef| est à |\fontchar| ce que |\chardef| est à
+|\char|; elle permet de nommer un certain caractère d'une certaine
+fonte. On dit par exemple
+\begincode
+\def\syfontselect{\fontpage{S1}\fontselect}
+\fontchardef\syfontselect\pilcrow="B6
+\endcode
+et |\pilcrow| est une séquence qui bascule temporairement vers la
+fonte appropriée et affiche le caractère situé à la position~|"B6|.
+
+
+\formalpar Sélectionner la taille du texte
+
+Nous avons vu comment le paramètre de sélection des fontes |\fontsize|
+régissait la taille de la fonte employée, mais composer un texte avec
+une fonte dans une certaine taille nécessite que des dispositions
+autres que le simple changement de la taille du corps des
+caractères soient prises. Par exemple, \TeX\ tient compte de plusieurs
+paramètres pour ajuster la distance entre les lignes du paragraphe, et
+il est bien sûr nécessaire des les ajuster lorsqu'on souhaite composer
+un paragraphe dans un corps d'une taille particulière.
+
+Le texte du paragraphe est composé dans un corps dont la taille est
+l'une des suivantes: 12pt, 11pt, 10pt, 9pt, 8pt, 7pt, 6pt, 5pt.
+
+Les macros |\twelvepoint|, etc. sélectionnent la taille correspondante
+pour la composition du corps de paragraphe. Ces macros ajustent la
+valeur du registre |\textsize| (nombre), puis délèguent leur
+travail aux macros |\textsizesetup| pour modifier les paramètres du
+paragraphe, et |\mathsizesetup| pour modifier les paramètres du mode
+mathématique. Les ensembles de macros peuvent enregistrer des actions
+à effectuer lorsqu'une commande |\twelvepoint| etc. est utilisée, via
+|\textsizehook| qui est appelé par toutes les commandes modifiant la
+taille du texte. Au moment de l'appel la valeur de |\textsize|
+vaut 12 dans |\twelvepoint|, etc. On peut aussi enregistrer des
+commandes dans |\twelvepointhook|, etc. ces commandes sont déclenchées
+après le |\textsizehook|.
+
+Dans un document donné, il vaut mieux n'utiliser qu'un petit nombre
+de tailles différentes. Pour favoriser une politique cohérente dans
+l'utilisation des tailles de caractères, on peut utiliser des alias
+comme
+\begincode
+\let\mainsize=\tenpoint
+\let\normalsize=\tenpoint
+\let\footnotesize=\sevenpoint
+\endcode
+N'oubliez pas que |\textsize|, |\fontsize| et |\mainsize| sont
+réservés. La définitions de |\mainsize| est celle de l'exemple, ainsi
+l'auteur qui souhaite revenir à la taille rodinaire des caractères
+dans son document peut utiliser |\mainsize|. Les auteurs de classe de
+document doivent penser à ajuster |\mainsize| pour que cette séquence
+ait toujours le bon comportement.
+
+Comme expliqué plus haut, la définition de la macro |\tenpoint| est
+équivalente à
+\begincode
+\def\tenpoint{%
+  \textsize=10
+  \expandafter\fontsize\expandafter{\the\textsize pt}%
+  \runhook\textsizeadjustments
+  \runhook\mathsizeadjustments
+  \rm\runhook\tenpointhook
+}
+\endcode
+En réalité, une partie de ce code est factorisée pour les commandes
+|\tenpoint|, |\ninepoint|, etc.
+
+
+\formalpar Paramètres du paragraphe liés à la taille du texte
+
+La préparation du paragraphe utilise notamment trois valeurs,
+|\normalbaselineskip|, |\normallineskip|, et |\lineskiplimit|, de la
+manière expliquée dans le {\sl\TeX book}, p.~78. Nous avons une table
+|\lineskiptable|, définie comme suit
+\begincode
+\def\lineskiptable{%
+  \\{{12}{{13pt}{1pt}{0pt}}}%
+  \\{{11}{{13pt}{1pt}{0pt}}}%
+  \\{{10}{{12pt}{1pt}{0pt}}}%
+  \\{{9}{{11pt}{1pt}{0pt}}}%
+  \\{{8}{{9pt}{1pt}{0pt}}}%
+  \\{{7}{{9pt}{1pt}{0pt}}}%
+  \\{{6}{{8pt}{1pt}{0pt}}}%
+  \\{{5}{{7pt}{1pt}{0pt}}}%
+}
+\endcode
+La macro |\lineskipadjust| inspecte cette table et si elle
+trouve une entrée dont le premier terme vaut |\textsize|, elle
+charge le triplet de valeurs en regard
+dans~|(\normalbaselineskip, \normallineskip, \lineskiplimit|), ce qui
+influe sur la préparation du paragraphe comme indiqué dans le {\sl\TeX
+book}. Il est facile d'augmenter cette table avec~|\leftappenditem|,
+comme dans
+\begincode
+\leftapppenditem{17}{{20pt}{2pt}{0pt}}\to\lineskiptable
+\endcode
+La macro |\rightappenditem| aurait ausi bien pu être utilisée, les
+macros inspectant cette table ne doivent pas faire d'hypotèse sur un
+ordre éventuel des entrées.
+
+Bien entendu, on enregistre |\lineskipadjust| dans |\textsizeadjust|
+avec
+\begincode
+\addhook\lineskipadjust\to\textsizeadjust
+\endcode
+Une classe de document peut redéfinir complètement les entrées de
+|\lineskiptable| ou la macro |\lineskipadjust|, par exemple pour avoir
+un très gros interligne dans certaines circonstances.
+
+
+\formalpar Sélection rapide des fontes
+
+Quelques abréviations commodes sont disponibles pour permettre aux
+auteurs de changer rapidement de fonte. Quelques unes de ces
+abréviations sont utilisées dans PLAIN~\TeX, il s'agit de~|\rm|,
+|\it|, |\sl|, |\sc|, d'autres sont nouvelles, comme |\mainfont| et
+|\mainfontselect| que nous décrivons à présent.
+
+La commande~|\mainfont| positionne tous les paramètres de sélection
+des fontes, hormis la taille pour que la commande~|\fontselect|
+bascule vers la fonte principale du document, tandis que
+|\mainfontselect| signifie simplement |\mainfont\fontselect|. Il est
+conseillé aux auteurs de macro d'utiliser des noms qui ressemblent aux
+précédents dans les nouvelles défintions qu'ils proposent, par exemple
+|\footnotefont| et |\footnotefontselect|, etc.
+
+Si vous shouhaitez revenir à la fonte principale et à la taille
+principale du document la séqunece recommandée est
+|\mainfont\mainsize|, remarquez que |\mainfont| ne sélectionne pas
+effectivement une fonte, mais |\mainsize|, qui est un alias pour
+|\tenpoint| au une autre de ces commandes, le fait.
+
+Les commandes |\rm|, |\it|, |\sl| et |\sc| ne modifient que le
+paramètre |\fontshape| et sélectionnent la fonte ainsi paramétrée. La
+commande |\bf| sélectionne une graisse différente en ne modifiant que
+le paramètre |\fontseries| et sélectionne la fonte ainsi
+paramétrée. Les commandes |\rm|, etc. ainsi que la commande |\bf|
+peuvent modifier certains paramètres du mode mathématique (voir plus
+bas).
+
+Remarquons qu'il n'y a pas de séquence courte pour passer d'une
+graisse élevée à une graisse moyenne. Ces commandes ne sont pas utiles
+aux auteurs, qui délimitent la portée des caractères fortement
+graissés au moyen d'un groupe.
+
+Enfin, les commandes |\tt| et |\sf| modifient le paramètre
+|\fontfamily| pour obtenir des Typewriter Type ou Sans Serifs; la
+commande |\sf| modifie également les paramètres du mode mathématique.
+
+
+\formalpar Mise en relief d'un élément du texte
+
+La mise en relief d'un élément du texte est réalisée par un changement
+temporaire de fonte; par exemple, pour mettre en valeur une portion de
+texte au milieu de caractères romains, on utilise souvent des
+italiques, mais à l'inverse, pour mettre en relief un portion de texte
+au milieu de caractères italiques ou penchés, on utilise des
+caractères romains. La réalisation d'une mise en relief dépend donc de
+la fonte utilisée lors de la composition du texte dont un élément
+donné doit se détacher.
+
+\em{Remarque: les écoliers n'utilisent pas des formes de caractères,
+de plomb ou éléctroniques, et ils utilisent un tout autre procédé pour
+mettre en valeur un élément de texte: ils le soulignent ou
+l'encadrent, pafois avec une couleur vive. Cette manière est adaptée
+pour les textes mansucrits, mais pas pour les textes typographiés.}
+
+La commande |\emphasis| peut être utilisée pour basculer vers une
+fonte appropriée à la mise en relief d'un élément de texte. L'auteur
+délimite cette mise en valeur au moyen d'un groupe, ou utilise la
+forme courte de la commande
+\begincode
+\def\em#1{{\emphasis #1}}
+\endcode
+pour marquer une courte locution. La version longue peut-être
+appliquée à plusieurs paragraphes.
+
+La commande |\emphasis| utilise pour son fonctionnement une table de
+correspondance entre la forme actuelle de caractères et la forme à
+utiliser pour la mise en relief. Le seul paramètre modifié est donc
+|\fontshape|. Les auteurs de classes de document souhaitant proposer
+un autre comportement doivent réecrire une macro |\emphasis|. Nous
+utilisons la table suivante
+\begincode
+\def\emphasistable{%
+  \\{{n}{i}}%
+  \\{{i}{n}}%
+  \\{{o}{n}}%
+  \\{{N}{I}}%
+  \\{{I}{N}}%
+  \\{{O}{N}}%
+}
+\endcode
+Cette table se lit de la façon suivante: la forme de caractère |n| est
+mise en relief au moyen de |i| (italiques), etc. On peut augmenter
+cette table au moyen des commandes |\leftappenditem| et
+|\rightappenditem|, les entrées les plus à gauche dominent celles de
+droite.
+
+On peut utiliser la commande |\emphasisfont| pour ajuster les
+paramètres de sélection des fontes en sorte que l'appel |\fontselect|
+sélectionne la fonte qu'utiliserait à ce moment la commande~|\em|.
+
+
+\section Domaines de caractères
+
+La notion de domaine de caractères est liée à celle de disposition des
+caractères dans une fonte. Un domaine de caractère est défini par un
+ensemble de commandes, qui ressemblent à
+\begincode
+%
+% Symboles dans le Texte
+%  du mode paragraphe
+%
+\def\tsfont{}% Doit être défini par une macro \selectts{whatever}
+\def\tsfontselect{\tsfont\fontselect}
+\def\tschar{\fontchar\tsfontselect}
+\def\tschardef#1{\fontchardef#1\tsfontselect}
+\def\selecttspage#1{\csname tspage@#1\endcsname}
+\def\selectts#1{\csname selectts@#1\endcsname}
+\newhook\tssizeadjustments
+\addhook\tssizeadjustments\to\textsizeadjustments
+\endcode
+Ces commandes décrivent le domaine de caractères |ts| \em{(text
+symbols)}. Un domaine de caractères est utilisé pour garantir l'accès
+à certains caractères au travers de séquences de contrôle. Par
+exemple, si une séquence de contrôle a besoin de produire un
+caractère~§, elle a besoin de deviner quel cqrqctère de quelle fonte
+doit être utilisé; avec les domaines de caractères, un macro
+appropriée permet d'accéder symboliquement à ce caractère.
+
+Voici comment fonctionnent les choses. L'utilisateur
+appelle~|\selectts|, comme par exemple~|\selectts{Latin Modern}|,
+cette commande définit~|\tsfont| et appelle une ou plusieurs
+commandes~|\selecttspage{whatever}|. Une commande~|\selecttspage{S1}|
+rend accessible tous les symboles situés sur la page de caractères
+\li{S1} au moyen de noms symboliques. L'ensemble des commandes
+définies par un appel |\selectts{whatever}| est constant, la commande
+|\missingchar| ou des assemblages plus ou moins heureux peuvent être
+utilisés lorsqu'un caractère demandé n'est pas disponible dans
+certaines fontes.
+
+
+\formalpar Domaine des lettres pour le texte Latin 9
+
+Voici la liste des commandes en regard du glyphe attendu. Il s'agit
+des caractères Latin~9 (aussi ISO~8859~15) dits spéciaux, c'est à dire
+les caractères accentués et les ligatures. Le domaine défini
+est~\li{tl}, où le~\li{t} est pour \em{texte} et le~\li{l} est pour
+\em{latin}.
+
+\begindomaintable\relax
+%
+% Quote marks
+%
+"10 \tldblquoteleft
+"11 \tldblquoteright
+"12 \tldblquotebase
+"13 \tlguillemetleft
+"14 \tlguillemetright
+"22 \tldblquote
+"27 \tlquoteright*
+"60 \tlquoteleft*
+\enddomaintable
+\begindomaintable\relax
+%
+% Punctuation marks
+%
+"21 \tlexclam*
+"2C \tlcomma*
+"2E \tlperiod*
+"3A \tlcolon*
+"3B \tlsemicolon*
+"3F \tlquestion*
+"BD \tlexclamdown
+"BE \tlquestiondown
+\enddomaintable
+\begindomaintable\relax
+%
+% Delimiters
+%
+"28 \tlparenleft*
+"29 \tlparenright*
+"5B \tlbracketleft*
+"5D \tlbracketright*
+"7B \tlbraceleft*
+"7D \tlbraceright*
+\enddomaintable
+\begindomaintable\relax
+%
+% Dashes
+%
+"15 \tlendash
+"16 \tlemdash
+"2D \tlhyphen*
+"7F \tlhyphenchar*
+\enddomaintable
+\begindomaintable\relax
+%
+% Various Symbols
+%
+"20 \tlvisiblespace
+"23 \tlnumbersign*
+"24 \tldollar*
+"25 \tlpercent*
+"26 \tlampersand*
+"2A \tlastersik*
+"2B \tlplus*
+"2F \tlslash*
+"3C \tlless*
+"3D \tlequal*
+"3E \tlgreater*
+"40 \tlat*
+"5C \tlbackslash*
+"5E \tlasciicircumflex*
+"5F \tlunderscore*
+"7C \tlbar*
+"7E \tlasciitilde*
+"9F \tlsection
+"BF \tlsterling
+\enddomaintable
+\begindomaintable\relax
+%
+% Ligatures
+%
+"9C \tlIJ
+"BC \tlij
+"C6 \tlAE
+"E6 \tlae
+"D7 \tlOE
+"F7 \tloe
+"DF \tlEsZet
+"FF \tleszet
+\enddomaintable
+\begindomaintable\relax
+%
+% Letters with diacritics
+%
+"80 \tlAbreve
+"81 \tlAogonek
+"82 \tlCacute
+"83 \tlCcaron
+"84 \tlDcaron
+"85 \tlEcaron
+"86 \tlEogonek
+"87 \tlGbreve
+"88 \tlLacute
+"89 \tlLcaron
+"8A \tlLslash
+"8B \tlNacute
+"8C \tlNcaron
+"8D \tlEng
+"8E \tlOhungarumlaut
+"8F \tlRacute
+"90 \tlRcaron
+"91 \tlSacute
+"92 \tlScaron
+"93 \tlScommaaccent
+"94 \tlTcaron
+"95 \tlTcommaaccent
+"96 \tlUhungarumlaut
+"97 \tlUring
+"98 \tlYdieresis
+"99 \tlZacute
+"9A \tlZcaron
+"9B \tlZdotaccent
+"9D \tlIdotaccent
+"9E \tldcroat
+"A0 \tlabreve
+"A1 \tlaogonek
+"A2 \tlcacute
+"A3 \tlccaron
+"A4 \tldcaron
+"A5 \tlecaron
+"A6 \tleogonek
+"A7 \tlgbreve
+"A8 \tllacute
+"A9 \tllcaron
+"AA \tllslash
+"AB \tlnacute
+"AC \tlncaron
+"AD \tleng
+"AE \tlohungarumlaut
+"AF \tlracute
+"B0 \tlrcaron
+"B1 \tlsacute
+"B2 \tlscaron
+"B3 \tlscommaaccent
+"B4 \tltcaron
+"B5 \tltcommaaccent
+"B6 \tluhungarumlaut
+"B7 \tluring
+"B8 \tlydieresis
+"B9 \tlzacute
+"BA \tlzcaron
+"BB \tlzdotaccent
+"C0 \tlAgrave
+"C1 \tlAacute
+"C2 \tlAcircumflex
+"C3 \tlAtilde
+"C4 \tlAdieresis
+"C5 \tlAring
+"C7 \tlCcedilla
+"C8 \tlEgrave
+"C9 \tlEacute
+"CA \tlEcircumflex
+"CB \tlEdieresis
+"CC \tlIgrave
+"CD \tlIacute
+"CE \tlIcircumflex
+"CF \tlIdieresis
+"D0 \tlEth
+"D1 \tlNtilde
+"D2 \tlOgrave
+"D3 \tlOacute
+"D4 \tlOcircumflex
+"D5 \tlOtilde
+"D6 \tlOdieresis
+"D8 \tlOslash
+"D9 \tlUgrave
+"DA \tlUacute
+"DB \tlUcircumflex
+"DC \tlUdieresis
+"DD \tlYacute
+"DE \tlThorn
+"E0 \tlagrave
+"E1 \tlaacute
+"E2 \tlacircumflex
+"E3 \tlatilde
+"E4 \tladieresis
+"E5 \tlaring
+"E7 \tlccedilla
+"E8 \tlegrave
+"E9 \tleacute
+"EA \tlecircumflex
+"EB \tledieresis
+"EC \tligrave
+"ED \tliacute
+"EE \tlicircumflex
+"EF \tlidieresis
+"F0 \tleth
+"F1 \tlntilde
+"F2 \tlograve
+"F3 \tloacute
+"F4 \tlocircumflex
+"F5 \tlotilde
+"F6 \tlodieresis
+"F8 \tloslash
+"F9 \tlugrave
+"FA \tluacute
+"FB \tlucircumflex
+"FC \tludieresis
+"FD \tlyacute
+"FE \tlthorn
+\enddomaintable
+
+
+\formalpar Caractères absents
+
+Le contrat entre les commandes précentes |\tlwhatever| et
+l'utilisateur de la commande est que la commande fait de son mieux
+pour produire le glyphe en regard, il ne s'agit de rien de plus que
+d'une promesse de bonne volonté.
+
+On peut utiliser la commande |\missingchardef\tlthorn|, par exemple, pour
+annoncer que le glyphe de |\tlthorn| n'est pas disponible avec les
+fontes chargées. Les commandes
+\begincode
+\missingcharhush
+\missingcharverbose
+\missingcharstop
+\endcode
+sélectionnent le comportement des caractères dont le glyphe est
+indisponible. La première passe tout sous silence mais reporte un
+message à la fin du traitement du fichier principal, la seconde
+affiche un message à chaque caractère manquant rencontré et la
+troisième arrête le traitement.
+
+
+\formalpar Domaine des symboles du texte
+
+\def\tsfontselect{\fontpage{S1}\fontselect}
+\begindomaintable\tsfontselect
+"00 \tsgrave
+"01 \tsacute
+"02 \tscircumflex
+"03 \tstilde
+"04 \tsdieresis
+"05 \tshungarumlaut
+"06 \tsring
+"07 \tscaron
+"08 \tsbreve
+"09 \tsmacron
+"0A \tsdotaccent
+"0B \tscedilla
+"0C \tsogonek
+"0D \tsquotebase
+"12 \tsdblquotebase
+"15 \tstwelveudash
+"16 \tsthreequartersemdash
+"17 \tscwmcapital
+"18 \tsarrowleft
+"19 \tsarrowright
+"1A \tstieaccentlowercase
+"1B \tstieaccentcapital
+"1C \tstieaccentlowercasenew
+"1D \tstieaccentcapitalnew
+"1F \tscwmascender
+"20 \tsblanksymbol
+"24 \tsdollar
+"27 \tsquotesingle
+"2A \tsasteriskmath
+"2C \tscomma
+"2D \tshyphendbl
+"2E \tsperiod
+"2F \tsfraction
+"30 \tszerooldstyle
+"31 \tsoneoldstyle
+"32 \tstwooldstyle
+"33 \tsthreeoldstyle
+"34 \tsfouroldstyle
+"35 \tsfiveoldstyle
+"36 \tssixoldstyle
+"37 \tssevenoldstyle
+"38 \tseightoldstyle
+"39 \tsnineoldstyle
+"3C \tsangleleft
+"3D \tsminus
+"3E \tsangleright
+"4D \tsmho
+"4F \tsbigcircle
+"57 \tsohm
+"5B \tsdblbracketleft
+"5D \tsdblbracketright
+"5E \tsarrowup
+"5F \tsarrowdown
+"60 \tsgrave
+"62 \tsborn
+"63 \tsdivorced
+"64 \tsdied
+"6C \tsleaf
+"6D \tsmarried
+"6E \tsmusicalnote
+"7E \tstildelow
+"7F \tsvarhyphendbl
+"80 \tsbreve
+"81 \tscaron
+"82 \tshungarumlaut
+"83 \tsdblgrave
+"84 \tsdagger
+"85 \tsdaggerdbl
+"86 \tsdblverticalbar
+"87 \tsperthousand
+"88 \tsbullet
+"89 \tscentigrade
+"8A \tsdollaroldstyle
+"8B \tscentoldstyle
+"8C \tsflorin
+"8D \tscolonmonetary
+"8E \tswon
+"8F \tsnaira
+"90 \tsguarani
+"91 \tspeso
+"92 \tslira
+"93 \tsrecipe
+"94 \tsinterrobang
+"95 \tsgnaborretni
+"96 \tsdong
+"97 \tstrademark
+"98 \tspermyriad
+"99 \tsvarparagraph
+"9A \tsbaht
+"9B \tsnumero
+"9C \tsdiscount
+"9D \tsestimated
+"9E \tsopenbullet
+"9F \tsservicemark
+"A0 \tsquillbracketleft
+"A1 \tsquillbracketright
+"A2 \tscent
+"A3 \tssterling
+"A4 \tscurrency
+"A5 \tsyen
+"A6 \tsbrokenbar
+"A7 \tssection
+"A8 \tsdieresis
+"A9 \tscopyright
+"AA \tsordfeminine
+"AB \tscopyleft
+"AC \tslogicalnot
+"AD \tspublished
+"AE \tsregistered
+"AF \tsmacron
+"B0 \tsdegree
+"B1 \tsplusminus
+"B2 \tstwosuperior
+"B3 \tsthreesuperior
+"B4 \tsacute
+"B5 \tsmu
+"B6 \tsparagraph
+"B7 \tsperiodcentered
+"B8 \tsreferencemark
+"B9 \tsonesuperior
+"BA \tsordmasculine
+"BB \tsradical
+"BC \tsonequarter
+"BD \tsonehalf
+"BE \tsthreequarters
+"BF \tseuro
+"D6 \tsmultiply
+"F6 \tsdivide
+\enddomaintable
+
+
+\section Fontes de caractères et mode mathématique
+
+Le mode mathématique de \TeX\ est celui dans lequel celui-ci prépare
+les formules mathématiques. On discute ici des commandes spécifiques à
+l'utilisation des fontes pour le mode mathématique.
+
+\formalpar Assigner des fontes aux registres d'une famille
+
+L'appel |\mathfontwish\mit{12pt}{10pt}{7pt}\as\yoyo| a deux effets.
+Premièrement, tout se passe comme si les séquences
+\begincode
+\fontsize{12pt}\fontwish\selection\as\yoyotext
+\fontsize{10pt}\fontwish\selection\as\yoyoscript
+\fontsize{7pt}\fontwish\selection\as\yoyoscriptscript
+\endcode
+étaient éavluées, mais le paramètre |\fontsize| est
+restauré. Deuxièmement les registres décrivant la famille |\mit| sont
+remplis avec les valeurs obtenues, ce qui équivaut à évaluer
+\begincode
+\textfont\mit=\yoyotext
+\scriptfont\mit=\yoyoscript
+\scriptscriptfont\mit=\yoyoscriptscript
+\endcode
+La commande~|\mathfontwish| ressemble à la forme~%
+|\fontwish\selection...|; avec des paramètres spécialement adaptés à
+son rôle. Rappelons qu'on peut sauvegarder et restaurer les paramètres
+de sélection des fontes en travaillant dans un groupe ou en utilisant
+les commandes~|\fontselectionsave| et~|\fontselectionload|.
+
+
+\formalpar Familles pour le mode mathématique
+
+Les familles suivantes sont proposées par BHRID \TeX\ pour composer les
+variables dans le mode mathématique:
+\beginlist\tag\literal
+\item{\string\rm} Romaines, famille |z@|;
+\item{\string\it} Math Italics, famille |\@ne|;
+\item{\string\bf} Romaines Grasses, famille |\bffam|;
+\item{\string\sf} Sans Serifs, famille |\sffam|;
+\item{\string\mit} Math Italics, famille |\@ne|;
+\item{\string\cal} pour les belles majuscules, famille |\mathscriptfam|;
+\item{\string\ef} Euler Fraktur, famille |\effam|;
+\endlist
+Les séquences |\rm|, |\it|, |\bf|, et |\sf| modifient également des
+paramètres pour le mode horizontal.
+
+Par exemple,
+$$
+{\sf\Gamma}\otimes\mathop{\hbox{\sf Hom}}({\ef A}, {\ef B})
+\simeq
+{\cal C}({\bf\Gamma})
+$$
+est obtenu avec
+\begincode
+$$
+{\sf\Gamma}\otimes\mathop{\hbox{\sf Hom}}({\ef A}, {\ef B})
+\simeq
+{\cal C}({\bf\Gamma})
+$$
+\endcode
+Rappelons que les commandes modifiant les familles dans le mode
+mathématique n'affectent que les variables, il faut mettre en ½uvre
+d'autres moyens pour obtenir des symboles gras, par exemple; ou
+modifier le comportement de toute autre élément du mode mathématique.
+
+\formalpar Paramètres du mode mathématique liés %
+ à la taille du texte
+
+Lorsqu'on modifie la taille du texte au moyen d'une commande
+|\tenpoint|, \em{etc.}, on souhaite que la taille des caractères du
+mode mathématique suivent ces changements. La commande
+|\familysizeadjust| opère les changements nécessaires pour une famille
+donnée du mode mathématique;
+l'appel~|\familysizeadjust\mitfont\@ne\mit| affecte aux regsitres
+|\textfont\@ne|, |\scriptfont\@ne|, |\scriptscriptfont\@ne| la fonte
+courante après l'appel de |\mitfont|, avec les tailles fournies par la
+table~|\familysizetable|~(cf. infra). De plus, chacune de ces fontes
+est chargée dans les registres de fontes de \TeX\ nommés |\mittext|,
+|\mitscript|, et~|\mitscriptscript|.
+
+Comme annoncé ci-dessus, la table |\familysizetable| décrit les
+tailels à utiliser pour charger les trois fontes d'une famille du mode
+mathématique, en fonction de la taille du texte, telle qu'elle est
+donnée par le registre~|\textsize|. Chaque triplet indexé par le
+paramètre |\textsize| a comme membres: |\fontsize| pour |\textfont|,
+pour |\scriptfont|, et pour~|\scriptscriptfont|.
+\begincode
+\def\familysizetable{%
+  \\{{12}{{12pt}{8pt}{6pt}}}%
+  \\{{11}{{11pt}{8pt}{6pt}}}%
+  \\{{10}{{10pt}{7pt}{5pt}}}%
+  \\{{9}{{9pt}{6pt}{5pt}}}%
+  \\{{8}{{8pt}{6pt}{5pt}}}%
+  \\{{7}{{7pt}{6pt}{5pt}}}%
+  \\{{6}{{6pt}{5pt}{5pt}}}%
+  \\{{5}{{5pt}{5pt}{5pt}}}%
+}
+\endcode
+Cette table peut être étendue et augmentée avec les commandes de
+manipulation des listes. Une classe de document peut redéfinir
+complètement cette table ou préparer un mécanisme différent pour
+ajuster les tailles des fontes.
+
+Pour appeler automatiquement |\familysizeadjust| quand nécessaire, on
+dit par exemple
+\begincode
+\addhook{\familysizeadjust\mitfont\@ne\mit}\to\mathsizeadjust
+\endcode
+et les tailles des fontes de la famille |\@ne|~\em{(math italics)} ont
+leurs tailles ajustées automatiquement par les
+commandes~|\tenpoint|,~\em{etc.}
+
+
+\formalpar Belles majuscules
+
+\def\belmaj{%
+\halign{\qquad\hfil##\hfil&\quad##\hfil\cr
+${\cal F}(A,B)$&toutes les fonctions de~$A$ dans~$B$\cr
+${\cal P}(A)$&ensemble des parties de~$A$\cr
+${\cal T}_X$&topologie de l'espace~$X$\cr
+${\cal C}(X,\R)$&ensemble des fonctions numériques de~$X$
+       continues\cr
+${\cal V}_X(x)$&ensemble des voisisanges de~$x$ dans~$X$\cr
+}\noindent\ignorewhitespace}%
+On utilise en mathématiques de belles majuscules dans de nombreuses
+situations, par exemple
+\belmaj
+On obtient ces majusucules dans le mode mathématique grâce à la
+commande~|\cal|, comme par exemple dans~|{\cal F}|. Les fontes
+préchargées dans~BHRID~\TeX\ proposent plusieurs jeux de belles
+majuscules, on choisit ce jeu avec la commande~|\selectmathcal|, les
+appels possibles sont
+\begincode
+\selectmathcal{formal}
+\selectmathcal{informal}
+\selectmathcal{eulerfraktur}
+\selectmathcal{eulerscript}
+\endcode
+Qui donnent respectivement
+\selectmathcal{formal}\mathsizeadjust\belmaj\medbreak
+\selectmathcal{informal}\mathsizeadjust\belmaj\medbreak
+\selectmathcal{eulerfraktur}\mathsizeadjust\belmaj\medbreak
+\selectmathcal{eulerscript}\mathsizeadjust\belmaj\medbreak
+Les caractères du jeu \li{formal} se rapprochent de ce que l'on peut
+trouver dans beaucoup de livres parus aux alentours des années
+soixante; le second jeu~\li{informal} est notamment utilisé dans {\sl
+the Art of Computer Programming} de~\nm{D.~E.~Knuth}, ainsi que dans
+de nombreux polys; le quatrième jeu~\li{eulerscript} apparaît dans le
+livre de {\sl Géométrie} de~\nm{M.~Audin}; tandis que le troisième
+jeu~\li{euler fraktur} apparaît dans des traités plus anciens, comme
+l'{\sl Algebra} de~\nm{Van der Waerden}. Les majuscules \li{euler
+fraktur} peuvent par ailleurs être utilisées à travers la
+commande~|\ef|.
+
+En plus de ces noms courts, on peut utiliser des noms longs,
+\begincode
+\selectmathcal{Ralph Smith Formal Script}
+\selectmathcal{Computer Modern Informal Script}
+\selectmathcal{Euler Fraktur}
+\selectmathcal{Euler Script}
+\endcode
+Il s'agit d'\em{alias} qui permettent seulement d'avoir de la
+cohérence avec les commandes comme~|\selecttl{Latin Modern}| en
+donnant comme argument un nom de fonte de caractères ou un nom de
+famille de fonte caractères. Si vous ajoutez des des nouvelles fontes
+pouvant être utilisées comme~|\mathcalfont|, privilégiez les noms
+longs.
+
+
+\bye
+
+%%% End of file `fontes.tex'

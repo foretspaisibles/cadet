@@ -1,0 +1,102 @@
+%%% agraf.tex -- Actions des groupes affines
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+
+\section Actions des groupes affines
+
+Une représentation linéaire d'un groupe affine~$G$ est un morphisme
+de~$G$ dans le groupe linéaire d'un espace vectoriel~$E$ de dimension
+finie. Si on veut laisser dans l'anonymat le morphisme lui-même et
+qu'on préfère parler de~$E$, on dit qu'il est un espace de
+représentation linéaire de~$G$, ou pour être bref, qu'il est une
+représentation de~$G$.
+
+Dans cet exposé, on utilise ces représentations pour étudier les
+groupes affines. Elles permettent d'étendre la décomposition de~Jordan
+aux groupes non linéaires, de construire les espaces homogènes, et
+c'est dans l'étude de la représentation adjointe qu'apparaissent les
+fameuses racines.
+
+\paragraph Représentation adjointe
+Lorsque~$G$ est un groupe affine, l'automorphisme intérieur~$\eta(x)$
+associé à~$x\in G$ stabilise l'élément neutre~$I$ de~$G$, et au niveau
+infinitésimal, l'application tangente~$T_I \eta(x)$ est un
+automorphisme du groupe linéaire de~$\lie g = T_I G$. De plus
+l'application
+$$
+\application
+\Ad:G\to \GL(\lie g)\cr
+x\mapsto T_I \eta(x)\cr
+$$
+est d'après la \em{chain-rule} un morphisme de groupes, on l'appelle
+la représentation adjointe de~$G$.
+
+On montre au \ref[pr:pousse] comment la structure de la représentation
+adjointe influence celle des autres.
+
+\medskip
+Pour l'étude des groupes affines, on a besoin d'autres espaces de
+représentations, comme ceux que produit~le
+
+\proposition Théorème de Chevalley
+Soit~$G$ un groupe affine et~$H$ un sous-groupe fermé de~$G$. Il
+existe une représentation~$E$ de~$G$ et une droite~$L$ de~$E$, tels
+que~$H$ est le groupe d'isotropie de~$L$.
+
+\paragraph [pa:ligraf] Linéarisation de groupes affines
+En prenant~$H=\set{I}$ on montre que~$G$ est isomorphe à un
+sous-groupe fermé d'un groupe linéaire, ce qui permet parfois de
+travailler concrètement sur des matrices.
+
+\paragraph
+En passant à l'action de~$G$ sur~$\P(E)$, l'orbite de~$\P(L)$ est
+une variété quasi-projective, à travers laquelle se factorisent les
+morphismes constants modulo~$H$.
+
+Il ne s'agit pas d'un quotient ensembliste, par exemple
+si~$G=\SL(2,k)$ et~$H=\left[\matrix{1&*\cr0&1\cr}\right]$, la variété
+quotient confond tous les points fixes de~$H$.
+% XXX vérifer l'exemple
+
+\proposition Décomposition de Jordan
+Soit~$x\in\GL(E)$. Il existe un, et un seul, couple~$(x_s,x_u)$
+d'éléments de~$\GL(E)$ vérifiant les conditions: $x=x_s x_u$; $x_s$
+est semi-simple, $x_u$ est unipotent; et~$x_s x_u = x_u x_s$. Les
+endomorphsimes~$x_s$ et~$x_u$ commutent à tous les endomorphismes qui
+commutent avec~$x$. Lorsqu'un sous-espace de~$E$ est stabilisé par~$x$
+il est également stabilisé par~$x_s$ et par~$x_u$. Enfin, lorsque~$x$
+et~$y$ commutent dans~$\GL(E)$, on a~$(xy)_s = x_s y_s$ et~$(xy)_u =
+x_u y_u$.
+
+% Lorsqu'on représente grâce à~\re[pa:ligraf] un groupe affine dans un
+% groupe linéaire, on peut transporter
+
+\proposition [pr:cj] Décomposition de Chevalley-Jordan
+Soit~$G$ un groupe affine et soit~$x\in G$. il existe un, et un seul,
+couple~$(x_s,x_u)$ d'éléments de~$G$ tels que: $x=x_s x_u$; dans toute
+représentation linéaire de~$G$, $x_s$ est semi-simple, $x_u$ est
+unipotent; et~$x_s x_u = x_u x_s$. Lorsque~$\phi$ est un morphisme de
+groupes~$\phi(x)_s = \phi(x_s)$ et~$\phi(x_u) = \phi(x)_u$.
+
+Lorsque~$G$ est un groupe linéaire, la décompostion de
+Chevalley-Jordan est la décomposition de Jordan.
+
+Pour prouver que~$(x_s,x_u)$ est une décompositon de Chevalley-Jordan,
+il suffit de trouver \em{une}~représentation fidèle de~$G$ dans
+laquelle~$x_s$ est semi-simple et~$x_u$ unipotent.
+
+L'ensemble~$G_u$ est fermé dans~$G$, mais ça n'est que rarement le cas
+pour~$G_s$. Par exemple~$\GL(E)_s$ est une partie ouverte dense
+de~$\GL(E)$, distincte de~$\GL(E)$ lorsque~$E$ est de dimension plus
+grande que~un.
+
+\paragraph [pa:redfd]
+Comme la décomposition de Chevalley-Jordan est compatible avec les
+homomorphismes, et en particulier avec les linéarisations des groupes
+affines, elle hérite certaines des propriétés de la décomposition de
+Jordan. Par exemple, un groupe abélien dont tous les éléments sont
+semi-simples peut-être réduit à la forme diagonale dans tous ses
+espaces de représentation.
+
+%%% End of file `agraf.tex'

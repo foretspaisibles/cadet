@@ -1,0 +1,60 @@
+%%% hyphende.nw -- Chargement des motifs de césure pour l'allemand -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Dim  7 jan 2007 12:22:28 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier hyphende.nw}
+<<*>>=
+
+% Pour la langue allemande, il existe deux ensembles de motifs de
+% césure. Le premier ensemble est valable pour les textes rédigés avec
+% l'ortohgraphe tradiotnnelle, tandis que le second est utilisé pour
+% ceux suivant la nouvelle orthographe (réforme de 19XXX).
+
+%
+% DET orthographe traditionnelle
+%
+
+\newlanguage\hyphen@det
+\begingroup\language=\hyphen@det\input dehypht\endgroup
+
+%
+% DEN Neue Rechtscreibung
+%
+
+\newlanguage\hyphen@den
+\begingroup\language=\hyphen@den\input dehyphn\endgroup
+
+
+% Les commmandes enableneuerechschreibung et
+% disableneuerechtschreibung permettent de passer d'un motif de césure
+% à l'autre pour la langue allemande.
+
+\def\enableneuerechtschreibung{\chardef\hyphen@de=\hyphen@den}
+\def\disableneuerechtschreibung{\chardef\hyphen@de=\hyphen@det}
+
+% On préfère utiliser les motifs de césure de l'orthographe
+% tradionnelle.
+
+\disableneuerechtschreibung
+
+%%% End of file `hyphende.nw'

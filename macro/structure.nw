@@ -1,0 +1,598 @@
+%%% structure.nw -- Bibliothèque de support pour les structures
+
+% Author: Michael Grünewald
+% Date: Sam  1 mar 2008 08:37:55 CET
+% Copyright: (C) 2006, 2013 Michael Grünewald
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+@ \section{Introduction}
+
+Pour utiliser la commande `eqlabel' il faut appeler
+`selectequationsuper' pour définir l'élément de structure contenant
+les équations.
+
+À la fin de la classe de document, on doit dire `auxinput' pour
+utiliser le fichier auxiliaire.
+
+On peut ajouter des procédures pour gérer une table des matières à
+cette bibliothèque.
+
+Et voilà, il n'y a plus qu'à documenter un peu plus sérieusement cette
+bibliothèque!
+
+<<*>>=
+<<Fichier auxiliaire>>
+<<Label>>
+<<Structure>>
+<<État civil>>
+
+
+@ \section{Fichier auxiliaire}
+
+Dans la réalisation de certains travaux, il peut être nécessaire de
+connaître à un moment donné des informations qui ne seront disponibles
+qu'ultérieurement. C'est par exemple le cas lorsqu'on prépare une
+table des matières, un index, ou des références croisées. Une façon de
+résoudre ce problème est d'utiliser un fichier auxiliaire où sont
+consignées des informations produites par un premier traitement des
+fichiers sources par \TeX, et destinées à être lues lors d'un
+traitement supplémentaire.
+
+Les préparations nécessitant plusieurs traitements sont connues comme
+\emph{multipass jobs}.
+
+Définitions:
+ auxfile (newwrite)
+ auxinput (procedure)
+ auxinputprehook (event)
+ auxinputposthook (event)
+
+<<Fichier auxiliaire>>=
+\newwrite\aux
+\newhook\auxinputprehook
+\newhook\auxinputposthook
+\def\auxinput{%
+  \beginnext
+  \testexists{\jobname.aux}%
+  \ifexists
+    \let\next\auxinput@M
+  \else
+    \let\next\auxinput@E
+  \fi
+  \endnext
+}
+
+\def\auxinput@E{%
+  % L'appel à `endhook' se fait après le `supereject' final, il n'y a
+  % donc aucune opération d'écriture en attente dans la MVL.
+  \openout\aux=\jobname.aux\relax
+  \addhook{\immediate\closeout\aux}\to\endhook
+}
+
+\def\auxinput@M{%
+   \begingroup
+     \runhook\auxinputprehook
+     \disableconventionpunc
+     \enableprivatenames
+     \input\jobname.aux
+     \runhook\auxinputposthook
+   \endgroup
+   \auxinput@E
+}
+
+@ \section{Références croisées}
+
+Certains textes, et tous particulièrement les textes techniques ont
+besoin d'utiliser des références croisées. Le système de références
+croisées permet d'associer un nom symbolique à un emplacement d'un
+document, cette première étape est la création de la référence; on
+peut alors utiliser ce nom symbolique pour faire référence à la page
+où se situe l'élément, ou le cas échéant à sa position dans la
+hiérarchie du document, cette deuxième étape est l'utilisation de la
+référence.
+
+Il est important de noter qu'on peut utiliser une référence avant de
+l'avoir créée, ce qui fait de la préparation d'un document contenant
+des références croisées un \emph{multipass job}.
+
+La procédure \fn{labelwriteaux} est utilisée pour créer une
+réference. Elle crée un enregistrement dans le fichier auxiliaire.
+<<Label>>=
+\newif\iflabelchanged
+\labelchangedfalse
+
+\def\labelchangedmessage{%
+  \iflabelchanged
+  \message{(labels changed)}%
+  \fi
+}
+
+\addhook{\labelchangedmessage}\to\endhook
+
+\def\labelwriteaux#1#2{%
+  \beginnext
+  \disableinputencoding
+  %
+  % On teste si #2 a changé entre la version en mémoire et la version
+  % consignée. On ne tient pas compte des numéros de page pour
+  % indiquer ou non si les `labels' ont changé.
+  %
+  \toksloadlabelref{#1}\to\rtA
+  \edef\rmA{\the\rtA}%
+  \edef\rmB{#2}%
+  \ifx\rmA\rmB
+  \else
+    \global\labelchangedtrue
+  \fi
+  %
+  % On prépare la consigne, et on l'expédie.
+  %
+  \edef\next{\rtA={{#1}}}\next% interprète les :_13 en :_12 (!)
+  \rtB={{\folio}{#2}}%
+  \edef\next{\noexpand\write\aux{\string\setlabel\the\rtA\the\rtB}}%
+  \endnext
+}
+
+\def\setlabel#1#2#3{%
+  % Les labels sont formés des caractères a-z A-Z 0-9 et `:' (le
+  % caractère deux-points).
+  \beginnext
+  \disableinputencoding
+  \toksloadcsname{label:#1}\to\rtA
+  \rtB={{#2}{#3}}%
+  \expandafter\let\expandafter\label@m\the\rtA
+  \edef\next{%
+    \let\noexpand\label@m\the\rtA
+    \global\def\the\rtA{\the\rtB}%
+  }%
+  \endnext
+}
+
+\def\labelrefnone{???}
+
+\def\toksloadlabelthing#1#2\to#3{%
+  \beginnext
+  \disableinputencoding
+  \rtA={#3}%
+  \toksloadcsname{label:#2}\to\rtB
+  \expandafter\ifx\the\rtB\relax
+     \toksloadcsexpansion\labelrefnone\to\rtC
+     \edef\next{\the\rtA={\the\rtC}}%
+  \else
+     \expandafter\toksloadcsexpansion\the\rtB\to\rtC
+     \rtD={#1}%
+     \edef\next{\the\rtD{\the\rtA}\the\rtC}%
+  \fi
+  \endnext
+}
+
+\def\toksloadlabelref{%
+  \toksloadlabelthing\label@R
+}
+
+\def\toksloadlabelpage{%
+  \toksloadlabelthing\label@P
+}
+
+\def\label@R#1#2#3{#1={#3}}
+\def\label@P#1#2#3{#1={#2}}
+
+\def\ref[#1]{%
+  \beginnext
+  \toksloadlabelref{#1}\to\rtA
+  \edef\next{(\the\rtA)}%
+  \endnext
+}
+
+\def\page[#1]{%
+  \beginnext
+  \toksloadlabelpage{#1}\to\rtA
+  \edef\next{\the\rtA}%
+  \endnext
+}
+
+@ \section{Structure}
+
+On définit une fonction d'ordre supérieur, \fn{structure}, qui décrit
+la procédure générale préparant les contenus du domaine de la
+structure.
+
+@ \subsection{Préparation de l'alinéa de structure}
+<<Structure>>=
+\newmacro\structurename
+\newmacro\structurebeforeskip
+\newmacro\structureafterskip
+\newmacro\structurebeginparagraph
+\newmacro\structureendparagraph
+\newmacro\structuretext
+\newmacro\structureempty
+
+
+@ \subsection{Numérotation des alinéas de structure}
+
+Lorsqu'une structure est créée avec \fn{newstructure}, disons par
+exemple \emph{chapter}, une compteur est réservé pour cette structure,
+dans l'exemple il s'agit de~\emph{chapterno}.
+
+Ce compteur est incrémenté au moyen de la procédure
+\fn{\fa{structure}nostep}, une procédure appropriée permet de ne
+numéroter que les structures pour lesquelles un texte est fourni.
+Cette procédure est évaluée dans un groupe.
+
+Si \fn{\fa{structure}nostep} n'est pas défini lors de la création de
+la structure, cette procédure est liée à \fn{structurenostepalways}.
+
+<<Structure>>=
+\def\structurenostepalways{%
+  \global\advance\structureno\@ne
+}
+
+\def\structurenostepwhentitle{%
+  \testtoksempty\structuretitle
+  \iftoksempty
+  \else
+    \global\advance\structureno\@ne
+  \fi
+}
+
+@ La bibliothèque \emph{structure} propose une solution automatique
+pour la subordination de compteur. Lorsqu'une structure est crée, si
+le membre \emph{super} est défini, avec pour valeur le nom d'une
+structure déjà existante, alors l'incrémentation du compteur de cette
+deuxième structure provoque l'annulation du compteur de la structure
+en cours de création.
+
+\begin{remark}
+La procédure \fn{newstructure} ne réserve pas de compteur s'il semble
+qu'un compteur ait été alloué par l'utilisateur. Cela permet par
+exemple de partager un même compteur entre plusieurs structures.
+\end{remark}
+
+<<Structure>>=
+\newmacro\structuresuper
+\newhook\structurehook
+
+@ \subsection{Étiquettage des alinéas de structure}
+
+Lorsqu'une structure numérotée est préparée, on fait fréquemment
+apparaître le numéro de la section. Ce numéro est parfois précédé des
+numéros des paragraphes de structure de niveau supérieur à celui
+utilisé.
+
+Les structures définissent des fonctions membre
+\emph{toksload<>number} et \emph{number}.
+
+<<Structure>>=
+\def\toksloadstructurenumber\to#1{%
+  \toksloaddecimal\structureno\to#1%
+}
+\def\structurenumber{{\toksloadstructurenumber\to\rtA\the\rtA.}}
+
+
+@ \subsection{Consigne dans le fichier auxiliaire}
+
+Remarque: la définition de \fn{structurewriteaux} peut être modifiée
+en fonction de la bibliothèque de fichier auxilaire utilisée.
+<<Structure>>=
+\def\structurewriteaux{%
+  %
+  % Écriture du label
+  %
+  \testtoksempty\structurelabel
+  \iftoksempty
+  \else
+    \beginnext
+    \toksloadstructurenumber\to\rtA
+    \edef\next{\noexpand\labelwriteaux{\the\structurelabel}{\the\rtA}}%
+    \endnext
+  \fi
+}
+
+
+
+@ \subsection{Réalisation}
+<<Structure>>=
+\def\structure{%
+  \beginnext
+  \setcatcodeother\^^M%
+  \getoptbracket\structure@A
+}
+
+\def\structure@A#1{%
+  \ifoptbracket
+    \def\next{\structurelabel{#1}}%
+  \else
+    \def\next{\structurelabel{}}%
+  \fi
+  \endnext
+  \readline\to\structuretitle\then
+    \structure@B
+  \done
+}
+
+\def\structure@B{%
+  \ifhmode
+  \else
+    \structurebeforeskip
+    \noindent
+  \fi
+  {\structurenostep}%
+  {\structurewriteaux}%
+  \runhook\structurehook
+  \structurebeginparagraph
+  \beginnext
+    \testtoksempty\structuretitle
+    \iftoksempty
+      \rtA={\structureempty}%
+    \else
+      \rtA={\structuretext}%
+    \fi
+  \edef\next{{\the\rtA}}%
+  \endnext
+  \structureendparagraph
+  \ifhmode
+  \else
+    \structureafterskip
+  \fi
+  \structurenextparagraph
+  \ignoreblanks
+}
+
+\def\newstructure#1{%
+  \beginnext
+  \rtA={#1}%
+  \toksloadcsident#1\to\rtB
+  \edef\next{\noexpand\newstructure@A{\the\rtA}{\the\rtB}}%
+  \endnext
+}
+
+\def\newstructure@A#1#2{%
+  %
+  % Initialisation
+  %
+  \beginnext
+  \rtA={}%
+  \newstructure@L{#2}\newstructure@M\newstructure@m
+  \newstructure@L{#2}\newstructure@T\newstructure@t
+  \newstructure@L{#2}\newstructure@C\newstructure@c
+  \newstructure@M{toksload#2}{number}%
+  \edef\next{\the\rtA}%
+  \endnext
+  %
+  % Définition de toksload<structure>number
+  %
+  %
+  % Gestion du numéro
+  %
+  \beginnext
+  \beginnext
+  \rtA={\ifx\empty}%
+  \toksloadcsname{#2super}\to\rtB
+  \edef\next{\the\rtA\the\rtB}%
+  \endnext
+  % Clear text:
+  %\ifx\empty\<structure>super
+    \let\next\empty
+  \else
+    \toksloadcsname{\csname#2super\endcsname hook}\to\rtA
+    \toksloadcsname{#2no}\to\rtB
+    \edef\next{%
+      \noexpand\addhook{%
+        \global\the\rtB\z@
+      }\noexpand\to\the\rtA
+    }%
+  \fi
+  \endnext
+  \newstructure@I{#2nostep}{empty}{structurenostepalways}
+  \newstructure@I{toksload#2number}{empty}{toksloadstructurenumber}%
+  \newstructure@I{#2number}{empty}{structurenumber}%
+  %
+  % Références
+  \newstructure@I{#2writeaux}{empty}{structurewriteaux}%
+  %
+  %
+  % Définition du trampoline
+  %
+  \beginnext
+  \rtA={}%
+  \rtB={\outer\def#1}%
+  \rtC={\def\structurename{#2}\structure}
+  \def\\##1{\newstructure@B{#2}{##1}}%
+  \newstructure@m
+  \newstructure@t
+  \newstructure@c
+  \beginnext
+  \toksloadcsname{toksload#2number}\to\rtA
+  \edef\next{%
+    \noexpand\tokslappend{%
+      \let\noexpand\toksloadstructurenumber\the\rtA}%
+      \noexpand\to\rtA
+    }%
+  \endnext
+  \edef\next{\the\rtB{\the\rtA\the\rtC}}%
+  \endnext
+}
+
+\def\newstructure@M#1#2{%
+  \beginnext
+  \rtA={\ifx\undefined}%
+  \toksloadcsname{#1#2}\to\rtB
+  \rtC={\empty\fi}%
+  \edef\next{%
+    \noexpand\toksrappend{%
+      % Clear text:
+      % \ifx\undefined control_sequence
+      %   \let control_sequence\empty
+      % \fi
+      \the\rtA\the\rtB\noexpand\let\the\rtB\the\rtC
+    }%
+    \noexpand\to\rtA
+  }%
+  \endnext
+}
+
+\def\newstructure@T#1#2{%
+  \beginnext
+  \rtA={\ifx\undefined}%
+  \toksloadcsname{#1#2}\to\rtB
+  \rtC={\alloc@M5\toks\toksdef\@cclvi}%
+  \edef\next{%
+    \noexpand\toksrappend{%
+      \the\rtA\the\rtB\the\rtC\the\rtB\noexpand\fi
+    }%
+    \noexpand\to\rtA
+  }%
+  \endnext
+}
+
+\def\newstructure@C#1#2{%
+  \beginnext
+  \rtA={\ifx\undefined}%
+  \toksloadcsname{#1#2}\to\rtB
+  \rtC={\alloc@M0\count\countdef\insert@c}%
+  \edef\next{%
+    \noexpand\toksrappend{%
+      \the\rtA\the\rtB\the\rtC\the\rtB\noexpand\fi
+    }%
+    \noexpand\to\rtA
+  }%
+  \endnext
+}
+
+\def\newstructure@L#1#2#3{%
+  \def\\##1{#2{#1}{##1}}#3%
+}
+
+\def\newstructure@B#1#2{%
+  \beginnext
+  \rtA={\let}%
+  \toksloadcsname{structure#2}\to\rtB
+  \toksloadcsname{#1#2}\to\rtC
+  \edef\next{\noexpand\toksrappend{\the\rtA\the\rtB\the\rtC}\noexpand\to\rtA}%
+  \endnext
+}
+
+\def\newstructure@I#1#2#3{%
+  \beginnext
+  \toksloadcsname{#1}\to\rtA
+  \toksloadcsname{#2}\to\rtB
+  \toksloadcsname{#3}\to\rtC
+  \edef\next{%
+    \noexpand\ifx\the\rtA\the\rtB
+      \let\the\rtA\the\rtC
+    \noexpand\fi
+  }%
+  \endnext
+}
+
+\def\newstructure@m{%
+  \\{name}%
+  \\{beforeskip}%
+  \\{afterskip}%
+  \\{beginparagraph}%
+  \\{endparagraph}%
+  \\{text}%
+  \\{empty}%
+  \\{hook}%
+  \\{super}%
+  \\{nostep}%
+  \\{number}%
+  \\{writeaux}%
+  \\{nextparagraph}%
+}
+
+\def\newstructure@t{%
+  \\{title}%
+  \\{label}%
+  \\{short}%
+}
+
+\def\newstructure@c{%
+  \\{no}%
+}
+
+\def\toksrappendstructurenumber#1#2#3\to#4{%
+  \beginnext
+  \rtA=#4%
+  #1#2\to\rtB
+  \rtC={#3}%
+  \rtD={#4}%
+  \edef\next{\the\rtD={\the\rtA\the\rtB\the\rtC}}%
+  \endnext
+}
+
+@ \subsection{Numérotage des équations}
+
+<<Structure>>=
+\newcount\equationno
+\def\equationnostep{\global\advance\equationno\@ne}
+
+\def\selectequationsuper#1{%
+  \beginnext
+  \rtA{\global\let\toksloadequationsupernumber}%
+  \toksloadcsname{toksload#1number}\to\rtB
+  \edef\next{\the\rtA\the\rtB}%
+  \endnext
+  \beginnext
+  \rtA{\global\equationno\z@}%
+  \toksloadcsname{#1hook}\to\rtB
+  \edef\next{\noexpand\addhook{\the\rtA}\noexpand\to\the\rtB}%
+  \endnext
+}
+
+\def\toksloadequationsupernumber\to#1{}
+
+\def\toksloadequationnumber\to#1{%
+  \beginnext
+  \rtA{}%
+  \toksloadequationsupernumber\to\rtA
+  \testtoksempty\rtA
+  \iftoksempty
+  \else
+    \toksrappend{.}\to\rtA
+  \fi
+  \toksloaddecimal\equationno\to\rtB
+  \rtC={#1}%
+  \edef\next{\the\rtC={\the\rtA\the\rtB}}%
+  \endnext
+}
+
+\def\eqlabel[#1]{%
+  \beginnext
+  \equationnostep
+  \toksloadequationnumber\to\rtA
+  \rtB={#1}%
+  \edef\next{%
+    \noexpand\labelwriteaux{\the\rtB}{\the\rtA}%
+    \noexpand\leqno\noexpand(\the\rtA)%
+  }%
+  \endnext
+}
+
+<<État civil>>=
+\def\libraryname{structure}
+\def\libraryversion{0.1}
+@
+% Local Variables:
+% mode: LaTeX
+% End:
+
+%%% End of file `structure.nw'

@@ -1,0 +1,3518 @@
+%%% kernel.nw -- BHRID Kernel -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 16 déc 2006 13:43:04 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Noyau}
+
+Le noyau de \brTeX\ définit des services et des primitives pour un
+langage qui est un sur-ensemble du langage \TeX\ original. On peut
+voir cette affirmation comme une façon compliquée de dire que le noyau
+enrichit le dictionnaire des macros de~\TeX, c'est donc une simple
+façon de voir les choses mais elle est dans l'esprit du langage
+\emph{sail} qui a inspiré Donald Knuth lorsqu'il a mis au point \TeX.
+
+On définit des procédures manipulant les types du langage~\TeX,
+notamment les macros et les registres contenant une liste de
+tokens~\emph{(registre de tokens)}. On définit aussi des types de
+données, comme les listes et listes d'associations.
+
+\begin{description}
+\item[Discipline] Le programme que l'on fait évaluer par~\TeX\ pour
+préparer les format~\brTeX\ est long. Pour faciliter sa lecture et son
+utilisation, il est souhaitable qu'il présente l'interface la plus
+homogène possible. Des indications sur la façon de nommer les
+procédures et les variables sont rassemblées dans cette section.
+
+\item[Catcodes] Définition des codes de catégorie pour les caractères
+de l'entrée. Définition de fonctions pour manipuler ces catcodes.
+
+\item[Constantes] Définition de constantes dont l'utilisation s'étend
+à tout le noyau. La définition des constantes utilisées par un
+sous-système particulier se trouve à sa place, avec le code de ce
+sous-système. Comme constantes particulières se trouvent les fonctions
+\fn{byte\dots} qui produisent le \emph{byte} correspondant aux
+caractères spéciaux utilisés, comme le caractère souligné ou
+l'esperluette, avec de \emph{catcodes} modifiés à~12.
+
+\item[Allocation des registres] Cette section réalise les services
+d'allocation des registres, exactement comme dans le format
+\emph{plain}. On réserve par ailleurs une poignée de registres
+\emph{touzuzages} aussi appelés \emph{scratch registers}.
+
+Dans cette section se trouvent aussi définies la constante \va{m@ne}
+valant -1 et la fonction \fn{writelog}, équivalent de \fn{wlog} dans
+\emph{plain}.  La présence de ces définitions dans cette section est
+un peu contre nature mais est due à des raisons techniques.
+
+\item[Programmation] On définit dans cette section des macros utiles
+pour la programmation. Il s'agit d'un enrichissement des primitives de
+\TeX, avec des fonctions manipulant les structures de données
+naturelles de \TeX, comme les macros et leur texte de remplacememnt,
+les registres, etc., mais aussi des structures plus complexes comme les
+listes et les listes d'associations. Cette section comprend également
+des macros intéressantes permettant aux concepteurs de format de
+définir des macros acceptant une variété d'arguments optionnels.
+
+\item[Paramètres régionaux] Le format \brTeX\ fournit des services
+pour la prise en compte de divers paramètres régionaux (souvent
+appelés \emph{locales} en anglais).  Par exemple les paramètres
+régionaux, ou la coutume, exercent leur influence en premier lieu sur
+la division des mots, mais aussi sur les espaces encadrant la
+ponctuation, sur les mots à utiliser dans certaines parties du
+document (chapitre, appendice, bibliographie, etc.), et cette liste
+peut être enrichies par les bibliothèques nouvellement écrites.
+
+Lorsqu'un module a des paramètres dépendant de la coutumne en vigueur,
+celui-ci peut enregistrer une fonction modifiant ces paramètres au
+moyen de \fn{localeadjustment}. L'utilisateur met telle ou telle
+coutume en vigueur au moyen de \fn{selectlocale}.
+
+\item[Initialisation des paramètres de \TeX]
+\end{description}
+
+<<*>>=
+<<Catcodes>>
+<<Constantes>>
+<<Allocation des registres>>
+<<Programmation>>
+<<Assistance à la définition de macros>>
+<<Bibliothèques>>
+<<Paramètres régionaux>>
+<<Initialisation des paramètres de TeX>>
+
+@ \subsection{Discipline}
+
+Le programme que l'on fait évaluer à \TeX\ pour préparer le
+format~\brTeX\ est complexe de par sa longueur mais aussi de par la
+diversité des services qu'il propose. Si les noms utilisés pour
+identifier les procédures et le variables devaient n'être dictés que
+par l'humeur du programmeur, leur mémorisation serait bien difficile
+pour l'utilisateur. Cette section rassemble quelques règles que l'on
+peut consulter pour choisir le nom d'une procédure ou d'une variable.
+
+\paragraph{Espace de noms privé}
+L'opérateur de saisie peut utiliser dans la transcription d'un
+document la capacité de définir des macros qu'a~\TeX\ pour s'aider
+dans sa tâche, et les clavistes expérimentés s'en remettent souvent à
+cette possibilité dans leur travail. Il est donc important de prendre
+des dispositions visant à minimiser le risque de collision entre les
+identifiants des macros déjà définies par le format utilisé par le
+scripteur et les identifiants des mscros définies par l'opérateur.
+
+On ne prend ici qu'une seule disposition, déjà utilisée par d'autres
+formats pour~\TeX, notamment~\emph{plain} et~\LaTeX. Mis à part les
+identifiants courts, réduits à un caractère, tels ceux de~[[\%]] et
+de~[[\$]], un identifiant est une suite de caractères dont
+le~\emph{catcode} est~11. En modifiant le~\emph{catcode} des
+caractères on modifie l'ensemble des caractères pouvant apparaître
+dans l'identifiant d'une macro. Lors de l'évaluation des programmes
+produisant les formats~\emph{plain} et~\LaTeX, le~\emph{catcode} du
+caractère~[[@]] est~11, ce qui lui permet d'apparaître dans des
+identifiants de macros, comme par exemple~[[\alloc@]]
+ou~[[\ch@ck]]. Le format~\brTeX\ définit deux
+procédures~\fn{enableprivatenames} et~\fn{disableprivatenames} pour
+ouvrir ou fermer l'accès à cet espace de noms privé. L'opérateur de
+saisie n'a jamais à utiliser ces deux procédures.
+
+\paragraph{Espaces de noms}
+Il est commun d'utiliser des bibliothèques de macros complétant
+l'ensemble de celles disponibles dans le format utilisé. Telle
+bibliothèque définit des procédures spécialisées dans la préparation
+de planches d'exercices, telle autre bibliothèque dans la préparation
+de polycopiés de cours, telle autre définit une procédure numérotatnt
+les lignes d'un paragraphe, et ainsi de suite. Il est tout aussi
+commun d'utiliser simultanément plusieurs bibliothèques, pour profiter
+des services rendus par chacune d'elle. Il est donc bon de prendre des
+dispositions visant réduire le risque de collision entre l'ensemble
+des identifiants utilisé par une bibliothèque et celui utilisé par une
+seconde bibliothèque susceptible d'être utilisée conjointement à la
+première.
+
+Les dispositions prises ne sont soutenues par aucun élément logiciel,
+elles sont incarnées par une suite de «règles civiques». Considérons
+dans un premier temps le cas d'une hypothétique
+procédure~\fn{toksloadfont} effectuant une tâche complexe. Pour être
+menée à bien, cette procédure fait appel à plusieurs mémoires dont les
+identifiants sont~\va{toksloadfont@a}, \va{toksloadfont@b}, etc. et à
+des procédures secondaires~\fn{toksloadfont@A}, \fn{toksloadfont@B}
+etc. Pour exprimer que ces identifiants ont~\fn{toksloadfont@} comme
+préfixe, on dit qu'il sont dans l'espace de noms de~\fn{toksloadfont}.
+La première règle de civisme régissant l'utilisation des espaces de
+noms stipule que la bibliothèque définissant la
+procédure~\fn{toksloadfont} réserve implicitement l'espace de noms
+de~\fn{toksloadfont}. Le terme «implicitement» utilisé dans l'énoncé
+de la règle signifie que la réservation a lieu même lorsqu'il n'y est
+pas fait explicitement allusion dans la documentation de la
+bibliothèque.
+
+La façon de réserver les espaces de noms évoquée ci-dessus est parfois
+inadéquate. Considérons par exemple le procédures manipulant les
+listes. Celles-cis ont pour nom~\fn{listlappend}, \fn{listrappend},
+\fn{toksloadlisttail} etc. Pourtant ces procédures utilisent des noms
+privés dans le même espace, celui formé des identifiants
+dont~\fn{list@} est un préfixe. Il est recommandé que ce type de
+situation soit indiqué dans la documentation de la bibliothèque au
+moyen d'un alinéa dont la teneur est «cette bibliothèque réserve
+l'espace de noms \emph{list}».
+
+De nombreuses macros ne relèvent d'aucun espace de noms privé, comme
+les abréviations~\va{@ne}, \va{tw@}, etc., de façon générale les deux
+règles ci-dessus subissent de nombreuses entorses, même dans le
+programme de~\brTeX. En un mot: s'il vous semble inopportun de suivre
+ces deux règles, ne vous en embarassez pas.
+
+@ \paragraph{Modification de registres}
+Dans ce paragraphe, un registre signifie soit un registre dans le sens
+technique propre à~\TeX, soit une mémoire nommée utilisée pour passer
+un paramètre à une procédure. On appelle ces mémoire nommées de faux
+registres, et on ferme souvent les yeux sur cette contrefaçon.
+
+Une procécédure dont l'objet est d'affecter sans traitement une valeur
+à un registre a le préfixe~\fn{set}. Il n'est certainement pas utile
+de définir une procédure~\fn{sethsize} pour encapsuler les
+affectations à~\va{hsize}. Les procédures~\fn{set} sont définies pour
+modifier une mémoire nommée. Cela permet d'écrire~[[\setthing{16}]]
+ou~[[\setname{le nom}]] et peut éviter à l'opérateur de saisie ou au
+programmeur de voir sa saisie garnies d'\emph{idiosyncrasies} telles
+que~[[\chardef\thing=16\relax]] ou~[[\def\name{nom}]]. Une autre
+utilité de cette convention est qu'elle permet de présenter une
+interface homogène à une procédure dont les arguments doivent être
+placés dans des registres et de faux registres, comme c'est le cas de
+la procédure~\fn{toksloadfont}.
+
+Une procédure dont l'objet est de réaliser plusieurs affectations sans
+traitement supplémentaire peut aussi avoir le préfixe~\fn{set}, c'est
+par exemple le cas des procédures~\fn{setnormalfont},
+\fn{setnormalsize}, \fn{setsectionfont}, etc.
+
+Les macros qui modifient un registre et procèdent ensuite à un
+traitement ne sont pas concernées par cette règle, elle ne vaut que
+lorsque le traitement est réduit à l'affectation d'une valeur dans une
+mémoire, ou diffère de ce traitement par quelques opérations
+triviales.
+
+Un autre préfixe couramment utilisé est~\fn{select}, on l'utilise
+dans~\fn{selectlocale}, \fn{selectpaper}, \fn{selectfont}, etc. Il
+semble difficile d'énoncer une règle pour expliquer quelles procédures
+ont le droit d'utiliser ce préfixe et qulles autres ne l'ont pas.
+
+Une fonction qui place sa valeur de retour dans un registre a comme
+préfixe \fn{\ty{type}load\dots} où on remplace \ty{type} par
+\va{toks} pour les registres de listes de \emph{tokens},
+par~\va{count} pour les registres numériques, etc. Ainsi une fonction
+qui place la valeur du registre \va{year} dans un registre numérique
+pourrait s'appeler \fn{countloadyear}, une fonction qui place le texte
+de remplacement d'une macro dans un registre de liste de \emph{tokens}
+pourrait s'appeler \fn{toksloadcsexpansion}.
+
+Lorsqu'une fonction de la famille \fn{\ty{type}load} prend un
+argument autre que le nom du registre cible, on recommande d'utiliser
+le format suivant:
+\begin{webcode}
+\\def\\toksloadanything#1\\to#2
+\end{webcode}
+où~[[#2]] est le registre cible. Respecter cette convention facilite
+l'utilisation de la commande \fn{expandafter} pour préparer
+l'argument~[[#1]].
+
+Une fonction qui interprète son argument pour modifier l'environnement
+d'éxécution peut commencer par \fn{select}, comme par
+exemple~\fn{selectinputconvention}, \fn{selectlocale}
+et~\fn{selectfont}. Ces procédures peuvent ne pas avoir d'arguments
+explicites et s'en remettre exclusivement à des paramètres globaux,
+c'est notamment le cas de~\fn{selectfont}.
+
+\paragraph{Établir, interrompre et rétablir un service}
+Un couple de macros qui établit et interrompt un service peut être
+nommé avec les préfixes \fn{enable} et~\fn{disable}. Les expressions
+\fn{enable/disable} n'ont pas besoin d'être bien parenthésées, un
+\fn{enable} n'a pas besoin d'être suivi d'un \fn{disable} et
+vice-versa.  Par exemple \fn{enableprivatenames} et
+\fn{disableprivatenames} contrôlent l'accès à l'espace de nom privés,
+aménagé grâce au caractère~[[@]]. Dans la bibliothèque~\emph{verbatim}
+la procédure~\fn{enableverbatimtext} contrôle l'utilisation de la
+barre verticale~[[|]] pour délimiter du texte à présenter de
+façon~\emph{verbatim}.
+
+
+@ \subsection{Catcodes}
+
+On ajuste la table des~\emph{catcodes} des caractères dans l'entrée,
+en modifiant les valeurs en vigueur au démarrage de INITEX, en suivant
+les conventions du format \emph{plain} de Don Knuth. Dans certaines
+constructions, il est utile de manipuler les valeurs figurant dans
+cette table, le format~\brTeX\ définit des procédures réalisant les
+manipulations les plus courantes, comme~\fn{enableprivatenames}
+et~\fn{disableprivatenames}.
+
+<<Catcodes>>=
+<<Initialisation du tableau des catcodes>>
+<<Message de progression: ouverture>>
+<<Message de progression: catcodes>>
+<<Procédures manipulant le tableau des catcodes>>
+<<Ouverture de l'espace de noms privé>>
+
+@ Lorsque débute l'interprétation d'une nouvelle grande partie du
+programme, un message de progression est imprimé sur le terminal. Le
+message d'ouverture est le suivant:
+
+<<Message de progression: ouverture>>=
+\message{Preloading a Bhrìd format:}
+
+@ Les définitions de tous les messages de progression sont rassemblées
+ci-dessous.
+
+<<Message de progression: catcodes>>=
+\message{catcodes,}
+
+<<Message de progression: constantes>>=
+\message{constantes,}
+
+<<Message de progression: registres>>=
+\message{registers,}
+
+<<Message de progression: programming>>=
+\message{programming,}
+
+<<Message de progression: locales>>=
+\message{locales,}
+
+<<Message de progression: paramètres>>=
+\message{parameters,}
+
+<<Message de progression: cloture>>=
+\message{done.}
+
+@ Les instructions permettant l'émission du message d'ouverture ne
+peuvent pas être interprétées par~INITEX, auquel ce programme est
+destiné, car lors de son démarrage les caractères~[[{]] et~[[}]] n'ont
+pas la valeur de délimiteurs de groupes. La modification des valeurs
+apparaissant dans la table des~\emph{catcodes} d'INITEX doit donc être
+modifiée au plus tôt dans le programme.
+
+Les définitions pour les caractères [[^^K]] et [[^^A]] suivent les
+recommandations de Knuth [??].
+
+<<Initialisation du tableau des catcodes>>=
+\catcode`\{=1           % left brace is begin-group character
+\catcode`\}=2           % right brace is end-group character
+\catcode`\$=3           % dollar sign is math shift
+\catcode`\&=4           % ampersand is alignment tab
+\catcode`\#=6           % hash mark is macro parameter character
+\catcode`\^=7           % circumflex
+\catcode`\^^K=7         %  and uparrow are for superscripts
+\catcode`\_=8           % underline
+\catcode`\^^A=8         %  and downarrow are for subscripts
+\catcode`\^^I=10        % ascii tab is a blank space
+
+% When INITEX (the TeX initializer) starts up,
+% it has defined the following \catcode values:
+%
+% \catcode`\^^@=9       % ascii null is ignored
+% \catcode`\^^M=5       % ascii return is end-line
+% \catcode`\\=0         % backslash is TeX escape character
+% \catcode`\%=14        % percent sign is comment character
+% \catcode`\ =10        % ascii space is blank space
+% \catcode`\^^?=15      % ascii delete is invalid
+% \catcode`\A=11 ... \catcode`\Z=11 % uppercase letters
+% \catcode`\a=11 ... \catcode`\z=11 % lowercase letters
+%
+% all others are type 12 (other)
+
+@ \begin{remark}
+Les tables `lccode', `uccode', `delcode', `sfcode' et `mathcode' sont
+modifiées par \emph{plain} à cette hauteur, dans \brTeX\ ces
+modifications ne font pas partie du noyau et prennent place à un
+moment ultérieur.
+\end{remark}
+
+\bigskip
+On définit trois abréviations pour les codes de catégorie 11, 12 et~13
+qui sont abondamment utilisés par les macros. Le code 13 rend un
+caractère actif et les deux autres codes sont employés pour le ramener
+à son état initial. Les commandes \fn{setcatcodeactive} etc. sont
+triviales mais utiles, par exemple dans le traitement des listes de
+caractères.
+<<Procédures manipulant le tableau des catcodes>>=
+\chardef\catcodeletter=11   % lettre
+\chardef\catcodeother=12    % autres
+\chardef\catcodeactive=13   % actif
+
+\def\setcatcodeletter#1{\catcode`#1=\catcodeletter}
+\def\setcatcodeother#1{\catcode`#1=\catcodeother}
+\def\setcatcodeactive#1{\catcode`#1=\catcodeactive}
+
+@ \paragraph{Espace de noms privé}
+Afin de ne pas empiéter sur l'espace des noms de macros de l'opérateur
+de saisie, on joue sur le \emph{catcode} du caractère~[[@]].  Ce
+caractère ne peut normalement pas apparaître dans les identifiants de
+macros, mais on peut modifier temporairement son \emph{catcode} pour
+le voir apparaître dans les identifiants. On dispose ainsi d'un espace
+de noms privé, auquel l'utilisateur ne peut pas accéder
+involontairement.
+
+La modification du \emph{catcode} est opérée par les procédures
+\fn{enableprivatenames} et \fn{disableprivatenames}.
+
+Cette convention est aussi utilisée dans \emph{plain} et dans \LaTeX.
+
+<<Procédures manipulant le tableau des catcodes>>=
+\def\enableprivatenames{\setcatcodeletter\@}
+\def\disableprivatenames{\setcatcodeother\@}
+
+<<Ouverture de l'espace de noms privé>>=
+\enableprivatenames
+
+
+@ \subsection{Constantes}
+
+Il est utile de définir les abréviations suivantes pour les constantes
+souvent utilisées dans \brTeX. Parmi ces abréviations on trouve de
+nombreuses constantes numériques. Rappelons que lorsque~\TeX\ évalue
+une séquence comme~[[\count0=1\dosomething]], la
+macro~[[\dosomething]] ne marque pas la fin du nombre que commence~1,
+mais son texte de remplacement lui est substitué et~\TeX\ continue d'y
+chercher des chiffres. Ceci ne se produit pas lorsqu'on écrit par
+exemple~[[\count0=\@ne\dosomething]]. De nombreuses autres
+abréviations constantes se révèlent utiles dans la pratique, elles
+sont rassemblées ici.
+
+On commence par produire le message de progression.
+
+<<Constantes>>=
+<<Message de progression: constantes>>
+
+@ \paragraph{Constantes numériques entières}
+
+On définit ici des constantes numériques représentant certains nombres
+entiers.
+
+<<Constantes>>=
+\chardef\@ne=1
+\chardef\tw@=2
+\chardef\thr@@=3
+\chardef\ei@ht=8
+\chardef\sixt@@n=16
+\chardef\@cclv=255
+
+@ Les constantes numériques dont la valeur dépasse~255 doivent être
+définies avec~\fn{mathchardef}, dont l'argument est un nombre entier
+sur~64 bits contre~16 pour~\fn{chardef}.
+
+<<Constantes>>=
+\mathchardef\@cclvi=256
+\mathchardef\@m=1000
+\mathchardef\@M=10000
+\mathchardef\@MM=20000
+\mathchardef\@mmmmxcvi=4096
+
+@ On définit dans cette partie une poignée de symboles couramment
+utilisés. Les trois premiers symboles sont \va{space}, \va{empty} et
+\va{null}; ces macros ont pour texte de remplacement un espace (de
+code de catégorie 10), rien du tout, et une boîte horizontale vide.
+Les quatre symboles suivants sont \va{endgraf}, \va{endline},
+\va{bgroup} et \va{egroup} qui sont des liaisons vers les primitives
+\fn{par} et \fn{cr}, et vers les symboles contrôlant l'ouverture et la
+fermeture des groupes.  Ces symboles sont d'un usage fort courant
+lorsqu'on écrit des macros, des définitions supplémentaires de ce
+genre peuvent être insérées ici.
+
+On peut considérer que la macro~\fn{undefined}, qui n'est jamais
+définie, est définie dans ce paragraphe.
+
+<<Constantes>>=
+\def\space{ }
+\def\empty{}
+\def\null{\hbox{}}
+
+\let\endgraf=\par
+\let\endline=\cr
+\let\bgroup={
+\let\egroup=}
+
+@ Les commandes \fn{@true} et \fn{@false} sont utiles dans les
+constructions telles que celle utilisée pour \fn{ifstreq}.
+
+\begin{seealso}
+{\TeXbook\ p.211: «Caution: don't say anything like
+`[[\let\ifabc=\iftrue]]' in conditional text\dots»}
+\end{seealso}
+
+<<Constantes>>=
+\def\@true{\iftrue}
+\def\@false{\iffalse}
+
+
+@ \paragraph{Registres constants}
+Si les grandeurs numériques entières peuvent être représentées grâce
+à~\fn{chardef} ou~\fn{mathchardef}, ce n'est pas le cas des grandeurs
+d'une autre nature pourtant couramment manipulées par~\TeX: les
+\emph{dimensions} et les~\emph{ressorts}. Pour définir ces constantes,
+on réserve un registre adapté à contenir la valeur de la
+constante. À~ce point du programme, les procédures pour l'allocation
+des registres n'ont pas encore été enseignées à~\TeX, et le code
+ci-dessous ne lui sera soumis qu'après que ces procédures soient
+utilisables. Dressons la liste des registres constants.
+\begin{description}
+
+\item[maxdimen] ([[16383.99999pt]]) est la plus grande valeur possible
+pour une dimension. Cette constante peut être utilisée pour
+initialiser un registre avec une valeur essentiellement infinie, par
+exemple~[[\madepth=\maxdimen]].
+
+\item[hideskip] ([[-1000pt plus 1fill]]) un ressort négatif et
+infiniment extensible. Ce ressort apparaît dans la définition
+de~\fn{hidewidth} que l'on peut utiliser dans la cellule d'un
+tableau. La séquence se comporte comme un~\fn{hfill} mais cache la
+largeur des colonnes trop grandes, ce qui autorise le contenu de la
+case à dorder sur la colonne suivante.
+
+\item[centering] ([[0pt plus 1000pt minus 1000pt]]) une valeur de
+ressort qui peut être utilisé pour centrer des éléments. Pour une
+utilisation, cf.~\TeXbook~p.362.
+
+\item[p@] ([[1pt]]) constante égale à un point. On peut par exemple
+l'utiliser dans des affectations comme~[[\hsize=600\p@]].
+
+\item[z@] ([[0pt]]) consante égale à zéro point, on peut aussi
+l'utiliser pour représenter la quantité numérique zéro:
+[[\count0=\z@]], [[\parskip=\z@]].
+
+\item[z@skip] ([[0pt plus0pt minus0pt]]) est un ressort dont les trois
+dimensions sont nulles.
+
+\item[voidb@x]
+(non initialisé) une boîte toujours vide, exemple: [[\unhbox\voidb@x]].
+
+\item[m@ne] ([[-1]]) une constante utile, elle ne peut pas être
+représentée par un~\emph{chardef} ou un~\emph{mathchardef}. Cette
+valeur doit être définie au moment de l'utilisation de~\fn{writelog},
+son initialisation est donc déplacée près de la définition
+de~\fn{writelog}.
+
+\end{description}
+
+<<Initialisation des registres constants>>=
+\maxdimen=16383.99999pt
+\hideskip=-1000pt plus 1fill
+\p@=1pt
+\z@=0pt
+\z@skip=0pt plus0pt minus0pt
+\centering=0pt plus 1000pt minus 1000pt
+
+@ \paragraph{Primitives}
+On sauvegarde certaines primitives de \TeX, la règle pour former les
+noms est d'utiliser \fn{tex@} comme préfixe pour le nom de la
+sauvegarde. Certaines macros peuvent modifier temporairement ou de
+façon permanente la liaison désignant ordinairement une primitive de
+\TeX, et il faut pouvoir continuer d'utiliser la primitive.
+
+<<Constantes>>=
+\let\tex@end=\end
+\let\tex@par=\par
+\let\tex@cr=\cr
+\let\tex@uppercase=\uppercase
+\let\tex@lowercase=\lowercase
+
+
+@ \paragraph{Bytes}
+On définit ici quelques \emph{bytes} nommés, qui permettent de
+produire les caractères~[[{]] etc. avec le code de caractère 12
+\emph{(other characters)}. Ces constantes sont parfois utiles, pour
+rédiger des messages devant être écrits dans des fichiers ou pour
+mettre au point un mode \emph{verbatim}.
+
+<<Constantes>>=
+\def\bytebracketleft{[}%
+\def\bytebracketright{]}%
+\def\byteasterisk{*}%
+\begingroup
+\catcode`\*=0
+\catcode`\[=1
+\catcode`\]=2
+\catcode`\?=7
+*catcode`*\=12
+*catcode`*{=12
+*catcode`*}=12
+*catcode`*@=12
+*catcode`*#=12
+*catcode`*%=12
+*catcode`*^=12
+*catcode`*_=12
+*catcode`*&=12
+*catcode`*~=12
+*catcode`*??I=12
+*catcode`*$=12
+*global*def*bytedollar[$]
+*global*def*bytebackslash[\]
+*global*def*bytebraceleft[{]
+*global*def*bytebraceright[}]
+*global*def*byteat[@]
+*global*def*bytenumbersign[#]
+*global*def*bytepercent[%]
+*global*def*bytecaret[^]
+*global*def*byteunderscore[_]
+*global*def*byteampersand[&]
+*global*def*bytetilde[~]
+*global*def*bytetab[??I]
+*endgroup
+
+
+@ \subsection{Allocation des registres}
+
+On définit ici des macros réalisant une allocation automatique des
+registres \emph{count}, \emph{box}, \emph{dimen}, \emph{skip},
+\emph{muskip} et \emph{toks}.  On prend également en charge des
+\emph{simili-registres} comme les numéros des manipulateurs de
+fichiers \emph{read} et \emph{write}, des code de famille \emph{fam}
+du mode mathématique, des codes de langage \emph{language} utilisé
+pour la divison des mots, et enfin pour allouer les insertions
+\emph{insert}. Cette partie a été bêtement recopiée à partir du
+fichier \emph{plain} de Donald Knuth, et un petit peu modifié pour
+suivre certaines conventions de \brTeX.
+
+On définit aussi des registres de travail nommés, à utiliser au lieu
+des registres~[[\count0]], [[\count2]], etc., des registres constants
+dont les valeurs ont déjà été discutées, et une procédure pour créer
+des conditionnelles.
+
+La création d'une nouvelle conditionnelle peut être considérée comme
+la création d'une registre booléen, pouvant contenir des valeurs parmi
+un ensemble à deux éléments.
+
+<<Allocation des registres>>=
+<<Message de progression: registres>>
+<<Procédure d'allocation automatique de registres>>
+<<Allocation des registres de travail>>
+<<Allocation des registres constants>>
+<<Initialisation des registres constants>>
+<<Procédure d'allocation automatique de registres booléens>>
+
+@ \paragraph{Procédures d'allocation automatique des registres}
+Here are macros for the automatic allocation of [[\count]], [[\box]],
+[[\dimen]], [[\skip]], [[\muskip]], and [[\toks]] registers, as well
+as [[\read]] and [[\write]] stream numbers, [[\fam]] codes,
+[[\language]] codes, and [[\insert]] numbers.
+
+When a register is used only temporarily, it need not be allocated;
+grouping can be used, making the value previously in the register return
+after the close of the group.  The main use of these macros is for
+registers that are defined by one macro and used by others, possibly at
+different nesting levels.  All such registers should be defined through
+these macros; otherwise conflicts may occur, especially when two or more
+macro packages are being used at once.
+
+The following counters are reserved:
+
+\begin{description}
+\item[0 to 9] page numbering
+\item[10] count allocation
+\item[11] dimen allocation
+\item[12] skip allocation
+\item[13] muskip allocation
+\item[14] box allocation
+\item[15] toks allocation
+\item[16] read file allocation
+\item[17] write file allocation
+\item[18] math family allocation
+\item[19] language allocation
+\item[20] insert allocation
+\item[21] the most recently allocated number
+\item[22] constant -1
+\end{description}
+New counters are allocated starting with 23, 24, etc.  Other registers
+are allocated starting with 10.  This leaves 0 through 9 for the user
+to play with safely, except that counts 0 to 9 are considered to be
+the page and subpage numbers (since they are displayed during output).
+In this scheme, [[\count 10]] always contains the number of the
+highest-numbered counter that has been allocated, [[\count 14]] the
+highest-numbered box, etc.  Inserts are given numbers 254, 253, etc.,
+since they require a [[\count]], [[\dimen]], [[\skip]], and [[\box]]
+all with the same number; [[\count 20]] contains the lowest-numbered
+insert that has been allocated. Of course, [[\box255]] is reserved for
+[[\output]]; [[\count255]], [[\dimen255]], and [[\skip255]] can be
+used freely.
+
+It is recommended that macro designers always use [[\global]]
+assignments with respect to registers numbered 1, 3, 5, 7, 9, and
+always non-[[\global]] assignments with respect to registers 0, 2, 4,
+6, 8, 255.  This will prevent ``save stack buildup'' that might
+otherwise occur.
+
+\begin{remark}
+On incite les programmeurs de~\brTeX\ à utiliser les
+registres nommés~\va{rtA}, etc., pour leurs variables locales, et à
+allouer un registre spécial pour leurs variables globales.
+Voir~\emph{Registres de travail}, ci-dessous.
+\end{remark}
+
+<<Procédure d'allocation automatique de registres>>=
+\count10=22     % allocates \count registers 23, 24, ...
+\count11=9      % allocates \dimen registers 10, 11, ...
+\count12=9      % allocates \skip registers 10, 11, ...
+\count13=9      % allocates \muskip registers 10, 11, ...
+\count14=9      % allocates \box registers 10, 11, ...
+\count15=9      % allocates \toks registers 10, 11, ...
+\count16=-1     % allocates input streams 0, 1, ...
+\count17=-1     % allocates output streams 0, 1, ...
+\count18=3      % allocates math families 4, 5, ...
+\count19=-1     % allocates \language codes 0, 1, 2, ...
+\count20=255    % allocates insertions 254, 253, ...
+\countdef\insert@c=20 % the insertion counter
+\countdef\allocationnumber=21 % the most recent allocation
+\countdef\m@ne=22
+\m@ne=-1
+
+@ La procédure~\fn{writelog} ne relève pas de l'allocation
+de registres, mais les procédures~\fn{newtoks}~etc. consignent les
+réservations faites dane le hournal d'éxécution au moyen
+de~\fn{writelog}. Il faut donc défnir cette procédure dès maintenant.
+<<Procédure d'allocation automatique de registres>>=
+\def\writelog{\immediate\write\m@ne} % write on log file (only)
+
+@ Now, we define [[\newcount]], [[\newbox]], etc. so that you can say
+[[\newcount\foo]] and [[\foo]] will be defined (with [[\countdef]]) to
+be the next counter.  To find out which counter [[\foo]] is, you can
+look at [[\allocationnumber]].  Since there's no [[\boxdef]] command,
+[[\chardef]] is used to define a [[\newbox]], [[\newinsert]],
+[[\newfam]], and so on.
+
+\begin{remark}
+  Une procédure \emph{newmacro} est ajoutée, elle sert à allouer un
+  registre de type macro.
+\end{remark}
+
+<<Procédure d'allocation automatique de registres>>=
+\outer\def\newmacro#1{\let#1\empty}
+\outer\def\newcount{\alloc@M0\count\countdef\insert@c}
+\outer\def\newdimen{\alloc@M1\dimen\dimendef\insert@c}
+\outer\def\newskip{\alloc@M2\skip\skipdef\insert@c}
+\outer\def\newmuskip{\alloc@M3\muskip\muskipdef\@cclvi}
+\outer\def\newbox{\alloc@M4\box\chardef\insert@c}
+\outer\def\newhelp#1#2{\newtoks#1#1\expandafter{\csname#2\endcsname}}
+\outer\def\newtoks{\alloc@M5\toks\toksdef\@cclvi}
+\outer\def\newread{\alloc@M6\read\chardef\sixt@@n}
+\outer\def\newwrite{\alloc@M7\write\chardef\sixt@@n}
+\outer\def\newfam{\alloc@M8\fam\chardef\sixt@@n}
+\outer\def\newlanguage{\alloc@M9\language\chardef\@cclvi}
+
+\def\alloc@M#1#2#3#4#5{%
+  \global\advance\count1#1by\@ne
+  \alloc@C#1#4#2%   make sure there's still room
+  \allocationnumber=\count1#1%
+  \global#3#5=\allocationnumber
+  \writelog{\string#5=\string#2\the\allocationnumber}%
+}
+
+\outer\def\newinsert#1{%
+  \global\advance\insert@c by\m@ne
+  \alloc@C0\insert@c\count
+  \alloc@C1\insert@c\dimen
+  \alloc@C2\insert@c\skip
+  \alloc@C4\insert@c\box
+  \allocationnumber=\insert@c
+  \global\chardef#1=\allocationnumber
+  \writelog{\string#1=\string\insert\the\allocationnumber}%
+}
+
+\def\alloc@C#1#2#3{%
+  \ifnum\count1#1<#2%
+  \else\errmessage{No room for a new #3}\fi
+}
+
+@ \paragraph{Registres de travail}
+On définit des abréviations pour les noms de registres de travail.
+Ces registres peuvent être utilisés par les programmeurs de macros et
+par l'utilisateur. Ces registres de travail ont une durée de vie
+courte, c'est à dire que l'on doit supposer que l'appel d'une macro
+modifie les valeurs de ces registres. Les commandes \fn{newcount},
+etc. permettent de réserver des registres de durée de vie longue, dont les
+valeurs ne sont modifiées que par un petit nombre de macros bien
+délimité.
+
+Les appels par l'interface du noyau de \brTeX\ ne modifient pas ces
+registres de travail, il est ainsi possible d'utiliser ces registres
+de travail lors de la définition de macros travaillant conjointement
+avec le noyau.
+
+\begin{remark}
+Les fonctions dans l'interface du noyau sont celles où ne figure aucun
+signe~[[@]].
+\end{remark}
+
+\begin{remark}
+Les procédures du noyau travaillent avec ces registres, mais
+toujours à l'intérieur d'un groupe qui ne dure qu'autant que la
+procédure appelée.
+\end{remark}
+
+\begin{remark}
+Les registres de travail occupent les positions paires des indices
+entre~0 et~9. Dans la convention de~Knuth, ces registres sont donc
+destinés à recevoir des affectations locales. Pour les affectations
+globales, on peut utiliser les registres de rang impair comme le
+recommande la convention de~Knuth. Ces registres de rang impair n'ont
+toutefois pas reçu de nom spécial dans~\brTeX.
+\end{remark}
+
+Les registres \va{count@} \va{skip@} \va{dimen@} et \va{toks@} sont
+des registres de travail du format \brTeX. Ils ne doivent être
+manipulés par l'utilisateur qu'avec discernement. En particulier il
+n'est pas garanti que la valeur de ces registres ne soit pas modifiée
+après l'appel à une procédure du noyau.
+
+<<Allocation des registres de travail>>=
+\newcount\count@A
+\newcount\count@B
+\let\count@=\count@A
+
+\dimendef\dimen@=1
+\dimendef\dimen@A=1
+\dimendef\dimen@B=3
+
+\skipdef\skip@=1
+\skipdef\skip@A=1
+\skipdef\skip@B=3
+
+\toksdef\toks@=1
+\toksdef\toks@A=1
+\toksdef\toks@B=3
+
+\newcount\rcA           % Count registers
+\newcount\rcB           %  les registres de 0 à 9 ont un sens spécial
+\newcount\rcC
+\newcount\rcD
+\newcount\rcE
+
+\dimendef\rdA=0         % Dimension registers
+\dimendef\rdB=2
+\dimendef\rdC=4
+\dimendef\rdD=6
+\dimendef\rdE=8
+
+\skipdef\rsA=0          % Skip registers
+\skipdef\rsB=2
+\skipdef\rsC=4
+\skipdef\rsD=6
+\skipdef\rsE=8
+
+\toksdef\rtA=0          % Token registers
+\toksdef\rtB=2
+\toksdef\rtC=4
+\toksdef\rtD=6
+\toksdef\rtE=8
+
+\chardef\rbA=0          % Box registers
+\chardef\rbB=2
+\chardef\rbC=4
+\chardef\rbD=6
+\chardef\rbE=8
+
+\chardef\rwA=0          % Write registers
+\chardef\rwB=2
+\chardef\rwC=4
+\chardef\rwD=6
+\chardef\rwE=8
+
+\chardef\rrA=0          % Read registers
+\chardef\rrB=2
+\chardef\rrC=4
+\chardef\rrD=6
+\chardef\rrE=8
+
+\let\rmA=\undefined     % Macro registers
+\let\rmB=\undefined
+\let\rmC=\undefined
+\let\rmD=\undefined
+\let\rmE=\undefined
+
+\let\next=\undefined
+
+@ La macro \fn{next} est spécialement utilisée dans les
+conditionnelles, dans les boucles, conjointement avec~\fn{futurelet},
+dans les constructions
+\begin{example}
+\begingroup
+...
+\expandafter\endgroup\next
+\end{example}
+Dans ce fichier, cette dernière construction est tellement utilisée
+qu'on lui crée une abréviation. On peut
+écrire \fn{beginnext} et \fn{endnext} pour abréger cette
+constuction. Lorsqu'on utilise \fn{beginnext} et~\fn{endnext} il est
+obligatoire d'affecter un texte de remplacement à~\fn{next}, par
+exemple avec~[[\let\next=\empty]].
+<<Allocation des registres>>=
+\def\beginnext{\begingroup\let\next\undefined}
+\def\endnext{\expandafter\endgroup\next}
+
+@ Voici quelques exemples d'allocations. Les allocations apparaissant
+dans ces exemples sont des constantes dont l'initialisation est
+discutée  dans la section sur les constantes.
+<<Allocation des registres constants>>=
+\newdimen\maxdimen      % the largest legal <dimen>
+\newskip\hideskip       % negative but can grow
+\newdimen\p@            % used for 1pt
+\newdimen\z@            % used for 0pt and 0 (the number zero)
+\newskip\z@skip         % used for 0pt skips
+\newbox\voidb@x         % permanently void box register
+\newskip\centering
+<<Initialisation des registres constants>>
+
+
+@ And here's a different sort of allocation:
+For example, [[\newif\iffoo]] creates [[\footrue]], [[\foofalse]] to
+go with [[\iffoo]].
+
+<<Procédure d'allocation automatique de registres booléens>>=
+\outer\def\newif#1{\rcA\escapechar \escapechar\m@ne
+  \expandafter\expandafter\expandafter
+   \def\@if#1{true}{\let#1=\iftrue}%
+  \expandafter\expandafter\expandafter
+   \def\@if#1{false}{\let#1=\iffalse}%
+  \@if#1{false}\escapechar\rcA} % the condition starts out false
+\def\@if#1#2{\csname\expandafter\if@\string#1#2\endcsname}
+{\uccode`1=`i \uccode`2=`f \tex@uppercase{\gdef\if@12{}}} % `if' is required
+
+
+@ \paragraph{Prise en charge des pilotes}
+\brTeX\ peut être utilisé avec plusieurs pilotes. Le pilote est un
+ensemble de définitions spécifiques au programme avec lequel doit être
+traité le fichier DVI produit par \TeX\ (xdvi, dvips, activedvi,
+etc.), ou bien spécifiques à la variante de \TeX\ utilisée (par
+exemple pdf\TeX). Ces définitions spécifiques permettent par exemple à
+l'utilisateur d'inclure des images ou d'utiliser la couleur dans son
+document en utilisant un jeu de macros indépendantes du programme
+utilisé pour produire transformer le fichier DVI en fichier
+imprimable.
+
+Du côté du système, on inscrit un pilote en
+évaluant~[[\setdriver{xdvi}]] etc. Comme un seul pilote peut être
+chargé, c'est une erreur d'appeler plusieurs fois la commande
+\fn{setdriver}.
+
+Les fichiers de macro utilisent~[[\testdriver{xdvi}\ifdriver]] pour
+connaître le driver sous lequel ils fonctionnent. On peut également
+charger le nom du driver dans un registre de~\emph{tokens} au moyen de
+la commande~\fn{toksloaddriver}.
+
+La version de \brTeX\ est contenue dans \va{fmtversion}, elle
+détermine les capacités de chaque pilote
+accompagnant~\brTeX. Cependant, utiliser~\fn{testdriver}
+et~\va{fmtversion} n'est pas le meilleur moyen de détecter les
+capacités d'un pilote dans du code conditionnel. Au lieu de cela, les
+capacités de drivers sont regroupées en interfaces. Lorsqu'un driver
+réalise une interface, il l'enregistre comme une bibliothèque. Ces
+interfaces s'enregistrent sous un nom commençant par~\emph{kif}
+pour~\emph{kernel interface}.
+
+<<Allocation des registres>>=
+\newif\ifdriver
+\def\setdriver#1{\global\def\driver@m{#1}\global\let\setdriver\undefined}
+\def\driver@m{none}
+\def\testdriver#1{%
+  \beginnext
+  \def\rmA{#1}%
+  \ifx\rmA\driver@m
+    \def\next{\drivertrue}%
+  \else
+    \def\next{\driverfalse}%
+  \fi
+  \endnext
+}
+\def\toksloaddriver\to#1{\toksloadcsexpansion\driver@m\to#1}
+
+@ \subsection{Programmation}
+On définit dans cette section des macros utiles pour la
+programmation. Il s'agit d'un enrichissement des primitives de \TeX,
+avec des fonctions manipulant les structures de données naturelles
+de \TeX, comme les macros et leur text de remplacememnt, les
+registres, etc, mais aussi des structures plus complexes comme les
+listes et les listes d'associations.
+
+Après avoir émis l'usuel message de progression, on définit quelques
+procédures de portée générale, comme~\fn{ignore} qui ignore son
+argument. Viennent alors quelques ensembles plus conséquents:
+\begin{itemize}
+\item des procédures de manipulation des listes, basées sur ce qui est
+décrit dans le~\TeXbook;
+\item des procédures pour manipuler les listes d'associations, aussi
+appelées dictionnaires;
+\item de nouveaux prédicats;
+\item des procédures manipulant les registres; par exemple l'une
+charge le texte de remplacement d'une macro et son format dans deux
+registres, une autre place le développement en octal ou en héxadécimal
+d'un nombre entier dans un registre de~\emph{tokens};
+\item des procédures d'analyse lexicale, une bien grand mot pour peu
+de choses ici: une procédure pour ignorer les blancs, variation de la
+primitve~\fn{ignorespaces} et une procédure pour agréger une suite
+de~\emph{tokens} satisfaisant à un prédicat;
+\item des procédures d'assistance à la définition de macros, par
+exemple certaines aident à écrire des procédures acceptant un argument
+entre crochets, comme on les trouve communément dans~\LaTeX.
+\end{itemize}
+Ces définitions constituent une trousse à outils largement utilisée
+dans la réalisation de services de plus haut niveau. Par exemple les
+listes et les listes associatives sont des pièces essentielles à la
+réalisation de services administratifs pour les bibliothèques et les
+paramètres régionaux.
+
+<<Programmation>>=
+<<Message de progression: programming>>
+<<Procédures générales>>
+<<Manipulation des listes>>
+<<Manipulation des listes d'associations>>
+<<Définition de prédicats usuels>>
+<<Manipulation des registres>>
+<<Manipulation des hooks>>
+<<Procédures d'analyse lexicale>>
+
+@ \paragraph{Procédures générales}
+On définit dans ce paragraphe des procédures disparates dont
+l'utilisation est de portée générale.
+
+\paracommand{\long\cs{ignore}\fa{token}}
+Cette procédure ignore son argument~\fa{token}, celui-ci est détruit,
+oublié,~etc.
+<<Procédures générales>>=
+\long\def\ignore#1{}
+
+
+@ \paragraph{Traitement des listes} [\TeXbook, p 378]
+Le noyau de \brTeX\ implémente les listes comme suggéré dans le
+\TeXbook, p.378. L'itération sur les éléments d'une liste se fait avec
+[[\\]] par exemple
+\begin{example}
+\def\cardinality#1\to#2{%
+  #2=\z@
+  \long\def\\##1{\advance#2\@ne}%
+  #1
+}
+\end{example}
+permet d'appeler [[\cardinality\mylist\to\myregister]]. On peut
+souhaiter conférer aux définitions de [[\\]] un caractère local en
+rajoutant des groupes dans le texte de remplacement de
+[[\cardinality]] --- au prix de quelques acrobaties supplémentaires
+pour faire sortir le résultat du groupe. Dans \brTeX, on décrète que
+[[\\]] est une \emph{scratch control sequence} et qu'elle est dans un
+état non initialisé au début de chaque séquence de contrôle.
+
+\begin{remark}
+Selon les recommandations de la section 0, la fonction
+\fn{cardinality} pourrait être nommée \fn{countloadcardinality} si
+elle faisait partie du noyau de~\brTeX.
+\end{remark}
+
+\paracommand{\cs{empty}}
+Macro dont le texte de remplacement est la liste vide de tokens. La
+définition de cette macro figure dans la section sur les
+constantes. On utilise [[\ifx\empty\list]] pour tester
+la vacuité d'une liste~[[\list]].
+
+\paracommand{\cs{listlappend}\fa{item}\cs{to}\fa{list}}
+Ajoute l'item \fa{item} à la gauche de la liste~\fa{list}.
+
+\paracommand{\cs{listrappend}\fa{item}\cs{to}\fa{list}}
+Ajoute l'item \fa{item} à la droite de la liste \fa{list}.
+
+<<Manipulation des listes>>=
+\newtoks\list@a
+\newtoks\list@b
+
+\long\def\listlappend#1\to#2{%
+  \list@a={\\{#1}}%
+  \list@b=\expandafter{#2}%
+  \edef#2{\the\list@a\the\list@b}%
+}
+
+\long\def\listrappend#1\to#2{%
+  \list@a={\\{#1}}%
+  \list@b=\expandafter{#2}%
+  \edef#2{\the\list@b\the\list@a}%
+}
+
+@ \paracommand{\cs{listcat}\fa{answer}=\fa{list1}\&\fa{list2}}
+Place le résultat de la concaténation de \fa{list1} et \fa{list2}
+dans~\fa{answer}.
+<<Manipulation des listes>>=
+\def\listcat#1=#2&#3{%
+  \list@a=\expandafter{#2}%
+  \list@b=\expandafter{#3}%
+  \edef#1{\the\list@a\the\list@b}%
+}
+
+@ \paracommand{\cs{listlop}\fa{list}\cs{to}\fa{answer}}
+Place le premier élément de \fa{list} dans la macro
+\fa{answer}. L'élément est retiré de~\fa{list}.
+\begin{remarks}
+Le terme \emph{lop} est une abréviation pour \emph{left pop}.
+
+Selon les conventions de la section \emph{Discipline}, cette
+fonction pourrait s'appeler \fn{csloadlistitem} mais j'ai préféré
+conserver le préfixe \fn{list} pour toutes les fonctions de cette
+section, ceci donne une impression globale de~\emph{module} pour cette
+partie de la bibliothèque.
+\end{remarks}
+<<Manipulation des listes>>=
+\def\listlop#1\to#2{%
+  \expandafter\listlop@off#1\listlop@off#1#2%
+}
+
+\long\def\listlop@off\\#1#2\listlop@off#3#4{%
+  \def#4{#1}\def#3{#2}%
+}
+
+
+@ \paracommand{\cs{testlistmem}\fa{list}\fa{token\_list}}
+Est vrai si et seulement si la list de tokens \fa{token\_list}
+appartient à la liste de tokens \fa{list}. Le test utilisé pour
+l'égalité des listes de tokens est~\fn{ifx}.
+\begin{example}
+\def\listtaglist{\\{\literal}\\{\compact}}
+\newif\iflisttag
+\def\testlisttag#1{%
+  \begingroup
+  \testlistmem\listtaglist#1%
+  \iflistmem\aftergroup\listtagtrue\else\aftergroup\listtagfalse\fi
+  \endgroup
+}
+\end{example}
+<<Manipulation des listes>>=
+\newif\iflistmem
+\def\testlistmem#1#2{%
+  \beginnext
+  \flagfalse
+  \def\rmA{#2}%
+  \def\\##1{\def\rmB{##1}\ifx\rmA\rmB\flagtrue\let\\=\ignore\fi}%
+  #1\let\next\ifflag
+  \endnext
+}
+
+
+
+@ \paragraph{Listes d'associations}
+Les listes d'associations sont des listes dont les termes sont des
+couples, appelés lisaisons, le premier est appelé clef et le second
+valeur de la liaison. La liste~\va{empty} représente également la
+liste d'associations vide.
+
+\paracommand{\cs{alistadd}\fa{alist}\fa{key}\fa{value}}
+Ajoute dans la liste d'assocations~\fa{alist} la liaison \fa{key},
+\fa{value}.
+
+<<Manipulation des listes d'associations>>=
+\def\alistadd#1#2#3{\listlappend{#2}{#3}\to#1}
+
+@ \paracommand{\cs{testalistmem}\fa{alist}\fa{key}}
+S'évalue à vrai si et seulement si la clef~\fa{key} fait l'objet d'une
+association dans le dictionnaire~\fa{alist}.
+\parafakepredicate
+<<Manipulation des listes d'associations>>=
+\newif\ifalistmem
+\def\testalistmem#1#2{%
+  \beginnext
+  \let\next\alistmemfalse
+  \def\rmA{#2}%
+  \def\\##1{\alistmem@A##1}#1%
+  \endnext
+}
+
+\def\alistmem@A#1#2{%
+  \def\rmB{#1}%
+  \ifx\rmA\rmB
+    \let\\=\ignore
+    \let\next\alistmemtrue
+  \fi
+}
+
+@ \paracommand{\cs{alistget}\fa{alist}\fa{key}\fa{memory}}
+Trouve la valeur associée à la liaison \fa{key} dans \fa{alist}, cette
+valeur est rangée dans la séquences \fa{memory} avec \fa{def}.
+
+Exemple:~[[\alistget\abbrev{PC}\PCValue]]
+
+Lorsque \fa{key} n'est l'objet d'aucune liaison dans \fa{alist}, le
+drapeau \fn{ifexception} est positionné, mais le travail est
+quand-même accompli. (i.e.~\fa{alist} n'est pas modifié).
+<<Manipulation des listes d'associations>>=
+\def\alistget#1#2#3{%
+  \exceptionfalse
+  \beginnext
+  \def\rmA{#2}%
+  \rtA={#3}%
+  \def\next{\exceptiontrue}%
+  \def\\##1{\alistget@A##1}#1%
+  \endnext
+}
+
+\def\alistget@A#1#2{%
+  \def\rmB{#1}%
+  \ifx\rmA\rmB
+    \let\\=\ignore
+    \rtB={#2}%
+    \edef\next{\def\the\rtA{\the\rtB}}%
+  \fi
+}
+
+@ \paracommand{\cs{alistremove}\fa{alist}\fa{key}}
+Supprime la dernière liaison à \fa{key} dans \fa{alist}. Si \fa{key}
+n'est l'objet d'aucune liaison dans \fa{alist} lors de l'appel, le
+drapeau \fn{ifexception} est positionné.
+<<Manipulation des listes d'associations>>=
+\def\alistremove#1#2{%
+  \exceptionfalse
+  \beginnext
+  \flagfalse
+  \rtA={#1}%
+  \def\rmA{#2}%
+  \let\rmC\empty
+  \def\\##1{\alistremove@A##1}#1%
+  \ifflag
+    \rtB=\expandafter{\rmC}%
+    \edef\next{\def\the\rtA{\the\rtB}}%
+  \else
+    \def\next{\exceptiontrue}%
+  \fi
+  \endnext
+}
+
+\def\alistremove@A#1#2{%
+  \def\rmB{#1}%
+  \ifx\rmA\rmB
+    \flagtrue
+    \def\\##1{\alistremove@B##1}%
+  \else
+    \alistremove@B{#1}{#2}%
+  \fi
+}
+
+\def\alistremove@B#1#2{\listrappend{#1}{#2}\to\rmC}
+
+@ \paracommand{\cs{alistprocess}\fa{alist}\fa{callback}\fa{emergency}\fa{key}}
+\begin{description}
+\item[alist] est une liste associative;
+\item[callback] est une fonction à appliquer sur une valeur de
+cette~liste;
+\item[emergency] est une fonction à appliquer en cas d'urgence~(voir
+infra.);
+
+\item[key] est une clef de cette liste.
+\end{description}
+La liste \fa{alist} est parcourue, si une clef égale à~\fa{key} est trouvée,
+alors~\fa{callback} est appliquée sur la valeur correspondante et les autres
+liaisons de la liste~\fa{alist} sont ignorées; si la clef~\fa{key}
+n'est l'objet d'aucune liaison alors la procédure~\fa{emergency} est
+appelée.
+
+On peut utiliser \fn{relax} comme argument~\fa{emergency} lorsque
+l'absence de la clef recherchée n'a pas lieu d'être mal vécue. On peut
+utiliser~\fn{exceptiontrue} comme argument~\fa{emergency} pour voir
+cette situation signalée par l'indicateur~\emph{exception}.
+<<Manipulation des listes d'associations>>=
+\def\alistprocess#1#2#3#4{%
+  \begingroup
+  \def\alistprocess@N{#3}%
+  \def\alistprocess@K{#4}%
+  \rtA={#2}%
+  \def\\##1{\alistprocess@L##1}%
+  #1\expandafter\endgroup\alistprocess@N
+}
+
+\def\alistprocess@L#1#2{%
+  \def\rmA{#1}\ifx\rmA\alistprocess@K
+    \rtB={#2}%
+    \edef\alistprocess@N{\the\rtA{\the\rtB}}%
+    \let\\=\ignore
+  \fi
+}
+
+@ \paragraph{Tests et prédicats}
+Les tests forment une partie importante de la boîte à outils du
+programmeur. Cette section en définit une petite quantité, parfois au
+moyen de la commande \fn{newif}; cette dernière est définie dans la
+partie sur les allocations. Les prédicats définis avec la
+procédure~\fn{newif} sont de vrais prédicats, les autres sont
+généralement de faux prédicats.
+
+Lorsqu'il interprète un programme, \TeX\ fait une différence entre les
+vrais prédicats et les faux prédicats. Un \emph{vrai prédicat} est un
+des prédicats primitifs de~\TeX, cf.~\TeXbook~p.~209, ou une commande
+qui est fait l'objet d'une liaison~\fn{let} avec un vrai
+prédicat. Ainsi après l'évaluation de
+\begin{example}
+\let\mypredicate\ifx
+\newif\ifexception
+\def\ifempty{\ifx\empty}
+\end{example}
+les commandes~[[\mypredicate]] et~[[\ifexception]] sont de vrais
+prédicats, mais la procédure~[[\ifempty]] est un faux prédicat. Les
+vrais prédicats et les faux prédicats sont traités différemment
+lorsque~\TeX\ examine le texte omis d'une alternative, à la recherche
+de~[[\else]] ou~[[\fi]]. Lors de cet examen, les vrais prédicats
+rencontrés sont appariés avec le~[[\fi]] leur correspondant ce qui
+autorise à les utiliser dans les branches des alternatives, tandis que
+les faux prédicats ne sont pas appriés avec les[[\fi]] et une
+alternative basée sur un faux prédicat ne doit pas figurer dans un
+texte comnditionnel. Cf.~\TeXbook, p~211.
+
+L'utilisation de faux prédicats demande donc à l'utilisateur de ces
+faux prédicats de définir des macros supplémentaires pour cacher
+ces faux prédicats lorsqu'ils apparaissent dans un texte
+conditionnel. Il est donc recommandé de ne pas utiliser ces faux
+prédicats, et de de leur préferer une construction à deux commandes,
+comme celles que l'on trouve en language machine: on crée un prédicat
+avec~\fn{newif}, et une procédure~\fn{test\dots} qui positionne ce
+prédicat selon le résultat du test.
+
+@ \paracommand{\cs{ifflag}}
+On définit un drapeau \emph{touzuzages}, il peut par exemple servir à
+indiquer la condition d'arrêt dans les boucles, et ce genre de choses.
+<<Définition de prédicats usuels>>=
+\newif\ifflag
+
+@ \paracommand{\cs{ifexception}}
+On définit ensuite le drapeaux ifexception qui est positionné par les
+procédures du noyau, en accord avec leur documentation. Ce drapeau
+sert à indiquer qu'une condtion exceptionnelle a été recnontrée
+pendant le traitement, le sens exact dépend de la procédure.
+
+Lorsqu'une procédure du noyau est appelée, on considère que le
+drapeau ifexception
+\begin{itemize}
+\item n'est pas modifié lorsque la documentation de la procédure ne
+précise rien à son sujet;
+\item prend une valeur précisée par la documentation de la procédure;
+\item prend une valeur aléatoire, par exemple si la procédure a une
+sous procédure qui peut modifier la valeur du drapeau, la
+documentation doit alors indiquer ``La valeur de \fn{ifexception} est
+aléatoire.''
+\end{itemize}
+<<Définition de prédicats usuels>>=
+\newif\ifexception
+
+
+@ \paracommand{\cs{testcs}\fa{token}}
+Est remplacé par \fn{iftrue} lorsque son argument \fa{token} est une
+\emph{control sequence} (et pas un caractère actif) (d'où le nom
+\fn{ifcs}).
+
+Attention: les quantités qui sont des \emph{shorthand def}, comme
+définies par~\fn{chardef} ou~\fn{mathchardef}
+etc., sont des séquences de contrôle, qu'on y accède par un caractère
+actif ou par un identifiant habituel pour les séquences de contrôle.
+
+<<Définition de prédicats usuels>>=
+\newif\ifcs
+\def\testcs#1{\ifcat\noexpand\undefined\noexpand#1\cstrue\else\csfalse\fi}
+
+@ \paracommand{\cs{teststreq}\fa{stra}\fa{strb}}
+Teste l'égalité des deux listes de tokens \fa{stra} et
+\fa{strb}. Aucun traitement n'est opéré sur ces listes de tokens.
+
+Exemple:
+\begin{example}
+\newif\ifbegin
+\def\testbegin#1{\teststreq{BEGIN}{#1}\let\ifbegin\ifstreq}
+
+\def\testbegintoks#1{%
+  \beginnext
+  \edef\next{\noexpand\teststreq{BEGIN}{\the#1}%
+    \let\noexpand\ifbegin\noexpand\ifstreq}%
+  \endnext
+\end{example}
+Bien que cette procédure teste en réalité l'égalité de deux listes de
+tokens, elle est souvent utilisée pour tester l'égalité des chaîndes
+de caractères~(suite de~\emph{tokens} dont les~\emph{catcodes} sont 11
+et~12).
+
+\begin{remark}
+Une erreur vacharde consiste à oublier que des chaînes de caractères
+ne satisfont pas ce prédicat lorsqu'elles sont constituées de
+caractères apparemment identiques mais de catcodes en réalité
+différents, par exemple lorsqu'on compare une chaîne définie dans le
+noyau et une chaîne apparaissant dans la saisie de l'opérateur.
+\end{remark}
+
+<<Définition de prédicats usuels>>=
+\newif\ifstreq
+\def\teststreq#1#2{%
+  \beginnext
+  \def\rmA{#1}%
+  \def\rmB{#2}%
+  \ifx\rmA\rmB
+    \let\next\streqtrue
+  \else
+    \let\next\streqfalse
+  \fi
+  \endnext
+}
+
+@ \paracommand{\cs{testprefix}\fa{char}\fa{thing}\cs{prefixstop}}
+Teste si \fa{char} est un caractère préfixe
+de~\fa{thing}. Lorsque~\fa{thing} est une macro, son texte de
+remplacement lui est substitué.
+\parafakepredicate
+
+<<Définition de prédicats usuels>>=
+\newif\ifprefix
+\def\testprefix{\expandafter\testprefix@A\expandafter}
+\def\testprefix@A#1#2#3\prefixstop{\if#1#2\prefixtrue\else\prefixfalse\fi}
+
+
+@ \paracommand{\cs{teststrempty}\fa{string}}
+
+Teste la vacuité de la liste~\fa{string} de tokens.
+<<Définition de prédicats usuels>>=
+\newif\ifstrempty
+\def\teststrempty#1{\teststreq{}{#1}\let\ifstrempty\ifstreq}
+
+
+@ \paracommand{\cs{testexists}\fa{filename}}
+
+Teste si un fichier nommé~\fa{filename} existe et peut être lu, soit
+ligne à ligne avec~\fn{open}, soit d'un seul coup avec~\fn{input}.
+<<Définition de prédicats usuels>>=
+\newif\ifexists
+\def\testexists#1{%
+  \begingroup
+  \immediate\openin\rrA=#1 %
+  \ifeof\rrA\aftergroup\existsfalse\else\aftergroup\existstrue\fi
+  \immediate\closein\rrA
+  \endgroup
+}
+
+@ \paracommand{\cs{loop}\fa{body}\cs{if}\fa{condition}\cs{repeat}}
+Il ne s'agit pas à proprement parler d'un test, mais d'une structure
+de contrôle. Je la recopie dans le \TeXbook~p.352.
+
+Dans le code de la procédure, de la liaison [[\let\repeat=\fi]]
+résulte que les blocs
+
+\cs{loop}\fa{body}\cs{if}\fa{condition}\cs{repeat}
+
+\noindent
+sont correctement traités lorsqu'ils apparaissent dans un texte
+conditionnel.
+
+<<Définition de prédicats usuels>>=
+\def\loop#1\repeat{\def\loop@B{#1}\loop@I}
+
+\def\loop@I{\loop@B
+    \let\loop@N=\loop@I
+  \else
+    \let\loop@N=\relax
+  \fi
+  \loop@N
+}
+
+\let\repeat=\fi
+
+
+@ \paragraph{Manipulation des macros et des registres de tokens}
+
+@ \paracommand{\cs{tokscat}\fa{answer}=\fa{r1}\&\fa{r2}}
+Place le résultat de la concaténation de \fa{r1} et \fa{r2}
+dans~\fa{answer}.
+<<Manipulation des registres>>=
+\def\tokscat#1=#2&#3{%
+  \beginnext
+  \edef\next{#1={\the#2\the#3}}%
+  \endnext
+}
+
+@ \paracommand{\cs{testtoksempty}\fa{toks\_register}}
+Teste la vacuité du registre de tokens~\fa{toks\_register}.
+<<Manipulation des registres>>=
+\newif\iftoksempty
+\def\testtoksempty#1{%
+  \begingroup
+  \edef\rmA{\the#1}%
+  \ifx\rmA\empty\aftergroup\toksemptytrue\else\aftergroup\toksemptyfalse\fi
+  \endgroup
+}
+
+@ \paracommand{\cs{toksrappend}\fa{token\_list}\cs{to}\fa{toks\_register}}
+Ajoute la liste \fa{token\_list} à droite du registre de tokens
+\fa{toks\_register}.
+<<Manipulation des registres>>=
+\def\toksrappend#1\to#2{#2=\expandafter{\the#2#1}}
+
+@ \paracommand{\cs{tokslappend}\fa{token\_list}\cs{to}\fa{toks\_register}}
+Ajoute la liste \fa{token\_list} à gauche du registre de tokens
+\fa{toks\_register}.
+<<Manipulation des registres>>=
+\def\tokslappend#1\to#2{%
+  \begingroup
+  \edef\rmA{\the#2}%
+  \toksloadcsexpansion\rmA\to\rtA
+  \rtB={#2}%
+  \rtC={#1}%
+  \edef\next{\the\rtB={\the\rtC\the\rtA}}%
+  \expandafter
+  \endgroup
+  \next
+}
+
+
+@ \paracommand{\cs{toksloadcsname}\fa{token\_list}\cs{to}\fa{toks\_register}}
+Charge \fa{toks\_register} avec la séquence de contrôle obtenue après
+application de~\fn{csname} sur~\fa{token\_list}.
+<<Manipulation des registres>>=
+\def\toksloadcsname#1\to#2{#2=\expandafter{\csname#1\endcsname}}
+
+@ \paracommand{%
+  \cs{toksloadcsexpansion}\fa{control\_sequence}\cs{to}\fa{toks\_register}%
+}
+Charge le registre \fa{toks\_register} avec le texte de remplacement
+de \fa{control\_sequence}.
+<<Manipulation des registres>>=
+\def\toksloadcsexpansion#1\to#2{#2=\expandafter{#1}}
+
+@ \paracommand{\cs{toksloadcsident}\fa{control\_sequence}\cs{to}\fa{toks\_register}}
+Charge \fa{toks\_register} avec l'identificateur de la \emph{control
+sequence} \fa{control\_sequence}. Si l'argument \fa{control\_sequence}
+n'est pas une \emph{control sequence} le résultat est indéfini.
+
+<<Manipulation des registres>>=
+\def\toksloadcsident#1\to#2{%
+  \edef\toksload@a{\expandafter\ignore\string#1}%
+  #2=\expandafter{\toksload@a}%
+}
+
+@ \paracommand{%
+  \cs{toksloadcsmeaning}%
+    \fa{control\_sequence}%
+    \cs{to}\fa{toks\_register1}\cs{and}\fa{toks\_register2}%
+}
+Pour une séquence \fa{control\_sequence}, charge le format d'appel
+dans le registre de tokens \fa{toks\_register1} et le texte de
+remplacement dans le registre de tokens \fa{toks\_register2}. On peut
+ignorer le texte format d'appel en disant par exemple
+\begin{example}
+toksloadcsmeaning\thing\to\toks@\and\toks@
+\end{example}
+Après cet appel \fa{toks@} contient le texte de remplacement de
+\fa{control\_sequence}.
+<<Manipulation des registres>>=
+\begingroup
+\edef\next{%
+\gdef\noexpand\toksloadmeaning@A
+  ##1\noexpand\and##2\expandafter
+    \ignore\string\macro:##3->##4\noexpand\stop{%
+  ##1{##3}##2{##4}%
+}}
+\next
+\endgroup
+
+\def\toksloadcsmeaning#1\to#2\and#3{%
+  \beginnext
+  \rtA={#2}%
+  \rtB={#3}%
+  \edef\next{\noexpand\toksloadmeaning@A\the\rtA\noexpand\and\the\rtB
+    \meaning#1\noexpand\stop
+  }%
+  \endnext
+}
+
+@ \paracommand{\cs{toksloadhex}\fa{number}\cs{to}\fa{toks\_register}}
+Cette commande place dans le registre~\fa{toks\_register} une suite
+de~\emph{tokens} représentant le nombre entier~\fa{number} en base
+héxadécimale. Ces~\emph{tokens} sont les chiffres de~0 à~9 et les
+lettres de~\emph{a} à~\emph{f}, avec le code de catégorie
+\emph{catcode}~12 pour les chiffres et~11 pour les lettres.
+
+Cette procédure a deux variantes,~\fn{toksloadoctal}
+et~\fn{toksloaddecimal}.
+
+La réalisation de~\fn{toksloaddecimal} est particulière, elle tire
+parti de la primitive~[[\the]] dans la forme~[[\the\count0]]. Les
+autres procédure utilisent les procédures~\fn{toksloadhexdigit}
+et~\fn{toksloadoctaldigit} pour convertir un nombre entre 0 et~15 ou
+entre 0 et~7 en chiffre.
+
+<<Manipulation des registres>>=
+\def\toksloadhexdigit#1\to#2{%
+  \ifcase#1\relax
+  #2={0}\or #2={1}\or #2={2}\or #2={3}\or
+  #2={4}\or #2={5}\or #2={6}\or #2={7}\or
+  #2={8}\or #2={9}\or #2={a}\or #2={b}\or
+  #2={c}\or #2={d}\or #2={e}\or #2={f}\else #2={?}\fi
+}
+
+\def\toksloadoctaldigit#1\to#2{%
+  \ifcase#1\relax
+  #2={0}\or #2={1}\or #2={2}\or #2={3}\or
+  #2={4}\or #2={5}\or #2={6}\or #2={7}\else #2={?}\fi
+}
+@ La procédure~\fn{toksloadradix} est une procédure générale de
+représentation des nombres dans une base arbitraire.
+
+@ \paracommand{%
+  \cs{toksloadradix}%
+  \fa{radix}\fa{converter}\fa{number}\fa{toks\_register}%
+}
+Place l'écriture de~\fa{number} en base~\fa{radix} dans le
+registre~\fa{toks\_register}. La conversion des nombres entre~0 et le
+nombre précédent~\fa{radix} est faite avec la procédure passée en
+argument~\fa{converter}. Cette procédure~\fa{converter} doit avoir le
+même format d'appel que~\fn{toksloadhexdigit} et
+que~\fn{toksloadoctaldigit}.
+
+<<Manipulation des registres>>=
+\def\toksloadradix#1#2#3#4{%
+  \beginnext
+  \rtA={}%
+  \rcB=#3\relax
+  \loop
+    \rcA=\rcB
+    \divide\rcB#1%
+    \multiply\rcB#1%
+    \advance\rcA-\rcB
+    #2\rcA\to\rtB
+    \expandafter\tokslappend\the\rtB\to\rtA
+  \ifnum\rcB>\z@
+    \divide\rcB#1%
+  \repeat
+  \edef\next{#4={\the\rtA}}%
+  \endnext
+}
+
+\def\toksloadhex#1\to#2{\toksloadradix\sixt@@n\toksloadhexdigit{#1}#2}
+
+\def\toksloadoctal#1\to#2{\toksloadradix\ei@ht\toksloadoctaldigit{#1}#2}
+
+\def\toksloaddecimal#1\to#2{%
+  \beginnext
+  \edef\next{#2=\expandafter{\number#1}}%
+  \endnext
+}
+
+@ \paracommand{\cs{toksload\va{ordinal}}\fa{number}\cs{to}\fa{toks\_register}}
+Où~\fa{ordinal} peut être l'un des mots suivants: \va{alpha},
+\va{Alpha}, \va{roman}, \va{Roman}, \va{greek}, \va{Greek}. Place la
+représentation ordinale de \fa{number} dans le registre
+\fa{toks\_register}.
+
+Pour alpha, Alpha, roman et Roman, cette représentation ordinale est
+une suite de tokens de code de catégorie 12.
+
+Pour greek et Greek cette représentation est une \emph{hbox} contenant une
+formule mathématique présentant la lettre correspondante de l'alphabet
+mathématique.
+
+<<Manipulation des registres>>=
+\def\toksloadalpha#1\to#2{%
+  \beginnext
+    \rcA=\relax
+    \advance\rcA by 96 %
+    \edef\next{#2{\char\the\rcA}}%
+  \endnext
+}
+
+\def\toksloadAlpha#1\to#2{%
+  \beginnext
+    \rcA=#1\relax
+    \advance\rcA by 64 %
+    \edef\next{#2{\char\the\rcA}}%
+  \endnext
+}
+
+\def\toksloadroman#1\to#2{%
+  \beginnext
+    \rcA=#1\relax
+    \edef\next{\noexpand#2={\expandafter\romannumeral\the\rcA}}%
+  \endnext
+}
+
+\def\toksloadRoman#1\to#2{%
+  \beginnext
+  \toksloadroman#1\to\rtA
+  \edef\next{\noexpand\tex@uppercase{#2={\the\rtA}}}%
+  \endnext
+}
+
+\def\toksloadgreek#1\to#2{%
+  \beginnext
+  \rtA={\hbox\bgroup$\nomathsurround}%$
+  \rtB={$\egroup}%$
+  \rcA=#1\relax
+  \edef\next{#2={\the\rtA\ifcase\the\rcA INVALID\or
+      \alpha\or
+      \beta\or
+      \gamma\or
+      \delta\or
+      \epsilon\or
+      \zeta\or
+      \eta\or
+      \theta\or
+      \iota\or
+      \kappa\or
+      \lambda\or
+      \mu\or
+      \nu\or
+      \xi\or
+      \omicron\or
+      \pi\or
+      \rho\or
+      \sigma\or
+      \tau\or
+      \upsilon\or
+      \phi\or
+      \chi\or
+      \psi\or
+      \omega\else
+      INVALID\fi
+      \the\rtB
+   }%
+ }%
+ \endnext
+}
+
+\def\toksloadGreek#1\to#2{%
+  \beginnext
+  \rcA=#1\relax
+  \rtA={\hbox\bgroup$\nomathsurround}%$
+  \rtB={$\egroup}%$
+  \edef\next{#2={\the\rtA\ifcase\the\rcA INVALID\or
+      \Alpha\or
+      \Beta\or
+      \Gamma\or
+      \Delta\or
+      \Epsilon\or
+      \Zeta\or
+      \Eta\or
+      \Theta\or
+      \Iota\or
+      \Kappa\or
+      \Lambda\or
+      \Mu\or
+      \Nu\or
+      \Xi\or
+      \Omicron\or
+      \Pi\or
+      \Rho\or
+      \Sigma\or
+      \Tau\or
+      \Upsilon\or
+      \Phi\or
+      \Chi\or
+      \Psi\or
+      \Omega\else
+      INVALID\fi
+      \the\rtB
+   }%
+ }%
+ \endnext
+}
+
+
+@ \paracommand{\cs{csexport}\fa{macro}}
+Fait remonter la liaison actuelle de la macro~\fa{macro} au niveau
+global. Le résultat est indéfini si l'argument est une~\emph{control
+sequence} autre qu'une macro: l'argument~\fa{macro} doit avoir un
+texte de remplacement.
+
+La construction~\fn{export} permet de modifier une variable globale
+dans un groupe mais de rendre visible au plus haut niveau les
+modifications apportées.
+
+<<Manipulation des registres>>=
+\def\csexport#1{%
+  \beginnext
+  \toksloadcsexpansion#1\to\rtA
+  \rtB={#1}%
+  \edef\next{\global\def\the\rtB{\the\rtA}}%
+  \endnext
+}
+
+@ \paracommand{\cs{export}\fa{register}}
+Fait remonter la liaison actuelle du registre~\fa{register} au niveau
+global.
+
+<<Manipulation des registres>>=
+\def\export#1{%
+  \beginnext
+  \rtA=\expandafter{\the#1}%
+  \rtB={#1}%
+  \edef\next{\global\the\rtB=\the\rtA\relax}%
+  \endnext
+}
+
+@ \paracommand{\cs{csexpansionuppercase}\fa{macro}}
+Transforme le texte de remplacement de~\fa{macro} avec la
+primitive~\fn{uppercase} de~\TeX, le résultat de cette transformation
+est le nouveau texte de remplacement de~\fa{macro}.
+
+Cette procédure utilise la copie de sauvegarde~\fn{tex@uppercase} de
+la primitive de~\TeX, la fonction~\cs{uppercase} peut être définie par
+les conventions de saisie~[XXX].
+
+Une procédure~\fn{csexpansionlowercase} existe également.
+
+<<Manipulation des registres>>=
+\def\csexpansionchangecase#1#2{%
+  \beginnext
+  \toksloadcsexpansion#2\to\rtA
+  \rtB={#1}%
+  \rtC={\def#2}%
+  \edef\next{\the\rtB{\the\rtC{\the\rtA}}}%
+  \endnext
+}
+
+\def\csexpansionuppercase{\csexpansionchangecase\tex@uppercase}
+\def\csexpansionlowercase{\csexpansionchangecase\tex@lowercase}
+
+
+@ \paragraph{Hooks}
+Les \emph{hooks} permettent d'enregistrer des listes de \emph{tokens}
+qui doivent être traitées lorsque survient un évènement
+particulier. On peut avec ce système enregistrer des~\emph{tokens}
+devant être évalués juste avant le traitement de la
+procédure~\fn{end}, ou à l'entrée de la procédure~\fn{output}, ou
+aupravant d'écrire une page dans le fichier~DVI.
+
+@ \paracommand{\cs{newhook}\fa{control\_sequence}}
+Définit un nouvel objet de type \emph{hook} nommé
+\fa{control\_sequence}. Cet identifiant est alors réservé: il ne peut
+plus être utilisé que comme argument de~\fn{addhook}, et~\fn{runhook}.
+Le nom~\fa{control\_sequence} désigne un évènement.
+
+Usuellement, les noms d'évènements utilisés
+pour~\fa{control\_sequence} se terminent par~\fn{hook},
+comme~\fn{endhook} ou~\fn{outputsanitizehook}.
+
+<<Manipulation des hooks>>=
+\def\newhook#1{\def#1{}}
+
+
+@ \paracommand{\cs{addhook}\fa{token\_list}\cs{to}\fa{event}}
+
+Enregistre la \fa{token\_list} pour être évaluée lorsque l'évènement
+\fa{event} est déclenché, avec la procédure~\fn{runhook}.
+
+<<Manipulation des hooks>>=
+\def\addhook#1\to#2{%
+  \beginnext
+  \rtA=\expandafter{#2#1}%
+  \edef\next{\def\noexpand#2{\the\rtA}}%
+  \endnext
+}
+
+
+@ \paracommand{\cs{runhook}\fa{event}}
+
+Traite les \emph{tokens} associés à l'évènement \fa{event} au moyen
+des appels à \fn{addhook}. Lorsque plusieurs listes de \emph{tokens}
+ont été enregistrées pour l'évènement \fa{event}, la première
+enregistrée est traitée en premier, etc.
+
+<<Manipulation des hooks>>=
+\def\runhook#1{#1\relax}
+
+@ \paracommand{\cs{formatdumphook}}
+
+Évènement déclenché peu avant l'instruction \fn{dump} créant un format
+dans INITEX. Cet évènement n'est pas défini lorsqu'un format est
+chargé.
+
+L'évènement \emph{dump} peut être utilisé pour réaliser des liaisons
+tardives. Par exemple, le pilote utilisé pour produire les fichiers
+DVI fait en sorte que la procédure \fn{selectlayout} inscrive les
+dimensions du papier dans le fichier DVI produit. Ceci ne doit
+cependant pas avoir lieu si la procédure \fn{selectlayout} est appelée
+lors de la préparation du format, on utilise donc pour cela une
+liaison tardive.
+
+<<Manipulation des hooks>>=
+\newhook\formatdumphook
+
+@ \paracommand{\cs{endhook}}
+
+Évènement déclenché avec l'instruction \fn{end} qui indique la fin
+du traitement d'un fichier.
+
+Il est garanti qu'au déclenchement de cet évènement, la MVL est
+vide. En particulier aucune opération d'écriture différée n'est en
+attente dans la MVL.
+
+<<Manipulation des hooks>>=
+\newhook\endhook
+\def\end{\runhook\endhook\tex@end}
+\def\bye{\runhook\endhook\par\vfill\supereject\tex@end}
+
+@ \paracommand{\cs{outputsanitizehook}}
+Évènement déclenché au début de la procédure \fn{output}. Certains
+paramètres importants pour la procédure \fn{output} peuvent avoir une
+valeur indéfinie au début de la procédure \fn{output}, les bibliothèques
+peuvent utiliser ce \emph{hook} pour ajouter des opérations
+d'initialisation à la routine \fn{output}.
+
+Exemple: dans la procédure \fn{output} les paramètres régionaux
+doivent être rétablis à leur valeur principale.
+
+Remarque: bien que la procédure \fn{output} ne soit pas définie dans
+le noyau, ce \emph{hook} y figure, car les bibliothèques redéfinissant
+la procédure \fn{output} devraient utiliser ce \emph{hook}.
+<<Manipulation des hooks>>=
+\newhook\outputsanitizehook
+
+@ \paracommand{\cs{shipoutsanitizehook}}
+
+Au moment de l'éxécution de la commande \fn{shipout}, les appels
+\fn{write} différés prennent effet. Le \va{shipoutsanitizehook} peut
+être utilisé pour initialiser des valeurs importantes à la bonne
+éxécution de ces \fn{write}.
+
+Remarque: voir \va{outputsanitizehook}. Les bibliothèques redéfinissant
+la procédure \fn{output} devraient éxécuter ce \fn{hook} juste avant
+d'appeler la commande \fn{shipout}.
+
+<<Manipulation des hooks>>=
+\newhook\shipoutsanitizehook
+
+
+@ \paragraph{Procédures d'analyse lexicale}
+
+@ \paracommand{\TeX\cs{ignorespaces}}
+\TeX\ reads and expands tokens, doing nothing until reaching one that
+is not a \emph{space token}. A space token is either a character with
+category 10, or an implict character whose definition is such a
+character.
+
+@ \paracommand{\cs{ignoreblanks}}
+Absorbe tous les blancs, et traite correctement les fichiers inclus.
+Lorsqu'une directive~\fn{input} est rencontrée, les espaces au début
+du fichier inclus sont eux aussi absorbés.
+
+Les blancs sont les membres de la liste~\va{ignoreblanks@l}.
+
+<<Procédures d'analyse lexicale>>=
+\def\ignoreblanks@l{\\{\par}\\{^^20}\\{^^09}\\{^^0a}}%\\{^^0c}\\{^^0d}}
+
+\def\ignoreblanks@A{%
+  \let\ignoreblanks@N=\ignoreblanks@D
+  \flagtrue
+  \let\\=\ignoreblanks@B
+  \ignoreblanks@l
+  \ifx\ignoreblanks@T\input
+    \let\ignoreblanks@N=\ignoreblanks@C
+  \else
+    \ifflag
+      \let\ignoreblanks@N=\ignoreblanks@E%
+    \fi
+  \fi
+  \ignoreblanks@N
+}
+
+\long\def\ignoreblanks@B#1{%
+  \let\rmA=#1%
+  \ifx\rmA\ignoreblanks@T
+    \flagfalse
+  \fi
+}
+\def\ignoreblanks@C{\endgroup\expandafter\ignoreblanks}
+\def\ignoreblanks@E{\endgroup}
+\def\ignoreblanks@D{%
+  \afterassignment\ignoreblanks@M
+  \let\ignoreblanks@T
+}
+\def\ignoreblanks@M{%
+  \futurelet
+  \ignoreblanks@T
+  \ignoreblanks@A
+}
+
+\def\ignoreblanks{%
+  \begingroup
+  \ignoreblanks@M
+}
+
+
+@ \paracommand{%
+  \cs{readtokens}%
+  \fa{predicate}\cs{to}\fa{toks\_register}%
+  \cs{then}\fa{token\_list}\cs{done}%
+}
+Lit les tokens arrivant sur le flot d'entrée. Le plus long préfixe de
+tokens satisfaisant \fa{predicate} est stocké dans \fa{toks\_register}
+et supprimé de l'entrée.
+
+On utilise l'indicateur \fn{ifreadgroups} pour déterminer si
+\fn{readtokens} absorbe également les groupes.
+
+<<Procédures d'analyse lexicale>>=
+\newif\ifreadgroups
+\readgroupsfalse
+
+\def\readtokens#1\to#2\then#3\done{%
+  \def\readtokens@p{#1}%
+  \def\readtokens@r{#2}%
+  \def\readtokens@c{#3}%
+  \toks@={}\readtokens@L
+}
+
+\def\readtokens@L{%
+  \futurelet\readtokens@t\readtokens@A
+}
+
+\def\readtokens@A{%
+  \let\readtokens@N=\readtokens@B
+  \ifreadgroups
+    \ifx\readtokens@t\bgroup
+      \let\readtokens@N\readtokens@G
+    \fi
+  \fi
+  \readtokens@N
+}
+
+
+\def\readtokens@B{%
+  \readtokens@p\readtokens@t
+    \let\readtokens@N=\readtokens@C
+  \else
+    \let\readtokens@N=\readtokens@E
+  \fi
+  \readtokens@N
+}
+
+\def\readtokens@C{%
+  \ifcat\spacetoken\readtokens@t
+    \expandafter\toksrappend\spacetoken\to\toks@
+    \let\readtokens@N=\readtokens@D
+  \else
+    \let\readtokens@N=\readtokens@F
+  \fi
+  \readtokens@N
+}
+
+\def\readtokens@D#1{\readtokens@L#1}
+\def\readtokens@F#1{\toksrappend#1\to\toks@\readtokens@L}
+
+\def\readtokens@G#1{\toksrappend{#1}\to\toks@\readtokens@L}
+
+\def\readtokens@E{\readtokens@r=\toks@\readtokens@c}
+
+@ \paragraph{Lire un nom de fichier}
+C'est un exemple d'utilisation de la commande `readtokens'.
+
+
+@ \paracommand{\cs{readfilename}\fa{callback}}
+Lit un nom de fichiers dans le flots en entrée et le passe en
+argument de \fa{callback}.
+
+Pendant la lecture, les groupes sont lus comme faisant partie du nom
+de fichier, ce qui permet de lire un nom de fichier avec des espaces.
+
+<<Procédures d'analyse lexicale>>=
+\def\readfilename@P#1{%
+  \beginnext
+  \let\next\@false
+  \ifcat A\noexpand#1\let\next\@true\fi
+  \ifcat 1\noexpand#1\let\next\@true\fi
+  \endnext
+}
+\def\readfilename@I{%
+  \let\\\setcatcodeother
+  \\\_\\\/\\\:\\\~\\\,\\\.%
+  \\\0\\\1\\\2\\\3\\\5\\\5\\\6\\\7\\\8\\\9%
+}
+\def\readfilename#1{%
+   \beginnext
+   \readfilename@I
+   \rtA{#1}%
+   \readgroupstrue
+   \readtokens\readfilename@P\to\rtB\then\readfilename@A\done
+}
+
+\def\readfilename@A{%
+  \edef\next{\the\rtA{\the\rtB}}%
+  \endnext
+}
+
+@ \subsection{Assistance à la définition de macros}
+
+@ \paragraph{Manipulation des séquence de contrôle}
+
+@ \paracommand{\cs{elet}\fa{macro}\fa{token}}
+Une abréviation de
+[[\expandafter\let\expandafter]]\fa{macro}\fa{token}.
+
+<<Assistance à la définition de macros>>=
+\def\elet#1{\expandafter\let\expandafter#1}
+
+
+@ \paracommand{\cs{csdef}\fa{identifier}}
+Définir une séquence de contrôle par son identifiant \fa{identifier},
+ce qui permet à des macros client de génerer automatiquement des
+identifiants. On peut utiliser les attributs \fn{outer}, \fn{long} et
+\fn{global} comme avec \fn{def}, on écrit par exemple [[\long\csdef]],
+etc.
+
+<<Assistance à la définition de macros>>=
+\def\csdef#1{\expandafter\def\csname #1\endcsname}
+
+
+@ \paracommand{\cs{cslet}\fa{identifier}}
+On définit un nouveau nom grâce à son identifiant~\fa{identifier},
+comme avec \fn{csdef}, mais l'opération effectuée est un \fn{let} au
+lieu d'un \fn{def}.
+
+<<Assistance à la définition de macros>>=
+\def\cslet#1{\expandafter\let\csname #1\endcsname}
+
+@ \paracommand{\cs{spacetoken}}
+Une constante qui est une liaison avec un espace.
+
+<<Assistance à la définition de macros>>=
+{\setcatcodeactive\*\def*{}\global\futurelet\spacetoken * }
+
+@ \paracommand{\long\cs{readline}\cs{to}\fa{toks\_register}\cs{then}\fa{token\_list}\cs{done}}
+Cette commande modifie le code de catégorie du caractère de fin de
+ligne~[[^^M]] pour placer le contenu de la fin de la ligne dans
+\fa{toks\_register}, puis évalue~\fa{token\_list}.
+
+Cette macro est marquée \fn{long} afin que \fa{token\_list} puisse
+contenir la commande~\fn{par}.
+
+<<Assistance à la définition de macros>>=
+\long\def\readline\to#1\then#2\done{%
+  \begingroup
+  \rtA={#1}%
+  \rtB={#2}%
+  \rtC={}%
+  \setcatcodeother\^^M%
+  \readline@M
+}
+
+{\setcatcodeother\^^M \gdef\readline@M#1^^M{\rtC={#1}\readline@E}}
+
+\def\readline@E{%
+  \edef\readline@N{\the\rtA={\the\rtC}\the\rtB}%
+  \expandafter\endgroup\readline@N
+}
+
+@ \paragraph{Mémorisation des modificateurs}
+Il est parfois utile de fournir des formes spécialisées de la commande
+\fn{def}. Les commandes \fn{modifierssave}, \fn{modifiersload} et
+\fn{csloadmodifiers} permettent de mémoriser les modificateurs `outer'
+et \fn{long} figurant avant l'appel à la macro qui les appelle et de les
+rappeler en temps voulu.
+
+On fait comme suit:
+\begin{example}
+\def\mycustomdef#1#2{%
+  \modifierssave
+  ...
+  \modifiersload\def#1{#2}%
+}
+\end{example}
+L'état mémorisé est préservé par les groupes, mais il peut être
+utile d'enregistrer les modificaeurs dans un mémoire nommée pour
+faciliter les emplois des fonctions \fn{modifieressave} et
+\fn{modifiersload} sur une longue portée. On peut enregistrer les
+modificateurs dans une macro de son choix avec
+\fn{cssavemodifiers}. Cela fonctionne ainsi:
+\begin{example}
+\def\mycustomdef#1#2{%
+  \cssavemodifiers\custom@m
+  ...
+  \custom@m\def#1{#2}%
+}
+\end{example}
+La macro de \fn{modifierssave} est une abréviation pour
+[[\cssavemodifiers\modifiersload]].
+
+<<Assistance à la définition de macros>>=
+\def\modifiers@M#1{%
+  \def\modifiers@s{}%
+  \let#1\empty
+  \ifx\modifiers@s\modifiers@o\let#1\modifiers@O\fi
+  \ifx\modifiers@s\modifiers@l\let#1\modifiers@L\fi
+  \ifx\modifiers@s\modifiers@b\let#1\modifiers@B\fi
+}
+
+\outer\def\modifiers@o{}
+\long\def\modifiers@l{}
+\outer\long\def\modifiers@b{}
+
+\def\modifiers@O{\outer}
+\def\modifiers@L{\long}
+\def\modifiers@B{\outer\long}
+
+\def\modifierssave{\modifiers@M\modifiersload}
+\let\modifiersload=\empty
+
+\def\cssavemodifiers#1{\modifiers@M#1}
+
+@ \paragraph{Définition des macros}
+Les commandes \TeX\ peuvent présenter une interface très sophistiquée
+à l'utilisateur, avec des arguments optionnels de diverses sortes.
+Dans ce paragraphe, on définit un petit jeu de commandes facilitant
+l'écriture de macros acceptant de tels arguments optionnels.
+
+Le premier type d'argument optionnel traité par nos macros est
+l'option présentée entre crochets; ce format d'argument optionnel est
+très largement utilisé dans le format \LaTeX. Une macro acceptant un
+argument optionnel de cette forme peut être invoquée de deux façons
+différentes, comme le montre l'exemple suivant illustrant deux appels
+à une hypothétique commande~\fn{name}.
+\begin{example}
+\name{Serre}
+\name[J.-P]{Serre}
+\end{example}
+et l'on peut aussi bien imaginer une autre façon, comme la suivante:
+\begin{example}
+  \name Serre\return
+  \name[J.-P.]Serre\return
+  \name[J.-P.] Serre\return
+\end{example}
+Dans ce dernier exemple, on voit que la macro \fn{name}
+devrait contenir un \fn{ignorespaces} bien placé pour permettre aux
+utilisateurs d'écrire la seconde forme ou la troisième avec le même
+résultat, puisque cette dernière paraît plus lisible.
+
+@ \paracommand{\cs{getoptbracket}\fa{callback}}
+La commande \fn{getoptbracket} teste la présence d'une option contenue
+entre crochets. Lorsque cette option est présente, la
+commande~\fn{optbrackettrue} est évaluée et la procédure~\fa{callback}
+est appelée avec comme argument la valeur de cette option. Lorsque
+cette option est absente, la commande~\fn{optbracketfalse} est évaluée
+et la procédure~\fn{callback} est appelée avec la liste de
+\emph{tokens} vide comme argument.
+
+La commande ne cause pas d'erreur lorsqu'elle est utilisée juste
+avant la fin du flot d'entrée.
+
+\begin{formalparagraph}{Exemple de commande name}
+La commande \fn{name} définie dans cet exemple a pour rôle de préparer
+le nom d'un auteur et tient compte de la présence d'un prénom. Cette
+commande peut être utile pour produire un index des noms, par exemple.
+\begin{example}
+\def\name{\getoptbracket\name@A}
+\def\name@A#1#2{%
+  \ifoptbracket
+    % Cas où aucune option n'est donnée
+  \else
+    % Cas où une option est donnée
+    #1~%
+  \fi
+  {\sc\ignorespaces #2}%
+}
+\end{example}
+\end{formalparagraph}
+
+<<Assistance à la définition de macros>>=
+\newif\ifoptbracket
+
+\def\getoptbracket#1{%
+  \beginnext
+  \rtA{#1}%
+  \rtB{}%
+  \rtC{\optbracketfalse}%
+  \futurelet\getoptbracket@T\getoptbracket@A
+}
+
+\def\getoptbracket@A{%
+  \ifx\getoptbracket@T[% Bluff Emacs]
+     \let\next=\getoptbracket@B
+  \else
+     \let\next=\getoptbracket@E
+  \fi
+  \next
+}
+
+\def\getoptbracket@B[#1]{%
+  \rtB{#1}%
+  \rtC{\optbrackettrue}%
+  \getoptbracket@E
+}
+
+\def\getoptbracket@E{%
+  \edef\next{\the\rtC\the\rtA{\the\rtB}}%
+  \endnext
+}
+
+@ Le second type d'argument optionnel est une séquence, éventuellement
+vide, de macros, appelées~\emph{tags}. Ce type d'argument optionnel
+permet de réaliser des macros comprenant des commutateurs, un peu
+comme les options de ligne de commande sur les sytèmes~UNIX.
+
+La commande getopttag a trois paramètres globaux, qui doivent
+impérativement être initialisés avant l'appel à \fn{getopttag}:
+\begin{description}
+\item[getopttagvoid] liste des tags sans paramètres;
+\item[getopttagmandatory] liste des tags à paramètre obligatoire;
+\item[getopttagbracket] liste des tags à paramètre optionnel entre crochets.
+\end{description}
+
+\begin{formalparagraph}{Exemple}
+Suit un exemple d'utilisation. Pour commencer on définit le sens des
+tags name, surname, alpha et beta.
+\begin{example}
+\def\name#1{@<< NAME #1 >>}
+\def\surname#1{%
+   \teststrempty{#1}\ifstrempty@<< SURNAME not provided >>\else@<< SURNAME #1 >>\fi
+}
+\def\alpha{@<< ALPHA >>}
+\def\beta{@<< BETA >>}
+\end{example}
+Ensuite, on définit la commande trial qui reconnaît les tags alpha,
+beta, name et surname. Elle initialise chacun des paramètres globaux
+puis appelle getopttag qui délègue l'interprétation des tags à
+trial@A.
+\begin{example}
+\def\trial{%
+  \def\getopttagvoid{\\{\alpha}\\{\beta}}%
+  \def\getopttagmandatory{\\{\name}}%
+  \def\getopttagbracket{\\{\surname}}%
+  \getopttag\trial@A
+}
+\def\trial@A#1{\par *** #1 ***\par}
+\end{example}
+On conclut enfin par une petite batterie d'essais.
+\begin{example}
+\trial\alpha\beta
+\trial\alpha\name{BOB}
+\trial\alpha\name1
+\trial\alpha
+\trial\surname[Mephiso]
+\trial\surname\alpha
+\beta\alpha\beta
+\trial Les poux de l'Empereur
+\end{example}
+Ces essais produisent la sortie suivante.
+\begin{example}
+*** @<< ALPHA >>@<< BETA >> ***
+*** @<< ALPHA >>@<< NAME BOB >> ***
+*** @<< ALPHA >>@<< NAME 1 >> ***
+*** @<< ALPHA >> ***
+*** @<< SURNAME Mephiso >> ***
+*** @<< SURNAME not provided >>@<< ALPHA >>
+  @<< BETA >>@<< ALPHA >>@<< BETA >> ***
+*** ***
+Les poux de l'Empereur
+\end{example}
+\end{formalparagraph}
+
+@ \paracommand{\cs{getopttagreset}}
+Cette commande initialise les listes~\va{getopttagvoid},
+\va{getopttagbracket} et~\va{getopttagmandatory} avec la liste vide.
+<<Assistance à la définition de macros>>=
+\def\getopttagreset{%
+  \let\getopttagvoid\empty
+  \let\getopttagmandatory\empty
+  \let\getopttagbracket\empty
+}
+
+@ \paracommand{\cs{getopttag}\fa{callback}}
+<<Assistance à la définition de macros>>=
+\newif\ifgetopttag
+\def\testgetopttag#1#2{%
+  \begingroup
+  \flagfalse
+  \def\\##1{\ifx#2##1\flagtrue\fi}#1%
+  \ifflag
+    \aftergroup\getopttagtrue
+  \else
+    \aftergroup\getopttagfalse
+  \fi
+  \endgroup
+}
+
+\def\getopttag#1{%
+  \beginnext
+  \rtA={#1}%
+  \rtB={}%
+  \getopttag@A
+}
+
+\def\getopttag@A{\futurelet\getopttag@T\getopttag@B}
+\def\getopttag@B{%
+  \let\next=\getopttag@E
+  \testgetopttag\getopttagvoid\getopttag@T
+  \ifgetopttag\let\next=\getopttag@V\fi
+  \testgetopttag\getopttagmandatory\getopttag@T
+  \ifgetopttag\let\next=\getopttag@M\fi
+  \testgetopttag\getopttagbracket\getopttag@T
+  \ifgetopttag\let\next=\getopttag@N\fi
+  \next
+}
+
+\def\getopttag@E{%
+  \edef\next{\the\rtA{\the\rtB}}%
+  \endnext
+}
+
+\def\getopttag@V#1{%
+  \toksrappend#1\to\rtB
+  \getopttag@A
+}
+
+\def\getopttag@M#1#2{%
+  \toksrappend{#1{#2}}\to\rtB
+  \getopttag@A
+}
+
+\def\getopttag@N#1{%
+  \toksrappend#1\to\rtB
+  \getoptbracket\getopttag@O
+}
+
+\def\getopttag@O#1{%
+  \toksrappend{{#1}}\to\rtB
+  \getopttag@A
+}
+
+@ \paragraph{Définition de commandes select}
+On utilise dans \brTeX\ de nombreuses commandes dont le préfixe est
+\fn{select}, elles ont souvent la forme générale suivante:
+\begin{example}
+\def\selectDOMAIN#1
+   si une macro selectDOMAIN@#1 existe alors on l'éxécute
+   sinon on éxécute selectDOMAIN@FALLBACK
+\end{example}
+La procédure `defselect' facilite la création de ces macros.
+<<Assistance à la définition de macros>>=
+\def\defselect#1#2{%
+  \beginnext
+  \toksloadcsname select#1\to\rtA
+  \rtB{##1}%
+  \edef\next{\def\the\rtA\the\rtB{\noexpand\defselect@M{#1}{#2}{\the\rtB}}}%
+  \endnext
+}
+
+\def\defselect@M#1#2#3{%
+  \begingroup
+  \toksloadcsname select#1@#3\to\rtA
+  \toksloadcsname select#1@#2\to\rtB
+  \expandafter\ifx\the\rtA\relax
+    \writelog{Warning: select#1: variant #3 unavailable, falling
+  back to #2}%
+    \rtA\rtB
+  \fi
+  \expandafter\endgroup\the\rtA
+}
+
+@ \subsection{Lecture des bibliothèques}
+Une bibliothèque est un ensemble de macros. Le noyau de \brTeX\ %
+propose des facilités pour le chargement des biliothèques. Pour le
+besoin de ces facilités, on distingue plusieurs sortes de
+bibliothèques:
+\begin{enumerate}
+\item Les classes de documents. Il s'agit d'un ensemble de macro
+spécilaisé pour la production d'une certaine sorte de documents, par
+exemple les courriers, les recueils de nouvelles, les pièce de
+théâtre, les dictionnaires, etc. Ces exemples sont assez généraux,
+mais une classe de document peut avoir une fonctions très précise, par
+exemple réaliser le courrier de telle société ou de telle
+administration, préparer les compte-rendus des séances de tel conseil,
+etc.
+
+Les macros d'une classe de document réalisent des services dans le
+domaine de la structure du texte, de la mise au point d'un index, de
+références, etc.
+
+\item Les bibliothèques générales. il s'agit d'un ensemble de macros
+ayant un intérêt pour la réalisation de plusieurs sortes de documents.
+Un premier exemple de ce genre de bibliothèque est la bibliothèque
+\emph{verbatim} qui est spécialisée dans la reproduction de fragments
+de fichiers, type de préparation pouvant apparaître dans plusieurs
+sortes de documents.
+
+Un second exemple de bibliothèque est un ensemble de macro générales
+permettant de réaliser un système de références bibliographiques.
+Cette bibliothèque peut-être utilisée dans les classes de documents
+proposant des services d'aide à la préparation de bibliographies.
+
+\item Les bibliothèques `feuille de style'. Ces ensembles de macros
+redéfinissent certains aspects de la présentation dans une classe de
+documents. Ces bibliothèques sont relatives à une classe de documents
+donnée.
+\end{enumerate}
+Les services proposés par \brTeX\ sont les suivants:
+\begin{enumerate}
+\item Contrôle contre les inclusions multiples.
+\item Contrôle des versions des bibliothèques chargées.
+\end{enumerate}
+Lorsqu'elle est chargée, une bibliothèque peut définir les macros
+\va{libraryname} et \va{libraryversion}. La macro \va{libraryname}
+doit contenir le nom de la bibliothèque, si aucun nom n'est fourni le
+nom du fichier qui la contient est utilisé (sans le suffixe `.mac',
+`.cls' ou `.sty' selon les cas). La macro \va{libraryversion} doit
+contenir un nom de version, comme `3.0' `2.1' etc.
+
+À la fin du chargement de la bibliothèque, ces informations sont
+sauvegardées dans une table adminsitrative et peuvent être consultées.
+
+@ \paracommand{\cs{testlibraryloaded}\fa{library\_name}}
+Prédicat vrai si, et seulement si, une bibliothèque dont le nom
+est~\fa{library\_name} a déjà été chargée.
+
+@ \paracommand{\cs{testlibraryversion}\fa{library\_name}\fa{test}\fa{version}.\fa{subversion}}
+Le~\fa{test} est l'un des~[[<]], [[=]], [[>]], tandis que \fa{version}
+et \fa{subversion} sont des nombres entiers.
+Ce prédicat est vrai si \fa{library\_name} est chargée et si sa
+version vérifie la relation souhaitée avec
+`\fa{version}.\fa{sunversion}' (deux nombres décimaux). Les inégalités
+sont des inégalités larges.
+
+Lorsque la bibliothèque \fa{library\_name} n'a jamais été chargée, une
+erreur se produit.
+
+\begin{example}
+\testlibraryversion verbatim>3.7
+\iflibraryversion True text\else False text\fi
+\end{example}
+
+@ \paracommand{\cs{countloadlibraryversion}\fa{library\_name}\cs{to}\fa{version}\cs{and}\fa{subversion}}
+Charge la version de \fa{library\_name} dans les registres numériques
+\fa{version} et~\fa{subversion}. Lorsqu'aucune bibliothèque
+\fa{library\_name} n'a déjà été chargée le drapeau \fn{ifexception}
+est levé.
+
+\paracommand{\cs{library@l}}
+Liste de bibliothèques chargées. C'est une liste d'associations de
+nom de bibliothèque avec comme valeur la version, sous forme de
+couple.
+\begin{example}
+{verbatim}{{3}{2}}% pour `verbatim version 3.2'.
+\end{example}
+<<Bibliothèques>>=
+\let\library@l\empty
+
+@ \paracommand{\cs{library@A}\fa{library\_name}\fa{version}\fa{subversion}}
+Enregistre une nouvelle entrée auprès de l'administration.
+
+<<Bibliothèques>>=
+\def\library@A#1#2#3{\alistadd\library@l{#1}{{#2}{#3}}\csexport\library@l}
+
+@ \paracommand{\cs{readlibraryversiontest}\cs{then}\fa{token\_list}\cs{done}}
+
+Lire l'argument du test \fn{iflibraryversion} puis
+évaluer~\fa{token\_list}. Pendant l'évaluation de \fa{token\_list} les
+liaisons suivantes sont en vigueur: le nom de la biliothèque dans
+\va{library@n}, le prédicat dans \va{library@p} la version dans
+\va{librar@v} et la sous-version dans \va{library@s}.
+
+<<Bibliothèques>>=
+\def\readlibraryversiontest\then#1\done{%
+  \begingroup
+  \def\library@c{#1}%
+  \readfilename\library@B
+}
+
+\def\library@B#1{%
+  \def\library@n{#1}%
+  \futurelet\library@t\library@C
+}
+
+\def\library@C{%
+  \flagfalse
+  \ifx>\library@t\flagtrue\fi
+  \ifx=\library@t\flagtrue\fi
+  \ifx<\library@t\flagtrue\fi
+  \ifflag
+    \let\library@N\library@D
+  \else
+    \let\library@N\library@Z
+  \fi
+  \library@N
+}
+
+\def\library@D#1#2.{%
+  \def\library@p{#1}%
+  \def\library@v{#2}%
+  \afterassignment\library@E\count@
+}
+
+\def\library@E{%
+  \edef\library@s{\the\count@}%
+  %
+  % Le nom de la bibliothèque peut contenir des caractères de
+  % catégorie différente de 12, la petite bidouille ci-dessous force
+  % la catégorie 12.
+  %
+  \toksloadcsmeaning\library@n\to\toks@\and\toks@
+  \edef\library@n{\the\toks@}%
+  %
+  % On prépare l'exportation du résultat de l'analyse.
+  %
+  \rtA={}%
+  \let\\\library@F
+  \\\library@n
+  \\\library@p
+  \\\library@v
+  \\\library@s
+  \toksloadcsexpansion\library@c\to\rtB
+  \expandafter\toksrappend\the\rtB\to\rtA
+  \expandafter\endgroup\the\rtA
+}
+
+\def\library@F#1{%
+  \toksrappend\def#1\to\rtA
+  \toksloadcsexpansion#1\to\rtB
+  %
+  % À propos des doubles `{{' ci-dessous:
+  %
+  % si on n'en met qu'un, TeX considère qu'ils délimitent l'argument
+  % de `toksrappend' et ils disparaissent du texte de remplacement.
+  %
+  \edef\rmA{{{\the\rtB}}}%
+  \toksloadcsexpansion\rmA\to\rtB
+  \expandafter\toksrappend\the\rtB\to\rtA
+}
+
+\def\library@Z#1{%
+  \error{I am waiting for one of `>' `=' or `<' but you gave `#1'.}%
+}
+
+\csdef{library@=}{%
+  \ifnum\rcA=\rcC
+    \ifnum\rcB=\rcD
+       \flagtrue
+    \fi
+  \fi
+}
+
+\csdef{library@>}{%
+  \ifnum\rcA>\rcC\flagtrue\fi
+  \ifnum\rcA=\rcC
+    \ifnum\rcB<\rcD\else\flagtrue\fi
+  \fi
+}
+
+\csdef{library@<}{%
+  \ifnum\rcA<\rcC\flagtrue\fi
+  \ifnum\rcA=\rcC
+    \ifnum\rcB>\rcD\else\flagtrue\fi
+  \fi
+}
+
+@ \paracommand{\cs{libraryadd}}
+Cette procédure inscrit une bibliothèque auprès de l'administration
+concernée. Elle est utilisée par les procédures~\fn{class}, \fn{macro}
+et~\fn{style} après qu'elles aient commandé la lecture d'un fichier de
+bibliothèque.
+
+Lorsque \va{libraryname} n'est pas défini aucune inscription n'a
+lieu. Lorsque \va{libraryversion} n'est pas défini, la version `0.0'
+est enregistrée.
+
+<<Bibliothèques>>=
+\def\libraryadd{%
+  \ifx\libraryname\undefined
+    \let\library@N\relax
+  \else
+    \ifx\libraryversion\undefined
+      \def\libraryversion{0.0}%
+    \fi
+    \let\library@N\library@G
+  \fi
+  \library@N
+}
+
+\def\library@G{%
+  %
+  % Le nom de la bibliothèque peut contenir des caractères de
+  % catégorie différente de 12, la petite bidouille ci-dessous force
+  % la catégorie 12.
+  %
+  \toksloadcsmeaning\libraryname\to\toks@\and\toks@
+  \edef\libraryname{\the\toks@}%
+  %
+  % Maintenant on passe la main à la fonction H qui procède à
+  % l'inscription.
+  %
+  \edef\library@N{%
+    \noexpand\library@H\libraryname
+    \noexpand\version\libraryversion
+    \noexpand\stop
+  }\library@N
+}
+
+\def\library@H#1\version#2.#3\stop{\library@A{#1}{#2}{#3}}
+
+\newif\iflibraryloaded
+\outer\def\testlibraryloaded{\readfilename\testlibraryloaded@A}
+
+\def\testlibraryloaded@A#1{%
+  \begingroup
+  \def\library@n{#1}%
+  %
+  % Le nom de la bibliothèque peut contenir des caractères de
+  % catégorie différente de 12, la petite bidouille ci-dessous force
+  % la catégorie 12.
+  %
+  \toksloadcsmeaning\library@n\to\toks@\and\toks@
+  \edef\library@N{%
+    \noexpand\testalistmem\noexpand\library@l{\the\toks@}%
+  }\library@N
+  \ifalistmem
+    \aftergroup\libraryloadedtrue
+  \else
+    \aftergroup\libraryloadedfalse
+  \fi
+  \endgroup
+  %
+  % Les espaces suivant un nom de fichier marquent la fin de ce nom
+  % de fichier.
+  %
+  \ignorespaces
+}
+
+\newif\iflibraryversion
+\outer\def\testlibraryversion{%
+  \begingroup
+  \readlibraryversiontest\then\library@I\done
+}
+
+\def\library@I{%
+  \edef\next{%
+    \noexpand\alistget
+    \noexpand\library@l
+    {\library@n}\noexpand\rmA
+  }\next
+  \ifexception
+    \let\next\library@Z
+  \else
+    \def\next{\expandafter\library@J\rmA}%
+  \fi
+  \next
+}
+
+\def\library@J#1#2{%
+  \rcA=#1 \rcB=#2 \rcC=\library@v \rcD=\library@s \relax
+  \flagfalse
+  \csname library@\library@p\endcsname
+  \ifflag
+    \aftergroup\libraryversiontrue
+  \else
+    \aftergroup\libraryversionfalse
+  \fi
+  \endgroup
+}
+
+\def\library@Z{\writelog{Error: testlibraryversion: \library@n\
+    not loaded}%
+  \endgroup
+  \errhelp{You called `iflibraryversion' in order to inspect the
+    version properties of `\library@n' which was never loaded. This is
+    an error. You can use `iflibraryloaded' to test wether a library
+    is loaded or not.}%
+  \errmessage{iflibraryversion: library `\library@n' was never loaded}%
+}
+
+\def\countloadlibraryversion#1\to#2\and#3{%
+  \begingroup
+  \def\library@n{#1}%
+  %
+  % Le nom de la bibliothèque peut contenir des caractères de
+  % catégorie différente de 12, la petite bidouille ci-dessous force
+  % la catégorie 12.
+  %
+  \toksloadcsmeaning\library@n\to\toks@\and\toks@
+  \edef\library@N{%
+    \noexpand\alistget\noexpand\library@l{\the\toks@}\noexpand\rmA%
+  }\library@N
+  \ifexception
+    \aftergroup\exceptiontrue
+    \let\library@N\relax
+  \else
+    \aftergroup\exceptionfalse
+    \rtA{#2}%
+    \rtB{#3}%
+    \edef\library@N{\noexpand\library@K{\the\rtA}{\the\rtB}\rmA}%
+  \fi
+  \expandafter\endgroup\library@N
+}
+
+\def\library@K#1#2#3#4{#1=#3 #2=#4\relax}
+
+
+@ \paragraph{Bibliothèques générales}
+Les bibliothèques générales sont des fichiers situés dans le chemin de
+recherche de~\TeX. La bibliothèque~\emph{verbatim} doit être contenue
+dans le fichier~\pa{verbatim.mac}. Avec l'appel~[[\macro verbatim]] le
+fichier~\pa{verbatim.mac} est lu par~\TeX\ au moyen de la
+primitive~\fn{input}. Au cours de cette lecture, le caractère~[[@]]
+a le~\emph{catcode}~11 et peut donc figurer dans les identifiants de
+commandes. Dans le fichier~\emph{verbatim.mac} des bibliothèques
+peuvent être chargées avec~\fn{macro} et des fichiers peuvent être
+inclus avec~\fn{input}.
+
+À la fin du fichier de bibliothèque, par exemple à la fin du
+fichier~\pa{verbatim.mac}, on peut définir les
+variables~\fn{libraryname} et~\fn{libraryversion} pour informer
+l'administration du nom  et de la version de la bibliothèque ayant été
+chargée.
+
+\begin{remark}
+Il peut être utile que~\fn{libraryname} ne soit pas égale au radical
+du nom de fichier effectivement inclus. Si on écrit une
+variante~\pa{xverbatim.mac} de la bibliothèque~\emph{verbatim}, le
+fichier~\pa{xverbatim.mac} peut préférer déclarer le nom de
+bibliothèque~\emph{verbatim}. Ceci est utile lorsque~\pa{verbatim.mac}
+et~\pa{xverbatim.mac} définissent des services et des interfaces
+voisins. Des ensembles de macros recquérant des services de
+type~\emph{verbatim} peuvent fonctionner identiquement avec les deux
+modules.
+
+Lorsque deux bibliothèques fournissent des fonctionnalités voisines
+au travers d'interfaces différentes, elles doivent cependant porter
+des noms différents.
+\end{remark}
+
+<<Bibliothèques>>=
+\def\macro{\readfilename\macro@M}
+
+\def\macro@A#1{%
+  \let\macro@M\macro@B
+  \enableprivatenames\macro@B{#1}\disableprivatenames
+  \let\macro@M\macro@A
+  \ignorespaces
+}
+
+\def\macro@B#1{%
+  \testlibraryloaded@A{#1}%
+  \iflibraryloaded
+    \let\macro@N\ignore
+  \else
+    \let\macro@N\macro@C
+  \fi
+  \macro@N{#1}%
+}
+
+\def\macro@C#1{%
+  \let\libraryname\undefined
+  \let\libraryversion\undefined
+  \input #1.mac
+  \ifx\libraryname\undefined\def\libraryname{#1}\fi
+  \libraryadd
+  \let\libraryname\undefined
+  \let\libraryversion\undefined
+  \ignorespaces
+}
+
+\let\macro@M=\macro@A
+
+
+@ \paragraph{Classes de documents}
+Une classe de document est une bibliothèque de commandes spécialisées
+dans l'aide à la production d'un type de document. Une classe de
+document peut être utile pour produire un recueil de nouvelles, une
+autre pour le courrier administatif, une autre pour préparer les
+comptes-rendus des réunions d'un bureau, une autre pour la préparation
+de livres, etc.
+
+Dans~\brTeX\ on charge une classe de document avec la
+commande~\fn{class}, qui doit figurer vers le début du code source
+traité par~\TeX. Par exemple~[[\class correspondance]] essaie de
+cherger la bibliothèque~\emph{correspondance} dans le
+fichier~\pa{correspondance.cls}.
+
+Après le chargement réussi d'une classe de document, la
+macro~\va{classname} contient le nom de cette classe de
+document. Avant le chargement d'une classe de document, la
+variable~\va{classname} n'est pas définie.
+
+Il est impossible de charger plusieurs modèles de documents dans le
+traitement d'un seul document, si plusieurs appels à~\fn{class}
+figurent dans le fichier source, une erreur se produit.
+
+Du point de vue de l'administration, une classe de document est une
+bibliothèque, on attend qu'elle définisse les
+variables~\va{libraryname} et~\va{libraryversion}.
+
+<<Bibliothèques>>=
+\let\classname\undefined
+
+\def\class@A#1{%
+  \def\classname{#1}%
+  \toksloadcsmeaning\classname\to\toks@\and\toks@
+  \edef\classname{\the\toks@}%
+  \let\macro@M\macro@B
+  \let\libraryname\undefined
+  \let\libraryversion\undefined
+  \enableprivatenames\input #1.cls\relax\disableprivatenames
+  \ifx\libraryname\undefined\def\libraryname{#1}\fi
+  \libraryadd
+  \let\libraryname\undefined
+  \let\libraryversion\undefined
+  \let\macro@M\macro@A
+  \let\class\class@E
+  \ignorespaces
+}
+
+\outer\def\class{\readfilename\class@A}
+
+\def\class@E{%
+  \errhelp{It is the second time you call the `class' procedure, that
+  load a document class library. It is not allowed to load two such
+  libraries, only zero or one document class library load is
+  allowed. It is also forbidden to load the same document class
+  library twice.}%
+  \errmessage{class: this is the second call}%
+}
+
+
+@ \paragraph{Styles de documents}
+Les styles de document sont des bibliothèques dont l'évaluation
+ne fournit pas de nouveaux services ou de nouvelles fonctionnalités
+mais modifie des paramètres visuels intervenant dans la préparation
+des documents.
+
+Il y a deux sortes de styles de documents: les styles génériques et les
+styles subordonnés à une classe de document. Un style générique est un
+fichier dont le suffixe est~\pa{sty}, il est chargé par une
+commande~\fn{style} avant le chargement de toute classe de
+document. Lorsqu'une classe de document a été chargée les
+commandes~\fn{style} recherhcent le fichier de style dans un dossier
+dont le nom est~\va{classname}.
+
+<<Bibliothèques>>=
+\outer\def\style{\readfilename\style@A}
+
+\def\style@A#1{%
+  \ifx\classname\undefined
+    \def\style@N{\input #1.sty}%
+  \else
+    \edef\style@N{\noexpand\input\classname/#1.sty}%
+  \fi
+  \let\macro@M\macro@B
+  \enableprivatenames
+  \style@N\relax
+  \disableprivatenames
+  \let\macro@M\macro@A
+  \ignorespaces
+}
+
+@ \subsection{Paramètres régionaux}
+Le noyau de \brTeX\ permet de facilement tenir compte des paramètres
+régionaux, notamment de la sélection des motifs de césures, etc. Le
+terme anglais habituellement utilisé est \emph{locale} et on trouve ce
+terme dans le nom des macros.
+
+La macro \va{currentlocale} contient un identifiant pour les paramètres
+régionaux en vigueur, comme par exemple `be', `de', `fr', `en', `us',
+etc.
+
+La macro \va{currentlocalevariant} contient un identifiant pour les
+variations de paramètres régionaux. Dans de nombreuses situations les
+paramètres régionaux pour le français peuvent être utilisés au Canada
+francophone, en Suisse francophone, en Belgique et en France. Dans des
+situations particulières, les usages en vigueur dans ces différentes
+régions s'écartent les uns des autres. Ce paramètre
+\va{currentlocalevariant} permet aux bibliothèques de macros de tenir
+compte de ces finesses.
+
+Les services pour aider à la prise en compte des paramètres régionaux
+sont articulés autour de deux commandes: \fn{selectlocale}, utilisée
+dans les documents, et \fn{addlocalefacility} utilisée dans les
+Bibliothèques. Le scripteur commande la mise en vigueur de paramètres
+régionaux avec~\fn{selectlocale}, par
+exemple~[[\selectlocale{fr}{CH}]] pour les paramètres régionaux
+francophones. Comme premier effet, cette commande vérifie que les
+\emph{bibliothèques de paramètres régionaux} requises sont chargées,
+comme second effet, elle procède à un certain nombre
+d'\emph{ajustements}. Avant de discuter précisément des bibliothèques
+de paramètres régionaux et des ajustements, examinons le fonctionnement
+du système dans sa globalité.
+
+Pour illustrer la discussion, considérons l'exemple d'une classe de
+documents \emph{livre}. Celle-ci tient compte de paramètre régionaux
+dans l'ensemble des noms employés pour les informations de
+structure, telles que \emph{chapitre}, \emph{table des matières},
+\emph{index} ou \emph{appendice}. Une classe de document réaliste
+pourrait tenir compte des paramètres
+régionaux dans un plus grand nombre de domaines, mais pour cet
+exemple, un seul domaine est suffisant.
+
+Pour tenir compte des paramètres régionaux dans l'ensemble des noms
+employés pour les informations de structure, on crée une bibliothèque
+de paramètres régionaux, nommée~\emph{bookstruct}. Les paramètres
+adéquats pour la Suisse francophone sont dans le
+fichier~\pa{locale/bookstruct/fr\_CH.tex} et pour signaler au noyau que
+la classe de document~\emph{livre} utilise les services de la
+bibliothèque de paramètres régionaux nommée~\emph{bookstruct}, le
+fichier~\pa{livre.cls} contient une
+déclaration~[[\addlocalefacility{bookstruct}]]. Celle-ci demande à la
+procédure~\fn{selectlocale} de veiller à ce que la
+bibliothèque~\emph{bookstruct} pour les paramètres
+régionaux~\emph{fr\_CH} soit chargée avant d'être utilisée par une
+procédure d'ajustement. Le fichier~\pa{locale/bookstruct/fr\_CH.tex}
+contient des déclaration du genre de suivantes:
+\begin{example}
+\def\locale@chaptername@fr@CH{chapitre}
+\def\locale@Chaptername@fr@CH{Chapitre}
+\def\locale@tocname@fr@CH{table des matières}
+\end{example}
+Pour utiliser ces définitions, la classe de document~\emph{livre}
+définit une fonction d'ajustement nommée~\fn{bookstructadjustment}:
+\begin{example}
+\def\bookstructadjustment{%
+  \csbindcurrentlocalecsname{chaptername}\to{chaptername}%
+  \csbindcurrentlocalecsname{Chaptername}\to{Chaptername}%
+  \csbindcurrentlocalecsname{tocname}\to{tocname}%
+}%
+\end{example}
+La bibliothèque~\emph{livre} inscrit ensuite cet ajustement auprès de
+l'administration réalisée par le noyau:
+\begin{example}
+\addlocaleadjsutment\bookstructadjustment
+\end{example}
+Lorsque~[[\selectlocale{fr}{CH}]] est appelée, les
+commandes~\va{chaptername}, \va{Chaptername} et~\va{tocname} sont
+liées vers~\va{locale@chaptername@fr@CH}, etc.
+
+Cet aperçu est une vue générale de l'utilisation des procédures d'aide
+à la prise en compte des paramètre régionaux. La documentation
+suivante complète cette vue d'ensemble et précise certains des
+mécanismes évoqués ci-dessus.
+
+<<Paramètres régionaux>>=
+<<Message de progression: locales>>
+
+@ \paracommand{\cs{toksloadlocalefilename}%
+ \fa{facility}\fa{locale}\fa{variant}\cs{to}\fa{toks\_register}%
+}
+Cette procédure recherche un fichier dans les bibliothèques de
+coutumes. Les noms suivants sont essayés:
+\begin{enumerate}
+\item locale/\fa{facility}/\fa{locale}\_\fa{variant}.tex
+\item locale/\fa{facility}/\fa{locale}.tex
+\item locale/\fa{facility}/kobaia.tex
+\item null.tex
+\end{enumerate}
+Le premier de fichier trouvé dans le système de fichier est placé
+dans le registre de tokens \fa{toks\_register}.
+
+Les valeurs autorisées pour \fa{facility} sont les suites de caractères
+non vides parmi les lettres minuscules \emph{a-z} et les chiffres
+\emph{0-9}.
+
+\begin{example}[Exemple]
+\toksloadlocalfilename{bookwords}{fr}{FR}\to\rtA
+\toksloadlocalfilename{bookwords}{fr}{FR}\to{\toks0}
+\end{example}
+
+La variante~\fn{toksloadcurrentlocalefilename} fait la même chose
+que~\fn{toksloadlocalefilename} mais prend ses paramètes~\fa{locale}
+et~\fa{variant} dans les variables globales~\va{currentlocale}
+et~\va{currentlocalevariant}.
+
+<<Paramètres régionaux>>=
+\begingroup
+\setcatcodeother\_
+\gdef\toksloadlocalefilename#1#2#3\to#4{%
+  \beginnext
+  \rtA{null.tex}%
+  \rtB{#4}%
+  \def\\##1{\testexists{##1}\ifexists\rtA{##1}\fi}%
+  \\{locale/#1/kobaia.tex}%
+  \\{locale/#1/#2.tex}%
+  \\{locale/#1/#2_#3.tex}%
+  \edef\next{\the\rtB{\the\rtA}}%
+  \endnext
+}
+\endgroup
+
+\def\toksloadcurrentlocalefilename#1\to#2{%
+  \beginnext
+  \rtA{#1}\rtB{#2}%
+  \edef\next{\noexpand\toksloadlocalefilename
+    {\the\rtA}{\currentlocale}{\currentlocalevariant}\noexpand\to{\the\rtB}%
+  }%
+  \endnext
+}
+
+@ \paracommand{\cs{csbindlocalecs}%
+  \fa{variable}\fa{locale}\fa{variant}\cs{to}\fa{controlsequence}%
+}
+Cette procédure lie \fa{controlsequence} au moyen de \fn{let} à la
+première des séquences de contrôle définie parmi celles dont les
+identifiants sont les suivants:
+\begin{enumerate}
+\item locale@\fa{variable}@\fa{locale}@\fa{variant}
+\item locale@\fa{variable}@\fa{locale}
+\item locale@\fa{variable}@kobaia
+\item relax
+\end{enumerate}
+Lorsque l'une des deux dernières éventualités se produit, deux
+effets supplémentaires surviennent. Premièrement, un message est
+consigné dans le rapport d'éxécution. Ce message est introduit
+par le préfixe~\emph{Warning: locale}. Deuxièmement l'indicateur
+\va{ifexception} est positionné sur~\emph{vrai}.
+
+La variante \fn{csbindlocalecsname} joue le même rôle mais son dernier
+argument, au lieu d'être une séquence de contrôle est l'identifiant
+d'une séquence de contrôle.
+
+La variante \fn{cslocale} exécute la procédure trouvée au lieu de lier
+sa valeur à une variable.
+
+Ces procédures ont des variantes~\fn{csbindcurrentlocalecs},
+\fn{csbindcurrentlocalecsname} et \fn{cscurrentlocale}.
+
+<<Paramètres régionaux>>=
+\def\cslocale#1#2#3{%
+  \beginnext
+  \rtB{}%
+  \cslocale@A{#1}{#2}{#3}%
+}
+
+\def\csbindlocalecs#1#2#3\to#4{%
+  \beginnext
+  \rtB{\let#4}%
+  \cslocale@A{#1}{#2}{#3}%
+}
+
+\def\cslocale@A#1#2#3{%
+  \def\\##1##2{\expandafter\ifx\csname ##1\endcsname\relax\else
+    \flagtrue##2\rtA{##1}\let\\\ignore
+    \fi
+  }%
+  \flagfalse
+  \rtC{}%
+  \\{locale@#1@#2@#3}{}%
+  \\{locale@#1@#2}{}%
+  \\{locale@#1@kobaia}{\flagfalse\rtC{ I am heading back to `kobaia'.}}%
+  \\{empty}{}%
+  \ifflag\else
+    \writelog{Warning: locale: #1: locales `#2_#3' and `#2' are not available.\the\rtC}%
+  \fi
+  \toksloadcsname\the\rtA\to\rtA
+  \edef\next{\the\rtB\the\rtA}%
+  \endnext
+}
+
+\def\cscurrentlocale#1{%
+  \beginnext
+  \rtA{\cslocale{#1}}%
+  \edef\next{\the\rtA{\currentlocale}{\currentlocalevariant}}%
+  \endnext
+}
+
+\def\csbindcurrentlocalecs#1\to#2{%
+  \beginnext
+  \rtA{\csbindlocalecs{#1}}%
+  \rtB{\to{#2}}%
+  \edef\next{\the\rtA{\currentlocale}{\currentlocalevariant}\the\rtB}%
+  \endnext
+}
+
+\def\csbindlocalecsname#1#2#3\to#4{%
+  \beginnext
+  \rtA{\csbindlocalecs{#1}{#2}{#3}\to}%
+  \toksloadcsname{#4}\to\rtB%
+  \edef\next{\the\rtA\the\rtB}%
+  \endnext
+}
+
+\def\csbindcurrentlocalecsname#1\to#2{%
+  \beginnext
+  \rtA{\csbindlocalecsname{#1}}%
+  \rtB{\to{#2}}%
+  \edef\next{\the\rtA{\currentlocale}{\currentlocalevariant}\the\rtB}%
+  \endnext
+}
+
+@ \paracommand{\cs{addlocalefacility}\fa{facility}}
+Cette procédure ajoute le nom \fa{facility} à la table des bibliothèques
+de paramètres régionaux devant être consultées. (Voir
+\fn{selectlocale}, ainsi que la discussion d'introduction.)
+
+<<Paramètres régionaux>>=
+\let\localefacility@l\empty
+
+\def\addlocalefacility#1{%
+  \beginnext
+  \def\\##1{\teststreq{##1}{#1}\ifstreq\flagtrue\let\\\ignore\fi}%
+  \flagfalse\localefacility@l
+  \ifflag
+    \let\next\empty
+  \else\def\next{%
+    \listrappend{#1}\to\localefacility@l
+  }%
+  \fi
+  \endnext
+}
+
+@ \paracommand{\cs{localefacilityinput}\fa{facility}\fa{locale}\fa{variant}}
+Cette procédure charge le fichier dont le nom est produit par
+\fn{toksloadlocalefilename} appliquée aux mêmes arguments, si celui-ci
+n'a pas encore été chargé, et ne fait rien dans le cas contraire.
+
+<<Paramètres régionaux>>=
+\let\localefacilityinput@l\empty
+
+\gdef\localefacilityinput#1#2#3{%
+  \beginnext
+  \toksloadlocalefilename{#1}{#2}{#3}\to\rtB
+  \edef\rmB{\the\rtB}%
+  \def\\##1{\def\rmA{##1}\ifx\rmA\rmB\flagtrue\let\\\ignore\fi}%
+  \flagfalse
+  \localefacilityinput@l
+  \ifflag
+    \let\next\empty
+  \else
+    \edef\next{%
+      \noexpand\listrappend{\the\rtB}\noexpand\to\noexpand\localefacilityinput@l
+      \noexpand\input\the\rtB\noexpand\relax}%
+  \fi
+  \endnext
+}
+
+@ \paracommand{\cs{locale@l}\qquad\cs{addlocaleadjustment}\qquad\cs{selectlocale}}
+La liste \va{locale@l} est une liste de macros à appeler pour modifier
+les paramètres régionaux. La fonctions \fn{addlocaleadjustment} insère
+une nouvelle fonction dans cette liste. La procédure \fn{selectlocale}
+fait deux choses:
+\begin{itemize}
+\item premièrement, elle s'assure que toutes les bibliothèques de
+paramètres régionaux pour les \emph{facilities} figurant dans
+\va{localefacility@l} ont été chargés une fois (pour les paramètres
+régionaux lui étant fournis);
+\item deuxièmement, elle appelle chaque fonction enregistrée dans
+\va{locale@l} sur son argument pour obtenir l'ajustment des paramètres
+régionaux.
+\end{itemize}
+
+<<Paramètres régionaux>>=
+\let\locale@l=\empty
+
+\def\addlocaleadjustment#1{\listlappend#1\to\locale@l} %
+
+\def\selectlocale#1#2{%
+  \def\\##1{\localefacilityinput{##1}{#1}{#2}}\localefacility@l
+  \def\\##1{##1{#1}{#2}}\locale@l
+  \let\\=\undefined
+  \def\currentlocale{#1}%
+  \def\currentlocalevariant{#2}%
+}
+
+@ \paragraph{Paramètres régionaux principaux.}
+Certaines procédures ont besoin de connaître l'identifiant des
+paramètres régionaux principaux. C'est notamment le cas de la
+procédure \fn{output}. Cet identifant est contenu dans les macros
+\va{mainlocale} et \va{mainlocalevariant}. Ces paramètres sont définis
+dans le format utilisé.
+
+@ \paracommand{\cs{selectmainlocale}\fa{locale}\fa{variant}}
+La procédure \fn{selectmainlocale} est comme la procédure
+\fn{selectlocale} mais elle positionne aussi les valeurs de
+\va{mainlocale} et \va{mainlocalevariant}.
+
+<<Paramètres régionaux>>=
+\let\mainlocale\undefined
+\let\mainlocalevariant\undefined
+
+\def\selectmainlocale#1#2{%
+  \def\mainlocale{#1}%
+  \def\mainlocalevariant{#2}%
+  \selectlocale{#1}{#2}%
+}
+
+@ \paracommand{\fn{selectlocalemainlocale}}
+La procédure~\fn{selectlocalemainlocale} active les paramètres
+régionaux principaux définis grâce à~\fn{selectmainlocale}.
+
+<<Paramètres régionaux>>=
+\def\selectlocalemainlocale{%
+  \beginnext
+  \edef\next{\noexpand\selectlocale{\mainlocale}{\mainlocalevariant}}%
+  \endnext
+}
+
+@ \paracommand{\cs{outputsanitizehook}+}
+Dans la procédure \fn{output}, il peut arriver qu'un texte soit
+composé pour décorer les hauts et bas de page. Si la page est coupée
+au milieu d'un groupe utilisant des paramètres régionaux différents
+des paramètres régionaux principaux, par exemple pour une citation en
+anglais, il est important de restaurer ces paramètres régionaux
+principaux avant de composer le texte des hauts et des bas de
+page. Pour cette raison, la procédure~\fn{selectlocalemainlocale} est
+ajoutée
+
+<<Paramètres régionaux>>=
+\addhook\selectlocalemainlocale\to\outputsanitizehook
+
+@ \paracommand{\cs{localesupport}}
+On utilise \fn{localesupport} dans le fichier d'un format pour indiquer
+quels paramètres régionaux doivent être assimilés. Cette procécdure a
+pour effet de précharger les bibliothèques de paramètres régionaux
+correspondant aux paramètres indiqués, pour les bibliothèques
+inscrites auprès de l'administration avec~\fn{addlocalefacility}.
+\begin{example}[Exemple]
+\localesupport{%
+  \\{fr}{FR}%
+  \\{de}{DE}%
+  \\{en}{GB}%
+  \\{fr}{CA}%
+  \\{fr}{CH}%
+  \\{fr}{BE}%
+  \\{de}{CH}%
+  \\{de}{AT}%
+  \\{en}{CA}%
+  \\{en}{US}%
+  \\{en}{NZ}%
+}
+\end{example}
+Cette procédure ne peut être employée qu'une seule fois.
+
+<<Paramètres régionaux>>=
+\def\localesupport#1{%
+  \def\\##1##2{\let\rmD\\\selectlocale{##1}{##2}\let\\\rmD}#1%
+  \let\\\undefined
+  \let\rmD\undefined
+  \let\localesupport\undefined
+}
+
+@ \paragraph{Exemple}
+Voici des exemples d'application de ces procédures destinées à
+faciliter la prise en compte des paramètres régionaux.
+\begin{enumerate}
+\item Motifs de césure. Les motifs de césure dépendent bien-sûr des
+paramètres régionaux. Cependant leur cas est particulier car les
+motifs de césure doivent être chargés dans INITEX, avant de `dumper'
+un format. Cet exemple est traité dans le noyau, au paragraphe 7.
+
+\item Noms des éléments de la structure d'un livre. Considérons un
+modèle de document pour les livres. Si un livre est écrit en français,
+les termes `chapitres', `table des matières' etc. peuvent apparaître
+en divers endroits. Si le livre est écrit en anglais, ces termes
+doivent apparaître en anglais, etc. L'exemple `2' ci-dessous montre
+comment réaliser cela.
+
+\item Paramètres de préparation du paragraphe. Les paramètres de
+préparation du paragraphe dépendent des paramètres régionaux. En
+effet, la longueur des mots et la largeur de la page peuvent amener à
+modifier les valeurs de `pretolerance' etc.
+\end{enumerate}
+
+\paragraph{Exemple: nom des éléments de la structure d'un livre}
+Le modèle de document fictif `livre' utilise deux macros pour
+représenter le nom du chapitre et le nom de la table des
+matières. Ces macros sont `chaptername' et `tocname', elles sont
+utilisées chaque fois que le mot table `chapitre' ou le mot `table
+des matières' doit apparaître dans la présentation du livre.
+
+Ensuite la bibliothèque `livre.cls' contient les commandes
+suivantes:
+\begin{example}
+\addlocaleadjustment\booknames
+\def\booknames#1#2{%
+  \def\\##1{\csbindlocalecsname{##1}{#1}{#2}\to{##1}}%
+  \\{chaptername}\\{tocname}%
+  \let\\\undefined
+}
+\end{example}
+Pour chaque nom de paramètre régionaux, on crée des fichiers dans le
+dossier `locale', avec les contenus indiqués.
+\begin{example}
+% FILE locale/booknames/fr.tex
+\def\locale@chaptername@fr{chapitre}
+\def\locale@tocname@fr{table des matières}
+
+% FILE locale/booknames/fr_RF.tex
+\def\locale@chaptername@fr@RF{ertipahc}
+\def\locale@tocname@fr@RF{serèitam sed elbat}
+\end{example}
+Enfin on ajoute le nom de service `booknames' à la liste
+`localefacility@l' avec la procédure `addlocalefacility', dans le
+fichier `livre.cls'.
+\begin{example}
+\addlocalefacility{bookname}
+\end{example}
+
+\begin{remark}
+La procédure `output' doit veiller à ce que les paramètres régionaux
+soient rétablis à la valeur souhaitée pour éviter des haut de page en
+anglais dans un texte en français ou toute autre surprise de ce genre.
+\end{remark}
+
+Voilà, c'est tout pour aujourd'hui!
+
+\paragraph{Exemple de division des mots}
+\begin{example}
+\newlanguage\hyphen@fr
+\begingroup\language=\hyphen@fr\input frhyph\endgroup
+\newlanguage\hyphen@en
+\begingroup\language=\hyphen@en\input hyphen\endgroup
+\let\hyphen@us=\hyphen@en
+
+\def\selecthyphen#1{%
+  \expandafter\language\csname hyphen@#1\endcsname
+}
+\localeadjustment\selecthyphen
+\end{example}
+
+@ \paragraph{Coupure des mots}
+Pour la coupure des mots, on crée un nouveau service. L'utilisation
+de `selectlocale', directement ou a travers `selectmainlocale' et
+`localesupport', a pour effet de lire le fichier
+`locale/hyphenation/**\_**.tex' correspondant. Ce fichier alloue un
+nouvel identifiant avec `newlanguage' et remplit la table de césure
+correspondante.
+
+<<Paramètres régionaux>>=
+\newlanguage\locale@hyphenation@kobaia
+
+\def\disablehyphenation{\language\locale@hyphenation@kobaia}
+
+\def\enablehyphenation{\language\currentlanguage}
+
+% Attention, lorsque `disablehyphenation' est en vigueur, la valeur de
+% `currentlanguage' est erronée.
+
+\def\selecthyphenation#1#2{%
+  \csbindlocalecs{hyphenation}{#1}{#2}\to\currentlanguage
+  \language\currentlanguage
+}
+
+\addlocalefacility{hyphenation}
+\addlocaleadjustment\selecthyphenation
+
+
+@ \subsection{Initialisation des paramètres de \TeX}
+Tous les paramètres de \TeX\ figurent dans la liste ci-dessous, mais
+apparaissent en commentaire lorsque leur valeur n'a pas lieu d'être
+modifiée.
+
+INITEX positionne tous les paramètres à zéro à moins que le
+contraire ne soit mentionné.
+
+<<Initialisation des paramètres de TeX>>=
+<<Message de progression: paramètres>>
+\pretolerance=100
+\tolerance=200		% INITEX sets this to 10000
+\hbadness=1000
+\vbadness=1000
+\linepenalty=10
+\hyphenpenalty=50
+\exhyphenpenalty=50
+\binoppenalty=700
+\relpenalty=500
+\clubpenalty=150
+\widowpenalty=150
+\displaywidowpenalty=50
+\brokenpenalty=100
+\predisplaypenalty=10000
+% \postdisplaypenalty=0
+% \interlinepenalty=0
+% \floatingpenalty=0, set during \insert
+% \outputpenalty=0, set before TeX enters \output
+\doublehyphendemerits=10000
+\finalhyphendemerits=5000
+\adjdemerits=10000
+% \looseness=0, cleared by TeX after each paragraph
+% \pausing=0
+% \holdinginserts=0
+% \tracingonline=0
+% \tracingmacros=0
+% \tracingstats=0
+% \tracingparagraphs=0
+% \tracingpages=0
+% \tracingoutput=0
+\tracinglostchars=1
+% \tracingcommands=0
+% \tracingrestores=0
+% \language=0
+\uchyph=1
+\lefthyphenmin=2
+\righthyphenmin=3
+% \globaldefs=0
+% \maxdeadcycles=25		% INITEX does this
+% \hangafter=1			% INITEX does this,
+				%  also TeX after each paragraph
+% \fam=0
+% \mag=1000			% INITEX does this
+% \escapechar=`\\		% INITEX does this
+\defaulthyphenchar=`\-
+\defaultskewchar=-1
+% \endlinechar=`\^^M		% INITEX does this
+\newlinechar=-1
+\delimiterfactor=901
+% \time=now			% TeX does this at beginning of job
+% \day=now			% TeX does this at beginning of job
+% \month=now			% TeX does this at beginning of job
+% \year=now			% TeX does this at beginning of job
+\showboxbreadth=5
+\showboxdepth=3
+\errorcontextlines=5
+
+\hfuzz=0.1pt
+\vfuzz=0.1pt
+\overfullrule=5pt
+\hsize=6.5in
+\vsize=8.9in
+\maxdepth=4pt
+\splitmaxdepth=\maxdimen
+\boxmaxdepth=\maxdimen
+% \lineskiplimit=0pt, changed by \normalbaselines
+\delimitershortfall=5pt
+\nulldelimiterspace=1.2pt
+\scriptspace=0.5pt
+% \mathsurround=0pt
+% \predisplaysize=0pt, set before TeX enters $$
+% \displaywidth=0pt, set before TeX enters $$
+% \displayindent=0pt, set before TeX enters $$
+\parindent=0pt
+% \hangindent=0pt, zeroed by TeX after each paragraph
+% \hoffset=0pt
+% \voffset=0pt
+
+% \baselineskip=0pt, changed by \normalbaselines
+% \lineskip=0pt, changed by \normalbaselines
+% \parskip=0pt plus 1pt
+\parskip=0pt
+\abovedisplayskip=12pt plus 3pt minus 3pt
+\abovedisplayshortskip=3pt plus 3pt
+\belowdisplayskip=12pt plus 3pt minus 3pt
+\belowdisplayshortskip=5pt plus 3pt minus 4pt
+% \leftskip=0pt
+% \rightskip=0pt
+\topskip=10pt
+\splittopskip=10pt
+% \tabskip=0pt
+% \spaceskip=0pt
+% \xspaceskip=0pt
+\parfillskip=0pt plus 1fil
+
+\thinmuskip=3mu
+\medmuskip=4mu plus 2mu minus 4mu
+\thickmuskip=5mu plus 5mu
+
+% We also define special registers that function like parameters:
+\newskip\smallskipamount \smallskipamount=3pt plus 1pt minus 1pt
+\newskip\medskipamount \medskipamount=6pt plus 2pt minus 2pt
+\newskip\bigskipamount \bigskipamount=12pt plus 4pt minus 4pt
+\newskip\normalbaselineskip \normalbaselineskip=12pt
+\newskip\normallineskip \normallineskip=1pt
+\newdimen\normallineskiplimit \normallineskiplimit=0pt
+\newdimen\jot \jot=3pt
+\newcount\interdisplaylinepenalty \interdisplaylinepenalty=100
+\newcount\interfootnotelinepenalty \interfootnotelinepenalty=100
+
+<<Message de progression: cloture>>
+@
+%%% End of file `kernel.tex'

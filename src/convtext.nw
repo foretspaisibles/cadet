@@ -1,0 +1,715 @@
+%%% convtext.nw -- Convention pour les caractères ordinaires -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 31 mar 2007 05:31:45 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Convetions de saisie pour le texte}
+
+Les conventions de saisie pour le texte lient les caractères abstraits
+ordinaires de l'entrée à des définitions adaptées à la fonte active.
+
+Les caractères ordinaires sont grosso-modo ceux que l'on peut
+obtenir avec la fonte CMR10 de Knuth, Computer Modern Roman. Les
+signes de ponctuation sont toutefois régis par une convention à
+part. Dans cette convention, on suppose toujours que la fonte
+courante montre la page TS1 (pour la convention cork) ou la page
+OT1 (pour la convention original). On peut donc utiliser `chardef'
+au lieu de `fontchardef' pour créer les liaisons, pour ces
+conventions, ceci permet d'éviter le travail sur le changement de
+registre et de fontes.
+
+Il est cependant sage d'utiliser un lien `tectchardef' que l'on
+utilise pour définir les liaisons des conventions `text'.
+
+
+
+<<*>>=
+
+%
+% Conventions pour les caractères ordinaires
+%
+\defselect{conventiontext}{latin9}
+
+\let\textchardef=\chardef
+
+\csdef{selectconventiontext@cork}{%
+  %
+  % Accents
+  %
+  \textchardef\textgrave="00
+  \textchardef\textacute="01
+  \textchardef\textcircumflex="02
+  \textchardef\texttilde="03
+  \textchardef\textdieresis="04
+  \textchardef\texthungar="05
+  \textchardef\textring="06
+  \textchardef\textcaron="07
+  \textchardef\textbreve="08
+  \textchardef\textmacron="09
+  \textchardef\textdotaccent="0A
+  \textchardef\textcedilla="0B
+  \textchardef\textogonek="0C
+  %
+  % Quote marks
+  %
+  \textchardef\textdblquoteleft="10
+  \textchardef\textdblquoteright="11
+  \textchardef\textdblquotebase="12
+  \textchardef\textguillemetleft="13
+  \textchardef\textguillemetright="14
+  \textchardef\textdblquote="22
+  \textchardef\textquoteright="27
+  \textchardef\textquoteleft="60
+  %
+  % Punctuation marks
+  %
+  \textchardef\textexclam="21
+  \textchardef\textcomma="2C
+  \textchardef\textperiod="2E
+  \textchardef\textcolon="3A
+  \textchardef\textsemicolon="3B
+  \textchardef\textquestion="3F
+  \textchardef\textexclamdown="BD
+  \textchardef\textquestiondown="BE
+  %
+  % Delimiters
+  %
+  \textchardef\textparenleft="28
+  \textchardef\textparenright="29
+  \textchardef\textbracketleft="5B
+  \textchardef\textbracketright="5D
+  \textchardef\textbraceleft="7B
+  \textchardef\textbraceright="7D
+  %
+  % Dashes
+  %
+  \textchardef\textendash="15
+  \textchardef\textemdash="16
+  \textchardef\texthyphen="2D
+  \textchardef\texthyphenchar="7F
+  %
+  % Various Symbols
+  %
+  \textchardef\textvisiblespace="20
+  \textchardef\textnumbersign="23
+  \textchardef\textdollar="24
+  \textchardef\textpercent="25
+  \textchardef\textampersand="26
+  \textchardef\textastersik="2A
+  \textchardef\textplus="2B
+  \textchardef\textslash="2F
+  \textchardef\textless="3C
+  \textchardef\textequal="3D
+  \textchardef\textgreater="3E
+  \textchardef\textat="40
+  \textchardef\textbackslash="5C
+  \textchardef\textunderscore="5F
+  \textchardef\textbar="7C
+  \textchardef\textsterling="BF
+  \textchardef\textsection="9F
+  %
+  % Remarque: ces deux caractères ne semblent pas avoir de
+  %  contrepartie dans les autres jeux de caractères
+  %
+  %
+  % Remarque: lorsqu'on y pense comme à ^ plutôt que comme à un
+  %  accent, le circumflex s'appelle CARET.
+  %
+  \textchardef\textasciitilde="7E
+  \textchardef\textasciicaret="5E
+  %
+  % Ligatures
+  %
+  \textchardef\textIJ="9C
+  \textchardef\textij="BC
+  \textchardef\textAE="C6
+  \textchardef\textae="E6
+  \textchardef\textOE="D7
+  \textchardef\textoe="F7
+  \textchardef\textEssZet="DF
+  \textchardef\textesszet="FF
+  %
+  % Letters with diacritics
+  %
+  \textchardef\textdotlessi="19
+  \textchardef\textdotlessj="1A
+  \textchardef\textAbreve="80
+  \textchardef\textAogonek="81
+  \textchardef\textCacute="82
+  \textchardef\textCcaron="83
+  \textchardef\textDcaron="84
+  \textchardef\textEcaron="85
+  \textchardef\textEogonek="86
+  \textchardef\textGbreve="87
+  \textchardef\textLacute="88
+  \textchardef\textLcaron="89
+  \textchardef\textLslash="8A
+  \textchardef\textNacute="8B
+  \textchardef\textNcaron="8C
+  \textchardef\textEng="8D
+  \textchardef\textOhungarumlaut="8E
+  \textchardef\textRacute="8F
+  \textchardef\textRcaron="90
+  \textchardef\textSacute="91
+  \textchardef\textScaron="92
+  \textchardef\textScommaaccent="93
+  \textchardef\textTcaron="94
+  \textchardef\textTcommaaccent="95
+  \textchardef\textUhungarumlaut="96
+  \textchardef\textUring="97
+  \textchardef\textYdieresis="98
+  \textchardef\textZacute="99
+  \textchardef\textZcaron="9A
+  \textchardef\textZdotaccent="9B
+  \textchardef\textIdotaccent="9D
+  \textchardef\textdcroat="9E
+  \textchardef\textabreve="A0
+  \textchardef\textaogonek="A1
+  \textchardef\textcacute="A2
+  \textchardef\textccaron="A3
+  \textchardef\textdcaron="A4
+  \textchardef\textecaron="A5
+  \textchardef\texteogonek="A6
+  \textchardef\textgbreve="A7
+  \textchardef\textlacute="A8
+  \textchardef\textlcaron="A9
+  \textchardef\textlslash="AA
+  \textchardef\textnacute="AB
+  \textchardef\textncaron="AC
+  \textchardef\texteng="AD
+  \textchardef\textohungarumlaut="AE
+  \textchardef\textracute="AF
+  \textchardef\textrcaron="B0
+  \textchardef\textsacute="B1
+  \textchardef\textscaron="B2
+  \textchardef\textscommaaccent="B3
+  \textchardef\texttcaron="B4
+  \textchardef\texttcommaaccent="B5
+  \textchardef\textuhungarumlaut="B6
+  \textchardef\texturing="B7
+  \textchardef\textydieresis="B8
+  \textchardef\textzacute="B9
+  \textchardef\textzcaron="BA
+  \textchardef\textzdotaccent="BB
+  \textchardef\textAgrave="C0
+  \textchardef\textAacute="C1
+  \textchardef\textAcircumflex="C2
+  \textchardef\textAtilde="C3
+  \textchardef\textAdieresis="C4
+  \textchardef\textAring="C5
+  \textchardef\textCcedilla="C7
+  \textchardef\textEgrave="C8
+  \textchardef\textEacute="C9
+  \textchardef\textEcircumflex="CA
+  \textchardef\textEdieresis="CB
+  \textchardef\textIgrave="CC
+  \textchardef\textIacute="CD
+  \textchardef\textIcircumflex="CE
+  \textchardef\textIdieresis="CF
+  \textchardef\textEth="D0
+  \textchardef\textNtilde="D1
+  \textchardef\textOgrave="D2
+  \textchardef\textOacute="D3
+  \textchardef\textOcircumflex="D4
+  \textchardef\textOtilde="D5
+  \textchardef\textOdieresis="D6
+  \textchardef\textOslash="D8
+  \textchardef\textUgrave="D9
+  \textchardef\textUacute="DA
+  \textchardef\textUcircumflex="DB
+  \textchardef\textUdieresis="DC
+  \textchardef\textYacute="DD
+  \textchardef\textThorn="DE
+  \textchardef\textagrave="E0
+  \textchardef\textaacute="E1
+  \textchardef\textacircumflex="E2
+  \textchardef\textatilde="E3
+  \textchardef\textadieresis="E4
+  \textchardef\textaring="E5
+  \textchardef\textccedilla="E7
+  \textchardef\textegrave="E8
+  \textchardef\texteacute="E9
+  \textchardef\textecircumflex="EA
+  \textchardef\textedieresis="EB
+  \textchardef\textigrave="EC
+  \textchardef\textiacute="ED
+  \textchardef\texticircumflex="EE
+  \textchardef\textidieresis="EF
+  \textchardef\texteth="F0
+  \textchardef\textntilde="F1
+  \textchardef\textograve="F2
+  \textchardef\textoacute="F3
+  \textchardef\textocircumflex="F4
+  \textchardef\textotilde="F5
+  \textchardef\textodieresis="F6
+  \textchardef\textoslash="F8
+  \textchardef\textugrave="F9
+  \textchardef\textuacute="FA
+  \textchardef\textucircumflex="FB
+  \textchardef\textudieresis="FC
+  \textchardef\textyacute="FD
+  \textchardef\textthorn="FE
+}
+
+\csdef{selectconventiontext@original}{%
+  %
+  % Accents
+  %
+  \textchardef\textgrave="12
+  \textchardef\textacute="13
+  \textchardef\textcircumflex="5E
+  \textchardef\texttilde="7E
+  \textchardef\textdieresis="7F
+  \textchardef\texthungar="7D
+  \textchardef\textring="17
+  \textchardef\textcaron="1C
+  \textchardef\textbreve="15
+  \textchardef\textmacron="16
+  \textchardef\textdotaccent="5F
+  \textchardef\textcedilla="18
+  \misschardef\textogonek
+  %
+  % Quote marks
+  %
+  \textchardef\textdblquoteleft="5C
+  \textchardef\textdblquoteright="2A
+  \misschardef\textdblquotebase
+  \misschardef\textguillemetleft
+  \textchardef\textguillemetright
+  \misschardef\textdblquote
+  \textchardef\textquoteright="27
+  \textchardef\textquoteleft="60
+  %
+  % Punctuation marks
+  %
+  \textchardef\textexclam="21
+  \textchardef\textcomma="2C
+  \textchardef\textperiod="2E
+  \textchardef\textcolon="3A
+  \textchardef\textsemicolon="3B
+  \textchardef\textquestion="3F
+  \textchardef\textexclamdown="3C
+  \textchardef\textquestiondown="3E
+  %
+  % Delimiters
+  %
+  \textchardef\textparenleft="28
+  \textchardef\textparenright="29
+  \textchardef\textbracketleft="5B
+  \textchardef\textbracketright="5D
+  \misschardef\textbraceleft
+  \misschardef\textbraceright
+  %
+  % Dashes
+  %
+  \textchardef\textendash="7B
+  \textchardef\textemdash="7C
+  \textchardef\texthyphen="2D
+  \textchardef\texthyphenchar="2D
+  %
+  % Various Symbols
+  %
+  \misschardef\textvisiblespace
+  \textchardef\textnumbersign="23
+  \textchardef\textdollar="24
+  \textchardef\textpercent="25
+  \textchardef\textampersand="26
+  \textchardef\textastersik="2A
+  \textchardef\textplus="2B
+  \textchardef\textslash="2F
+  \misschardef\textless
+  \textchardef\textequal="3D
+  \misschardef\textgreater
+  \textchardef\textat="40
+  \misschardef\textbackslash
+  % Le caractère \textcaret est un caractère comme un accent cironflexe
+  % mais plus large, le caractère à la position "5E de fontes de
+  % caractères Computer Modern est plutôt un accent cironcflexe.
+  \misschardef\textcaret
+  \misschardef\textunderscore
+  \misschardef\textbar
+  \misschardef\texttilde
+  % Le caractère \texttilde est un caractère comme une tilde
+  % mais plus large, le caractère à la position "7E de fontes de
+  % caractères Computer Modern est plutôt une tilde pour les accents.
+  \misschardef\textsection
+  \misschardef\textsterling
+  %
+  %
+  \misschardef\textasciitilde
+  \misschardef\textasciicaret
+  %
+  % Ligatures
+  %
+  \def\textIJ{IJ}%
+  \def\textij{ij}%
+  \textchardef\textAE="1D
+  \textchardef\textae="1A
+  \textchardef\textOE="1E
+  \textchardef\textoe="1B
+  \def\textEssZet{SS}%
+  \textchardef\textesszet="19
+  %
+  % Letters with diacritics
+  %
+  \textchardef\textdotlessi="10
+  \textchardef\textdotlessj="11
+  \misschardef\textAbreve
+  \misschardef\textAogonek
+  \misschardef\textCacute
+  \misschardef\textCcaron
+  \misschardef\textDcaron
+  \misschardef\textEcaron
+  \misschardef\textEogonek
+  \misschardef\textGbreve
+  \misschardef\textLacute
+  \misschardef\textLcaron
+  \misschardef\textLslash
+  \misschardef\textNacute
+  \misschardef\textNcaron
+  \misschardef\textEng
+  \misschardef\textOhungarumlaut
+  \misschardef\textRacute
+  \misschardef\textRcaron
+  \misschardef\textSacute
+  \misschardef\textScaron
+  \misschardef\textScommaaccent
+  \misschardef\textTcaron
+  \misschardef\textTcommaaccent
+  \misschardef\textUhungarumlaut
+  \misschardef\textUring
+  \misschardef\textYdieresis
+  \misschardef\textZacute
+  \misschardef\textZcaron
+  \misschardef\textZdotaccent
+  \misschardef\textIdotaccent
+  \misschardef\textdcroat
+  \misschardef\textabreve
+  \misschardef\textaogonek
+  \misschardef\textcacute
+  \misschardef\textccaron
+  \misschardef\textdcaron
+  \misschardef\textecaron
+  \misschardef\texteogonek
+  \misschardef\textgbreve
+  \misschardef\textlacute
+  \misschardef\textlcaron
+  \misschardef\textlslash
+  \misschardef\textnacute
+  \misschardef\textncaron
+  \misschardef\texteng
+  \misschardef\textohungarumlaut
+  \misschardef\textracute
+  \misschardef\textrcaron
+  \misschardef\textsacute
+  \misschardef\textscaron
+  \misschardef\textscommaaccent
+  \misschardef\texttcaron
+  \misschardef\texttcommaaccent
+  \misschardef\textuhungarumlaut
+  \misschardef\texturing
+  \misschardef\textydieresis
+  \misschardef\textzacute
+  \misschardef\textzcaron
+  \misschardef\textzdotaccent
+  \misschardef\textAgrave
+  \misschardef\textAacute
+  \misschardef\textAcircumflex
+  \misschardef\textAtilde
+  \misschardef\textAdieresis
+  \misschardef\textAring
+  \misschardef\textCcedilla
+  \misschardef\textEgrave
+  \misschardef\textEacute
+  \misschardef\textEcircumflex
+  \misschardef\textEdieresis
+  \misschardef\textIgrave
+  \misschardef\textIacute
+  \misschardef\textIcircumflex
+  \misschardef\textIdieresis
+  \misschardef\textEth
+  \misschardef\textNtilde
+  \misschardef\textOgrave
+  \misschardef\textOacute
+  \misschardef\textOcircumflex
+  \misschardef\textOtilde
+  \misschardef\textOdieresis
+  \textchardef\textOslash="1F
+  \misschardef\textUgrave
+  \misschardef\textUacute
+  \misschardef\textUcircumflex
+  \misschardef\textUdieresis
+  \misschardef\textYacute
+  \misschardef\textThorn
+  \misschardef\textagrave
+  \misschardef\textaacute
+  \misschardef\textacircumflex
+  \misschardef\textatilde
+  \misschardef\textadieresis
+  \misschardef\textaring
+  \misschardef\textccedilla
+  \misschardef\textegrave
+  \misschardef\texteacute
+  \misschardef\textecircumflex
+  \misschardef\textedieresis
+  \misschardef\textigrave
+  \misschardef\textiacute
+  \misschardef\texticircumflex
+  \misschardef\textidieresis
+  \misschardef\texteth
+  \misschardef\textntilde
+  \misschardef\textograve
+  \misschardef\textoacute
+  \misschardef\textocircumflex
+  \misschardef\textotilde
+  \misschardef\textodieresis
+  \textchardef\textoslash="1C
+  \misschardef\textugrave
+  \misschardef\textuacute
+  \misschardef\textucircumflex
+  \misschardef\textudieresis
+  \misschardef\textyacute
+  \misschardef\textthorn
+}
+
+\csdef{selectconventiontext@latin9}{%
+  %
+  % Accents
+  %
+  \def\textgrave{`}%
+  \def\textacute{'}%
+  \def\textcircumflex{^}%
+  \def\texttilde{~}%
+  \misschardef\textdieresis
+  \def\texthungar{"}%
+  \misschardef\textring
+  \misschardef\textcaron
+  \misschardef\textbreve
+  \misschardef\textmacron
+  \misschardef\textdotaccent
+  \misschardef\textcedilla
+  \misschardef\textogonek
+  %
+  % Quote marks
+  %
+  \def\textdblquoteleft{"}%
+  \def\textdblquoteright{"}%
+  \misschardef\textdblquotebase
+  \def\textguillemetleft{«}%
+  \def\textguillemetright{»}%
+  \def\textdblquote{"}%
+  \def\textquoteright{'}%
+  \def\textquoteleft{`}%
+  %
+  % Punctuation marks
+  %
+  \def\textexclam{!}%
+  \def\textcomma{,}%
+  \def\textperiod{.}%
+  \def\textcolon{:}%
+  \def\textsemicolon{;}%
+  \def\textquestion{?}%
+  \def\textexclamdown{¡}%
+  \def\textquestiondown{¿}%
+  %
+  % Delimiters
+  %
+  \def\textparenleft{(}%
+  \def\textparenright{)}%
+  \def\textbracketleft{[}%
+  \def\textbracketright{]}%
+  \let\textbraceleft\bytebraceleft
+  \let\textbraceright\bytebraceright
+  %
+  % Dashes
+  %
+  \def\textendash{-}%
+  \def\textemdash{-}%
+  \def\texthyphen{-}%
+  \def\texthyphenchar{-}%
+  %
+  % Various Symbols
+  %
+  \misschardef\textvisiblespace%{"20!}%
+  \let\textnumbersign\bytenumbersign
+  \let\textdollar\bytedollar
+  \let\textpercent\bytepercent
+  \let\textampersand\byteampersand
+  \let\textastersik\byteasterisk
+  \def\textplus{+}%
+  \def\textslash{/}%
+  \def\textless{<}%
+  \def\textequal{=}%
+  \def\textgreater{>}%
+  \let\textat\byteat
+  \let\textbackslash\bytebackslash
+  % Le caractère \textcaret est un caractère comme un accent cironflexe
+  % mais plus large, le caractère à la position "5E de fontes de
+  % caractères Computer Modern est plutôt un accent cironcflexe.
+  \let\textcaret\bytecaret
+  \let\textunderscore\byteunderscore
+  \misschardef\textbar
+  \leytexttilde\bytetilde
+  % Le caractère \texttilde est un caractère comme une tilde
+  % mais plus large, le caractère à la position "7E de fontes de
+  % caractères Computer Modern est plutôt une tilde pour les accents.
+  \def\textsection{§}%
+  \def\textsterling{£}%
+  %
+  %
+  \let\textasciitilde\bytetilde
+  \let\textasciicaret\bytecaret
+  %
+  % Ligatures
+  %
+  \def\textIJ{IJ}%
+  \def\textij{ij}%
+  \def\textAE{Æ}%
+  \def\textae{æ}%
+  \def\textOE{¼}%
+  \def\textoe{½}%
+  \def\textEssZet{SS}%
+  \def\textesszet{ß}%
+  %
+  % Letters with diacritics
+  %
+  \misschardef\textdotlessi
+  \misschardef\textdotlessj
+  \misschardef\textAbreve
+  \misschardef\textAogonek
+  \misschardef\textCacute
+  \misschardef\textCcaron
+  \misschardef\textDcaron
+  \misschardef\textEcaron
+  \misschardef\textEogonek
+  \misschardef\textGbreve
+  \misschardef\textLacute
+  \misschardef\textLcaron
+  \misschardef\textLslash
+  \misschardef\textNacute
+  \misschardef\textNcaron
+  \misschardef\textEng
+  \misschardef\textOhungarumlaut
+  \misschardef\textRacute
+  \misschardef\textRcaron
+  \misschardef\textSacute
+  \misschardef\textScaron
+  \misschardef\textScommaaccent
+  \misschardef\textTcaron
+  \misschardef\textTcommaaccent
+  \misschardef\textUhungarumlaut
+  \misschardef\textUring
+  \def\textYdieresis{¾}%
+  \misschardef\textZacute
+  \def\textZcaron{´}%
+  \misschardef\textZdotaccent
+  \misschardef\textIdotaccent
+  \misschardef\textdcroat
+  \misschardef\textabreve
+  \misschardef\textaogonek
+  \misschardef\textcacute
+  \misschardef\textccaron
+  \misschardef\textdcaron
+  \misschardef\textecaron
+  \misschardef\texteogonek
+  \misschardef\textgbreve
+  \misschardef\textlacute
+  \misschardef\textlcaron
+  \misschardef\textlslash
+  \misschardef\textnacute
+  \misschardef\textncaron
+  \misschardef\texteng
+  \misschardef\textohungarumlaut
+  \misschardef\textracute
+  \misschardef\textrcaron
+  \misschardef\textsacute
+  \misschardef\textscaron
+  \misschardef\textscommaaccent
+  \misschardef\texttcaron
+  \misschardef\texttcommaaccent
+  \misschardef\textuhungarumlaut
+  \misschardef\texturing
+  \misschardef\textydieresis
+  \misschardef\textzacute
+  \def\textzcaron{¸}%
+  \misschardef\textzdotaccent
+  \def\textAgrave{À}%
+  \def\textAacute{Á}%
+  \def\textAcircumflex{Â}%
+  \def\textAtilde{Ã}%
+  \def\textAdieresis{Ä}%
+  \def\textAring{Å}%
+  \def\textCcedilla{Ç}%
+  \def\textEgrave{È}%
+  \def\textEacute{É}%
+  \def\textEcircumflex{Ê}%
+  \def\textEdieresis{Ë}%
+  \def\textIgrave{Ì}%
+  \def\textIacute{Í}%
+  \def\textIcircumflex{Î}%
+  \def\textIdieresis{Ï}%
+  \def\textEth{Ð}%
+  \def\textNtilde{Ñ}%
+  \def\textOgrave{Ò}%
+  \def\textOacute{Ó}%
+  \def\textOcircumflex{Ô}%
+  \def\textOtilde{Õ}%
+  \def\textOdieresis{Ö}%
+  \def\textOslash{Ø}%
+  \def\textUgrave{Ù}%
+  \def\textUacute{Ú}%
+  \def\textUcircumflex{Û}%
+  \def\textUdieresis{Ü}%
+  \def\textYacute{Ý}%
+  \def\textThorn{Þ}%
+  \def\textagrave{à}%
+  \def\textaacute{á}%
+  \def\textacircumflex{â}%
+  \def\textatilde{ã}%
+  \def\textadieresis{ä}%
+  \def\textaring{å}%
+  \def\textccedilla{ç}%
+  \def\textegrave{è}%
+  \def\texteacute{é}%
+  \def\textecircumflex{ê}%
+  \def\textedieresis{ë}%
+  \def\textigrave{ì}%
+  \def\textiacute{í}%
+  \def\texticircumflex{î}%
+  \def\textidieresis{ï}%
+  \def\texteth{ð}%
+  \def\textntilde{ñ}%
+  \def\textograve{ò}%
+  \def\textoacute{ó}%
+  \def\textocircumflex{ô}%
+  \def\textotilde{õ}%
+  \def\textodieresis{ö}%
+  \def\textoslash{ø}%
+  \def\textugrave{ù}%
+  \def\textuacute{ú}%
+  \def\textucircumflex{û}%
+  \def\textudieresis{ü}%
+  \def\textyacute{ý}%
+  \def\textthorn{þ}%
+}
+
+%%% End of file `convtext.nw'

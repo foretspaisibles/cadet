@@ -1,0 +1,122 @@
+%%% torcn.tex -- Groupes résolubles
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+
+\section Groupes résolubles
+
+On est motivé par la symétrie de~$\Phi$ remarquée pour~$\SL(2,k)$, et
+pour décrire comment la décomposition~\ref[eq:decomp] de~$E$
+selon~$\Psi(G,T)$ est transformée par les automorphismes de~$T$
+intérieurs à~$G$.
+
+\paragraph Suite dérivée et suite centrale
+Si~$A$ et~$B$ sont des parties d'un groupe~$G$, on note~$(A,B)$ le
+groupe engendré par les commutateurs d'éléments pris une fois dans~$A$
+et une fois dans~$B$. Pour un groupe~$G$ on définit la suite
+dérivée~$\Derive G$ et la suite Centrale~$\Central G$ par les
+relations
+$$
+\Derive^0 G = G
+,\qquad\Derive^{i+1}G = (\Derive^iG, \Derive^iG)
+;\qquad\mbox{et}\qquad
+\Central^0 G = G
+,\qquad\Central^{i+1}G = (\Central^iG,G)
+.
+$$
+Il s'agit de suites décroissantes de sous-groupes de~$G$, pour chaque
+rang on a~$\Derive^i G \subset \Central^i G$. Lorsque la suite dérivée
+converge vers~1, on dit que~$G$ est résoluble; lorsque même la suite
+centrale converge vers~1, on dit que~$G$ est nilpotent. On
+note~$G^\infty = \lim \Central G$.
+
+Comme conséquence du théorème de rigidité des tores~\ref[pr:rigid] on
+prouve que
+
+\proposition
+Si~$H$ est un sous-groupe d'un groupe
+résoluble~$G$, peut-être pas fermé  et formé d'éléments tous
+semi-simples, alors
+\beginenumeration
+\item 1 $H$ est inclus dans un tore;
+\item 2 le centralisateur et le normalisateur de~$H$ dans~$G$ sont égaux
+      entre eux, et connexes.
+\endenumeration
+
+Cela signifie que pour un groupe résoluble, on n'a pas
+``d'automorphismes'' de la décomposition~\ref[eq:decomp] associés à
+des automorphismes de~$T$ intérieurs à~$G$.
+
+
+\proposition [pr:grres] Théorème de structure pour les groupes résolubles
+Soit~$G$ un groupe, que l'on suppose résoluble et
+connexe. L'ensemble~$G_u$ est alors un sous-groupe fermé, normal
+(résoluble) et connexe de~$G$, contenant le sous-groupe
+dérivé~$(G,G)$. Le groupe~$G_u$ a une chaîne décroissante de
+sous-groupes de~$G$ connexes et fermés, tous normaux dans~$G$, et de
+codimensions relatives toutes égales à~1.
+\endgraf
+Les tores maximaux de~$G$ sont conjugués sous l'action de~$G^\infty$,
+et on~a $G=T\ltimes G_u$ lorsque~$T$ est l'un d'entre eux.
+
+Lorsque~$G$ est nilpotent, $G^\infty = 1$ et~$G$ n'a qu'un tore
+maximal~$T$, il est alors produit direct de~$T$ et de~$G_u$. Si
+réciproquement~$G_s$ est un sous-groupe de~$G$, il faut que~$G$ soit
+nilpotent.
+
+\paragraph Vocabulaire des groupes semi-simples
+On considère d'après \ref[pr:grres] que les groupes résolubles sont
+relativement bien compris et on aborde l'étude des groupes affines
+généraux de la façon suivante:
+
+A. On étudie le radical~$R(G)$ du groupe,~$G$: parmi les sous-groupes
+   connexes et résolubles de~$G$, il en existe un plus grand que tous
+   les autres,\footnote*{lorsque~$A$ et~$B$ sont des sous-groupes
+   de~$G$ qui sont résolubles, connexes, et normaux dans~$G$,
+   l'adhérence de $AB$ dans~$G$ a ces mêmes qualités.} on l'appelle
+   radical de~$G$. Par exemple
+$$
+R(\GL(n,k)) = k^* I
+,\qquad
+R(\SL(n,k)) = \set{I}
+,\qquad\mbox{et}\qquad
+R(\Sp(n,k)) = \set{I}.
+$$
+
+B. On étudie le groupe quotient~$G/R(G)$, dont le radical
+   est~$\set{I}$. Ces groupes dont le radical est réduit au
+   groupe nul sont appelés semi-simples.
+
+C. On étudie l'extension de~$G/R(G)$ par~$R(G)$.
+
+\proposition
+Si~$f:G_1\to G_2$ est un épimorphisme de groupes affines,
+alors~$f(R(G_1))=R(G_2)$.
+
+
+\paragraph Vocabulaire des groupes réductifs
+On est en fait amené à considérer un classe de groupes un peu plus
+large que celle des seuls groupes semi-simples. C'est celle des
+groupes unipotents, dont la propriété caractéristique est que la
+partie unipotente de leur radical, ou leur radical unipotent, soit
+nul, soit~$R(G)_u = \set{I}$.
+
+Pour ces groupes~$R(G)$ est la composante neutre du centre de~$G$,
+c'est un tore qui rencontre~$\Derive^1G$ selon un ensemble fini.
+
+D'un point de vue technique, l'intérêt que l'on porte aux groupes
+réductifs est justifié par
+
+\proposition
+Soit~$G$ un groupe affine et~$N$ le normalisateur d'un tore
+de~$G$. Si~$G$ est réductif, alors~$N$ est lui-aussi réductif.
+
+Il n'y a pas d'anlogue pour les groupes semi-simples, puisque par
+exemple le normalisateur dans~$\SL(3,k)$ du tore dont l'élément
+générique est
+$$
+\Matrix{s&0&0\cr0&s&0\cr0&0&1/s^2\cr}
+$$
+est isomorphe à~$\GL(2,k)$ et n'est pas réductif.
+
+%%% End of file `torcn.tex'

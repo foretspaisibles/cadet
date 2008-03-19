@@ -1,0 +1,70 @@
+%%% fontg.nw -- PFSS Garamond Declaration -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam  1 mar 2008 11:00:13 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fontes Garamond}
+
+La fonderie éléctronique URW~a publié des caractères Garamond pour
+lesquels on propose une interface. La liste complète des fontes
+utilisées est la suivante:
+\begin{tabular}{ll}
+ugmm8y          & GaramondNo8-Med\\
+ugmmo8y         & GaramondNo8-Med (slanted)\\
+ugmmi8y         & GaramondNo8-MedIta\\
+ugmr8y          & GaramondNo8-Reg\\
+ugmro8y         & GaramondNo8-Reg (slanted)\\
+ugmri8y         & GaramondNo8-Ita\\
+md-gmr7m        & MathDesign-GM-Regular-MathItalic-10\\
+md-gmri7m       & MathDesign-GM-Regular-Italic-MathItalic-10\\
+md-gmrmb        & MathDesign-GM-Regular-MathDesignSymbolB-10\\
+md-gmrma        & MathDesign-GM-Regular-MathDesignSymbolA-10\\
+md-gmr8t        & MathDesign-GM-Regular-T1-10\\
+md-gmri8t       & MathDesign-GM-Regular-Italic-T1-10\\
+md-gmro8t       & MathDesign-GM-Regular-Slanted-T1-10\\
+md-gmr7y        & MathDesign-GM-Regular-Symbol-10\\
+md-gmr7t        & MathDesign-GM-Regular-OT1-10\\
+md-gmri7t       & MathDesign-GM-Regular-Italic-OT1-10\\
+md-gmro7t       & MathDesign-GM-Regular-Slanted-OT1-10\\
+md-gmr7v        & MathDesign-GM-Regular-Extension-10\\
+md-gmr8c        & MathDesign-GM-Regular-TS1-10\\
+md-gmri8c       & MathDesign-GM-Regular-Italic-TS1-10\\
+md-gmro8c       & MathDesign-GM-Regular-Slanted-TS1-10\\
+md-gmm7m        & MathDesign-GM-Medium-MathItalic-10\\
+md-gmmi7m       & MathDesign-GM-Medium-Italic-MathItalic-10\\
+md-gmmmb        & MathDesign-GM-Medium-MathDesignSymbolB-10\\
+md-gmmma        & MathDesign-GM-Medium-MathDesignSymbolA-10\\
+md-gmm8t        & MathDesign-GM-Medium-T1-10\\          % Almost empty
+md-gmmi8t       & MathDesign-GM-Medium-Italic-T1-10\\   % Almost empty
+md-gmmo8t       & MathDesign-GM-Medium-Slanted-T1-10\\  % Almost empty
+md-gmm7y        & MathDesign-GM-Medium-Symbol-10\\
+md-gmm7t        & MathDesign-GM-Medium-OT1-10\\         % Almost empty
+md-gmmi7t       & MathDesign-GM-Medium-Italic-OT1-10\\  % Almost empty
+md-gmmo7t       & MathDesign-GM-Medium-Slanted-OT1-10\\ % Almost empty
+md-gmm7v        & MathDesign-GM-Medium-Extension-10\\
+
+md-gmm8c        & MathDesign-GM-Medium-TS1-10\\
+md-gmmi8c       & MathDesign-GM-Medium-Italic-TS1-10\\
+md-gmmo8c       & MathDesign-GM-Medium-Slanted-TS1-10\\
+\end{tabular}
+
+%%% End of file `fontg.nw'

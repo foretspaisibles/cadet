@@ -1,0 +1,101 @@
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+
+\centerline{\bf À propose du contrôle continu}
+\bigbreak
+
+\section Ce qui doit disparaître des copies
+
+1. Les calculs de limites du genre
+$$
+\lim_{x\to+\infty} x^5
+ = (+\infty)(+\infty)(+\infty)(+\infty)(+\infty)
+ = (+\infty)
+$$
+n'ont pas de sens. Une des raisons pour lesquelles on ne donne pas de
+sens à ce genre d'expressions est qu'à cause des \em{formes
+indéterminées} apparaissant dans certaines expressions, on n'obtient
+pas de règles de calcul dans~$[-\infty,+\infty]$ adaptées au calcul
+des limites.
+
+2. Les symboles~$\equiv$ et~$\approx$ apparaissent parfois dans des
+calculs du type
+$$
+\lim_{x\to+\infty} x^5(1 + 1/x) \approx \lim_{x\to+\infty} x^5
+ = +\infty
+.
+$$
+Pourquoi ne pas utiliser une égalité là où elle est légitime au lieu
+d'employer des symboles sans prendre la peine d'en préciser le sens?
+
+3. On ne peut pas citer le théorème des valeurs intermédiaires dans
+une question et prétendre qu'il atteste l'existence d'un extremum dans
+une autre, c'est de l'escroquerie.
+
+4. Quand on cite un un théorème, une proposition, les hypothèses font
+partie de l'énoncé. Un énoncé privé d'hypothèses ne doit plus jamais
+apparaître dans vos copies.
+
+
+\section Ce qu'on préférerait ne pas voir
+
+On doit justifier l'existence d'une limite avant de procéder à son
+calcul (du moins lorsqu'on présente ses résultats).  La présentation
+suivante:
+
+{\sl Pour~$x$ voisin de~$+\infty$, on a $-x + x^5 = x^5(1-1/x^4)$
+et~$1/x^4$ tend vers~$0$, on conclut donc que
+$$
+\lim_{x\to+\infty} -x + x^5 = +\infty
+.
+$$}
+est à préférer à la suivante:
+{\sl $\lim_{x\to+\infty} -x + x^5 = \lim_{x\to+\infty} x^5(1-1/x^4) =
++\infty$}.
+
+
+\section Quelques bêtises en vrac
+
+1. Les fonctions polynomiales ne sont pas continues et
+dérivables~\em{par définition}. La continuité et la dérivabilité des
+fonctions polynomiales font partie de leurs propriétés remarquables,
+mais ne figurent pas dans leur définition!
+
+2. Un terme infiniment proche de~$0$ est négligeable dans une
+somme, mais pas dans un produit!
+
+3. Beaucoup confondent ensemble d'arrivée d'une application et
+ensemble des valeurs d'une fonction. Il faut réviser ces notions,
+ainsi que la restriction et la corestriction (restriction à une partie
+de l'ensemble d'arrivée) des fonctions.
+
+4. La stricte croissance d'une fonction ne suffit pas à prouver
+qu'elle tend vers~$+\infty$ en~$+\infty$. Cherchez de nombreux contre
+exemples!
+
+5. Pour une fonction~$f$ définie au voisinage de~$+\infty$,
+l'existence de deux suites~$x_n$ et~$y_n$ convergeant vers~$+\infty$
+et telles que~$f(x_n)$ converge vers~$X$ et~$f(y_n)$ converge vers~$Y$
+permet lorsque~$X\not=Y$ de conclure que~$f$ n'a pas de limite
+en~$+\infty$. Dans le cas contraire où~$X=Y$ on ne peut rien dire de
+plus sur~$f$, et en particulier on ne peut pas conclure que~$f$
+converge vers~$X$ en~$+\infty$.
+
+6. Dans la question~2.2, la fonction~$1/x$ n'est pas un exemple car
+elle est définie (et soit dit en passant, continue) de~$\R^*$
+dans~$\R$, tandis qu'on demande une fonction définie de~$\R$
+dans~$\R$. En revanche la fonction définie par~$g(x) = 1/x$
+si~$x\not=0$ et~$g(0) = 0$ accompagnée de l'intervalle~$J=]-1, 1[$
+donnent un exemple valide; avec de nombreuses variations possibles.
+
+7. Pour une fonction réelle de la variable réelle~$f$ dérivable en un
+point~$x_0$, la condition~$f'(x_0)$ est une condition nécessaire
+d'extremum \em{local}. Ça n'est pas une condition suffisante
+d'extremum (exemple~$f(x) = x^3$ et~$x_0 = 0$) et encore moins une
+condition suffisante de maximum (trouvez de nombreux exemples).
+C'est en général l'étude des variations d'une fonction qui permet de
+trouver les extrema globaux parmi les extréma locaux; mais attention
+une fonction peut très bien avoir des minima locaux sans pour autant
+avoir un minimum global (trouvez ici aussi de nombreux exemples).
+
+\bye

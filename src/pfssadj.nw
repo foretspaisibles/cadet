@@ -1,0 +1,211 @@
+%%% pfssadj.nw -- PFSS adjustement -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 10 fév 2007 21:51:03 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier pfssadj.nw}
+<<*>>=
+
+% Ce fichier réalise une fonction `fontswitchadjust' pour le module
+% pfss. C'est cette fonction qui et appelée lorsque l'utilisateur
+% réclame le chargement d'une fonte via des paramètres ne possédant
+% pas de liaison.
+
+% La fonction `fontswitchadjust' travaille en deux temps. Dans un
+% premier temps, elle consulte ses tables internes pour savoir si une
+% fonte externe déjà chargée doit être utilisée avec un facteur
+% d'homothétie pour remplacer la fonte absente. Dans un second temps,
+% elle dégrade la requête de l'utilisateur jusqu'à obtenir des
+% paramètres autorisant le chargement d'une fonte.
+
+%
+% Commandes fontswitchadjust et fontswitchreset
+%
+
+% La commande 'fontswitchadjust' est juste une petite administration
+% enregistrant les commandes prétendant modifier les registres des
+% paramètres de fontes de façon utile. Les usagers de cette
+% administration enregistrent une macro modifiant ces
+% paramètres. L'administration encadrant le travail de
+% 'fontswitchadjust' peut enregistrer trois types de listes de
+% TOKENS.
+%
+% La première liste est celle des ajustements ordinaires, enregistrés
+% par 'fontadustment'. Ces ajustement sont traités dans l'ordre de
+% leur enregistrement.
+%
+% La seconde liste est celle des ajustements de dernière chance,
+% enregistrés avec 'fontlastadjustment'. Ces ajustements sont traités
+% dans l'ordre de leur enregistrement, mais après tous les
+% ajustements ordinaires.
+%
+% La troisième liste est celle des initialisations, enregitrés avec
+% 'fontadustmentinit'. Les éléments de cette liste ne sont traités
+% qu'une fois, avant la boucle de 'fontswitch'. Ces éléments peuvent
+% donc être utilisés pour initialiser des structures permettant aux
+% fonctions d'ajustement de savoir si elles ont déjà été appelées au
+% cours de cette requête 'fontswitch'.
+%
+% Lorsqu'une fonction d'ajustement prétend avoir géré la situation
+% avec brio, elle utilise 'fontadustmentdone' pour empêcher ses
+% copines de gâcher son travail.
+%
+% Enfin ce module suppose que ses utilsiateurs ont défini ou
+% définiront la fonction `setsytemfont' qui charge des paramètres
+% système dans les registres de description des fontes.
+
+\let\fontswitch@I=\empty
+\let\fontswitch@A=\empty
+\let\fontswitch@L=\empty
+
+\def\fontadjustment#1{\listrappend #1\to\fontswitch@A}
+\def\fontlastadjustment#1{\listrappend #1\to\fontswitch@L}
+\def\fontadjustmentinit#1{\listrappend #1\to\fontswitch@I}
+
+\def\fontadjustmentdone{\let\\\ignore}
+
+\def\fontswitchadjustinit{\def\\##1{##1}\fontswitch@I}
+
+\def\fontswitchadjust{%
+  % Remarque: l'appel est encadré par le groupe de 'fontswitch', ce
+  % dont peuvent tenir compte les usagers.
+  \def\\##1{##1}% C'est déjà fait par fontswitchreset, mais dans la
+                %  boucle la valeur de \\ peut changer.
+  \fontswitch@A
+  \fontswitch@L
+  \\{\fontadjustmentfailure}%
+}
+
+\def\fontadjustmentfailure{%
+  \writelog{Warning: fontadjustmentfailure %
+    \fontfamily/\fontshape/\fontweight/\fontwidth/\the\fontsize}%
+  \setsystemfont
+}
+
+%
+% Ajuster la taille
+%
+
+% Les caractères d'une même famille sont normalement dessinés dans
+% plusieurs tailles différentes, car si on appliquait les mêmes règles
+% pour dessiner le petits caractères que celles utilisées pour
+% dessiner les grands, les petits seraient absolument illisibles. On
+% souhaite cependant parfois utiliser des caractères dans une taille
+% pour laquelle aucun dessin n'est disponible et il n'y a alors pas
+% d'autres solution que de faire une mise à l'échelle de caractères
+% déjà existants. Cette section définit des fonctions permettant
+% d'associer des tailles souhaitées et des tailles concrètes.
+
+% Les associations entre tailles souhaitées et tailles concrètes sont
+% d'une seule forme: la donnée d'un intervalle et d'une taille
+% concrète à utiliser, ainsi qu'un facteur d'ajustement.
+
+% Les informations concernant ces ajustements sont faites au niveau
+% global. Ceci permet de cacher les macros nécessaires à la
+% d'larations de fontes dans un groupe tout en conservant sa facilité
+% d'utilisation à `setfontadjustsize'.
+
+\newcount\pfsz@a
+\newcount\pfsz@b
+\newcount\pfsz@s
+\newdimen\pfsz@d
+
+\def\setfontadjustsize#1#2#3#4{%
+  \begingroup
+  \toksloadcsname\fontshortname*\to\rtB%
+  % Dire \let\next\relax ne fonctionne pas ici, car \relax est une
+  % primitive et n'a pas de texte de remplacement. Après
+  % \let\next\relax, l'appel \toksloadcsexpansion\rtA\next a un résultat
+  % indéfini.
+  \let\next\empty%
+  \expandafter\ifx\the\rtB\relax
+    \edef\next{\noexpand\let\the\rtB\noexpand\empty}%
+  \fi
+  \toksloadcsexpansion\next\to\rtA
+  \rtC={\listrappend{#1}{#2}{#3}{#4}\to}%
+  \edef\next{\the\rtA\the\rtC\the\rtB}%
+  \next
+  \expandafter\csexport\the\rtB
+  \endgroup
+}
+
+
+\def\pfsz@load#1#2#3#4{%
+  \pfsz@a=#1%
+  \pfsz@b=#2%
+  \pfsz@s=#3%
+  \def\pfsz@f{#4}%
+}
+
+\newif\ifpfsz@match
+
+\def\testpfsz@match{%
+  \begingroup
+  \flagtrue
+  \ifnum\fontsize<\pfsz@a \flagfalse\fi
+  \ifnum\fontsize>\pfsz@b \flagfalse\fi
+  \ifflag
+    \aftergroup\pfsz@matchtrue
+  \else
+    \aftergroup\pfsz@matchfalse
+  \fi
+  \endgroup
+}
+
+\def\pfsz@bind{%
+  \pfsz@d=\the\fontsize pt%
+  \ifnum\pfsz@s=\@m
+  \else
+    \multiply\pfsz@d\pfsz@s
+    \divide\pfsz@d\m@
+  \fi
+  \edef\pfsz@X{ at \the\pfsz@d}%
+  \edef\pfsz@Y{\pfsz@f\pfsz@X}%
+  \expandafter\fontbind\expandafter{\pfsz@Y}%
+}
+
+\def\pfsz@loop#1{%
+  \pfsz@load#1%
+  \testpfsz@match
+  \ifpfsz@match
+    \flagtrue
+    \pfsz@bind
+    \let\\=\ignore
+  \fi
+}
+
+\def\fontadjustsize{%
+  \begingroup
+  \flagfalse
+  \let\\=\pfsz@loop
+  \csname\fontshortname*\endcsname
+  \ifflag
+    \def\next{\fontadjustmentdone}%
+  \else
+    \def\next{}%
+  \fi
+  \expandafter\endgroup\next
+}
+
+\fontadjustment\fontadjustsize
+
+%%% End of file `pfssadj.nw'

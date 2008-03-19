@@ -1,0 +1,202 @@
+%%% torrep.tex -- Les tores et leurs représentations
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+
+\section Représentations des tores
+
+\paragraph
+Un tore est un groupe affine isomorphe à un groupe
+diagonal~$D(n,k)$. Pour qu'un groupe affine~$T$ soit un tore, il faut
+et il suffit qu'il soit connexe et que le groupe de ses
+caractères~$X(T) = \homo(T,G_m)$ soit une base de l'algèbre~$k[T]$ des
+fonctions régulières sur~$T$.
+
+\paragraph [pa:tdual]
+Pour un tore~$T$, le groupe abélien~$X(T)$ est libre, de type fini. Le
+groupe~$Y(T) = \homo(G_m,T)$ des sous-groupes à un paramètre de~$T$ est
+le dual de~$X(T)$ grâce à la forme bilinéaire
+$$
+\langle\chi,\lambda\rangle = n
+\qquad\mbox{pour l'unique entier~$n$ tel que~$\chi\circ\lambda(s) = s^n$.}
+$$
+
+
+\paragraph
+Un tore~$T$ d'un groupe affine~$G$ agit diagonalement dans toutes les
+représentations linéaires~$E$ de~$G$~\ref[pa:redfd], c'est à dire que
+$$
+E =
+\bigoplus_{\chi\in X(T)} E_\chi =
+\bigoplus_{\chi\in X(T)}
+\set{x\in E\mid \forall t\in T\quad tx = \chi(t) x}
+.
+\eqlabel[eq:decomp]
+$$
+Les éléments du support~$\Psi$ de cette somme sont les poids de~$T$
+dans la représentation~$E$.
+
+\paragraph [pa:radjsl2]%
+  Représentation adjointe du deuxième groupe spécial linéaire
+\input radjsl2
+
+\paragraph [pa:rstdsl2]%
+  Représentation standard du deuxième groupe spécial linéaire
+\input rstdsl2
+
+\paragraph Deuxième groupe spécial linéaire et formes quadratiques
+\input rsm2sl2
+
+\paragraph
+On peut observer que dans toutes les représentations de~$\SL(2,k)$,
+l'ensemble~$\Psi$ des poids du tore~$T$ \ref[eq:sl2t] est symétrique par
+rapport à l'automorphisme~$\theta(x)=\inv x$ du groupe abélien~$T$,
+c'est-à-dire que
+$$
+\chi\in\Psi
+\qquad\mbox{si, et seulement si,}\qquad
+\theta^*\chi\in\Psi
+.
+$$
+Cette symétrie s'explique par le fait que~$\theta$ est réalisé par un
+automorphisme intérieur à~$\SL(2,k)$, celui associé par exemple à
+l'élément~$\left[\matrix{\hphantom{-}0&1\cr-1&0\cr}\right]$ du
+normalisateur de~$T$ dans~$\SL(2,k)$.
+
+Dans ce dernier cas, il ne peut il y avoir qu'une seule symétrie
+parceque~$T\simeq G_m$ n'a qu'un automorphisme. Les tores de dimension
+plus grande ont plus d'automorphismes, mais très peu
+peuvent être intérieurs au groupe ambiant:
+
+\proposition [pr:rigid] Rigidité des tores
+Si~$T$ est un tore dans un groupe affine~$G$, la composante neutre du
+centralisateur de~$T$ dans~$G$ égale celle du normalisateur de~$T$
+dans~$G$. En particulier l'image du morphisme
+$$
+\app\eta:N_G(T)\arrow\to\Aut(T)\cr
+$$
+est finie puisque~$\ker\eta=C_G(T)$.
+
+On peut pressentir que l'image de~$\eta$ est finie en associant à
+chaque élément~$x$ de~$N_G(T)$ l'automorphisme de~$X(T)$ associé
+à~$\eta(x)$. Les automorphismes de~$X(T)$ sont un groupe isomorphe à
+un~$\GL(r,\Z)$, et les groupes algébriques comme~$N_G(T)$ n'ont qu'un
+nombre fini de composantes connexes. Cet argument n'est pas correct
+car la flèche décrite n'est pas un morphisme de variétés algébriques.
+
+\paragraph Racines
+Lorsqu'on décompose la représentation adjointe d'un groupe affine~$G$
+relativement à un tore~$T$ comme dans~\ref[eq:decomp],
+l'ensemble~$\Phi(G,T) = \Psi-\set{1}$ est l'ensemble des racines
+de~$G$ relatives à~$T$. Voici un exemple de la façon dont les racines
+structurent les représentations de~$G$:
+
+\proposition [pr:pousse]
+Soit~$\rho:G\to E$ une représentation linéaire de~$G$, $T$ un tore
+de~$G$, et~$\Psi$ les poids de~$T$ dans~$E$. Considérons d'une part un
+poids~$\chi\in\Psi$ et l'espace propre~$E_\chi$ qui lui est associé,
+d'autre part une racine~$\alpha\in\Phi$.
+Supposons qu'il existe un morphsime~$x:G_a\to G$ tel que~$x'(0)\in
+{\lie g}_\alpha$ et que
+$$
+t x(u)\inv t = x\left(\alpha(t) u\right)
+.
+$$
+Dans ces conditions l'action de~$x$ sur~$E_\chi$ vérifie:
+$$
+x(u) E_\chi \subset \sum_{r\ge0} E_{\alpha^r\chi}
+.
+\eqlabel[eq:exrac]
+$$
+
+\proof
+On réduit simultanément l'action de~$T$ et celle de~$U_\alpha = \Im x$
+aux formes diagonale et triangulaire supérieure, dans cette base~$e\in
+E^I$ bien choisie, le vecteur~$e_i$ est propre pour le poids~$\chi_i
+\in \Psi(E,T)$. On étudie ensuite les entrées~$x(u)_{ij}$ de l'action
+de~$x(u)$ dans cette base bien choisie pour établir~\ref[eq:exrac].
+
+\proposition Lemme. Un petit ``théorème de Lie-Kolchin.''
+Il existe une base~$e$ de~$E$ dans laquelle~$x(u)$ agit par matrices
+triangulaires supérieures et~$T$ par matrices diagonales.
+
+\proof Preuve du lemme.
+Pour réduire l'action de~$G'= TU_\alpha$ à la forme souhaitée, il
+suffit de trouver une droite stable sous~$G'$ dans toutes ses
+représentations. On applique ce résultat à~$E$ pour obtenir une
+droite~$L$, puis à~$E' = E/L$ pour obtenir une droite~$L'$, puis à
+~$E'' = E'/L'$, etc. L'action de~$G'$ diagonale dans~$L \times
+L'\times\cdots$ est triangulaire dans~$E$.
+\par
+Dans une représentation~$E$ de~$G'$ le sous-groupe
+unipotent~$U_\alpha$ est trigonalisable et admet donc un point fixe
+non-nul. Comme~$T$ normalise~$U_\alpha$, il stabilise l'espace
+des points-fixes de~$U_\alpha$, comme celui-là n'est pas réduit à zéro
+et que les actions du tore~$T$ se réduisent à la forme diagonale, il
+contient une droite fixée par~$G'$, ce qu'il fallait démontrer.
+
+\proof Revenons à la preuve de~\ref[pr:pousse].
+Étudions les coefficients matriciels de~$x(u)$ pour cette base, soit
+$x(u)_{ij} = \langle e_j^*, x(u) e_i \rangle$. On a d'une part
+$$
+\langle e_j^*, t x(u) e_i \rangle
+= \langle e_j^*, x(\alpha(t)u) t e_i \rangle
+= \chi_i(t)\langle e_j^*, x(\alpha(t)u) e_i \rangle
+= \chi_i(t) x(\alpha(t)u)_{ij}
+$$
+et d'autre part
+$$
+\langle e_j^*, t x(u) e_i \rangle
+= \langle e_j^*, t x(u) e_i \rangle
+= \langle e_j^*, \chi_j(t) x(u)_{ij} e_j \rangle
+= \chi_j(t) x(u)_{ij}
+$$
+ce qui entraine
+$$
+x(u)_{ij}{\chi_j \inv\chi_i}(t) - x(\alpha(t)u)_{ij} = 0
+.
+$$
+En fixant~$t$, cette relation devient une identité polynomiale en~$u$,
+si le coefficient de degré~$r$ de~$x(u)_{ij}$ n'est pas nul, il
+vient
+$$
+\chi_j \inv\chi_i = \alpha^r
+$$
+et comme~$X(T)$ est libre, cela n'arrive que pour une valeur
+de~$r$. La matrice de~$x(u)$ est triangulaire supérieure, ses
+entrées pour~$j < i$ sont nulles et pour que l'image du
+vecteur~$e_i$ ait une coordonnée non nulle selon~$e_j^*$ il faut
+donc que~$i\ge j$ et que~$\chi_j = \alpha^r\chi_i$, ce qu'il fallait
+démontrer.
+
+On a aussi démontré que l'entrée~$x(u)_{ij}$ est nulle ou de la
+forme~$au^r$, et comme~$x(u) = \exp(u x'(0))$ avec~$x'(0)$ nilpotent
+dans~$\lie g$, on peut voir que~$r = |i -j|$. On exploite cette
+information dans le cas de~$\SL(2,k)$: si~$m$ est la première
+coordonnée nulle de~$T_I\rho\;x'(0)$ (application tangente de~$\rho$),
+l'espace
+$$
+E' = E_{\chi_1}\oplus E_{\chi_1}\oplus \cdots\oplus E_{\chi_m}
+$$
+est stable sous l'action de~$x(u)$. Comme~$y(v)$ pousse les espaces
+propres de~$T$ dans la direction~$-\alpha$~\ref[pa:radjsl2],
+\ref[pr:pousse], il stabilise également~$E'$, et puisque ce dernier est
+également stabilisé par~$T$, on peut conclure que
+
+\proposition
+Dans une représentation irréductible de~$\SL(2,k)$ les poids de~$T$
+forment un ensemble
+$$
+\set{\bar\chi,\alpha\bar\chi,\dots,\bar\alpha\chi,\chi}
+,
+$$
+où~$\chi$ et~$\bar\chi = \inv\chi$ sont congrus modulo~$\alpha$
+dans~$X(T)$.  [\ref[pa:radjsl2] pour les notations]
+
+%% Un des buts de cet exposé est de prouver que lorsque~$T$ est un tore
+%% maximal d'un groupe semi-simple~$G$~\ref[XXX], $\Phi(G,T)$ est un
+%% système de racines.
+
+% XXX Systèmes de racines
+
+%%% End of file `torrep.tex'

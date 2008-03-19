@@ -1,0 +1,303 @@
+%%% pfssmath.nw -- PFSS et mode mathématiques -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 24 mar 2007 12:02:40 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier pfssmath.nw}
+<<*>>=
+
+% L'utilisation des fontes avec le mode mathématique demande des
+% aménagements particuliers, fort différents de ceux utilisés pour le
+% texte ordinaire. Ce module réalise ces aménagements.
+
+% La commande `newfam' du noyau permet de nommer les seize familles
+% utilisées par TeX dans le mode mathématique. Chaque famille est
+% définie par trois fontes `text' `script' et `scriptscript'. Dans ce
+% module on réalise des fonctions permettant de charger des fontes dans
+% les registres des familles, en spécifiant la fonte par les
+% paramètres de PFSS.
+
+%
+% Taille nominale des fontes
+%
+
+% Les fonctions réalisées par ce module utilsient trois paramètres
+% pour déterminer les tailles de fontes à utiliser pour remplir les
+% trois registres d'une famille de fontes. Ces trois paramètres sont
+% définis simultanément par une seule procédure `setmathsizes'.
+
+\def\setmathsizes#1#2#3{%
+  \def\math@textsize{#1}%
+  \def\math@scriptsize{#2}%
+  \def\math@scriptscriptsize{#3}%
+}
+
+\def\settextsize{\fontsize=\math@textsize\relax}
+\def\setscriptsize{\fontsize=\math@scriptsize\relax}
+\def\setscriptscriptsize{\fontsize=\math@scriptscriptsize\relax}
+
+\def\textsize{\settextsize\selectfont}
+\def\scriptsize{\setscriptsize\selectfont}
+\def\scriptscriptsize{\setscriptscriptsize\selectfont}
+
+\setmathsizes{10}{7}{5}
+
+% On définit une table qui fait correspondre à chaque taille nominale
+% entre 7pt et 12pt un triplet de tailles entre '12pt' et '5pt'.
+
+\def\mathsizes@t{%
+  \\{{7}{{7}{6}{5}}}%
+  \\{{8}{{8}{7}{5}}}%
+  \\{{9}{{9}{7}{5}}}%
+  \\{{10}{{10}{7}{5}}}%
+  \\{{11}{{11}{7}{5}}}%
+  \\{{12}{{12}{8}{6}}}%
+}
+
+\def\mathsizesadjustment{%
+  \begingroup
+  \rtA={\alistprocess
+    \mathsizes@t
+    \mathsizesadjustment@A
+    \mathsizesadjustment@E
+  }%
+  \edef\next{\the\rtA{\the\fontsize}}%
+  \expandafter\endgroup\next
+}
+
+
+\def\mathsizesadjustment@A#1{\setmathsizes#1}
+
+\def\mathsizesadjustment@E{%
+  \begingroup
+  \rcA=\fontsize
+  \rcB=\fontsize
+  \divide\rcB\tw@
+  \advance\rcA\rcB
+  \divide\rcA\tw@
+  \edef\next{\noexpand\setmathsizes{\the\fontsize}{\the\rcA}{\the\rcB}}%
+  \expandafter\endgroup\next
+  \writelog{Warning: mathsizeadjustment:
+    \math@textsize/\math@scriptsize/\math@scriptscriptsize}%
+}
+
+\addhook\mathsizesadjustment\to\fontsizehook
+
+
+%
+% Paramètres des familles
+%
+
+% toksloadmathfamattributesname TOKENREG FAMILY
+%
+% Charge le registre TOKENREG avec le nom de la mémoire utilisée pour
+% conserver les attributs de fontes de la famille FAMILY.
+
+\def\toksloadmathfamattributesname#1\to#2{%
+  \toksloadcsident#1\to#2%
+  \tokslappend math@\to#2%
+}
+
+
+% setmathfamattributes FAMILY TOKENLIST
+%
+% Cet appel associe TOKENLIST et FAMILY dans les structures internes
+% du module. Lorsque le module est utilisé pour renouveler le contenu
+% des registres des familles de fontes pour FAMILY, les tokens de
+% TOKENLIST sont traités, on attend d'eux qu'ils positionnent les
+% attributs `fontfamily' `fontpage' etc. de sélection des fontes pour
+% décrire la fonte à utiliser pour remplir les registres.
+
+\def\setmathfamattributes#1#2{%
+  \begingroup
+  \toksloadmathfamattributesname#1\to\rtA
+  \rtB={#2}%
+  \edef\next{%
+    \def\expandafter\noexpand\csname\the\rtA\endcsname{\the\rtB}%
+  }%
+  \expandafter
+  \endgroup
+  \next
+}
+
+% addmathfam FAMILY
+%
+% Inscrire auprès de l'administration la famille FAMILY.
+
+\let\mathfam@l\empty
+
+\def\addmathfam#1{\listrappend#1\to\mathfam@l}
+
+
+%
+% Recharger les registres de fontes
+%
+
+% mathfamupdate FAMILY
+%
+% Charge les trois registres de fontes de la famille FAMILY en accord
+% avec les valeurs de `math@textsize' etc. et de la dernière liaison
+% `setmathfamattributes'. Toutes les fontes nécessaires doivent déjà
+% avoir été préalablement chargées.
+
+\def\mathfamupdate#1{%
+  \begingroup
+  \toksloadmathfamattributesname#1\to\rtA
+  \csname\the\rtA\endcsname
+  \rtB={}%
+  \mathfamupdate@A\textfont#1\math@textsize
+  \mathfamupdate@A\scriptfont#1\math@scriptsize
+  \mathfamupdate@A\scriptscriptfont#1\math@scriptscriptsize
+  \edef\next{\the\rtB}%
+  \expandafter\endgroup\next
+}
+
+\def\mathfamupdate@A#1#2#3{%
+  \fontsize=#3\relax
+  \toksloadfontswitch\to\rtC
+  \edef\rmA{\noexpand#1\noexpand#2=\the\rtC}%
+  \toksloadcsexpansion\rmA\to\rtC
+  \expandafter\toksrappend\the\rtC\to\rtB
+}
+
+% mathfamadjustment
+%
+% Applique `mathfamupdate' sur les membres inscrits avec `addmathfam'.
+
+\def\mathfamadjustment{\let\\\mathfamupdate\mathfam@l\let\\\undefined}
+
+\addhook\mathfamadjustment\to\fontsizehook
+
+
+%
+% Définition des tables de caractères
+%
+
+% Les commandes `mathcode' et `mathchardef' permettent de définir les
+% convetions d'entrée du mode mathématique. Ces commandes sont mal
+% adaptées à l'utilisation de noms symboliques pour les familles de
+% fontes.
+%
+% On définit les commandes `countloadmathcode', `mathfamchardef' et
+% `mathfamcode' qui encapsulent les appels à `mathchardef' et
+% `mathcode' pour pouvoir utiliser des noms symboliques dans les
+% fontes.
+
+
+% countloadmathcode FAMILY CODE\to TOKSREGISTER
+%
+% Charge le registre TOKSREGISTER avec le `mathcode' calculé à partir
+% de CODE et de FAMILY comme décrit ci-dessous.
+%
+% Les `mathcode' de TeX sont de la forme `"ABCD' où
+%  - A est le code de classe, compris entre 0 et 7;
+%  - B est une famille de fontes;
+%  - CD est le code d'un caractère dans la fonte.
+%
+% Ici nos CODES sont de la forme ACD et la famille est précisée sous
+% forme symbolique.
+
+\def\countloadmathcode#1#2\to#3{%
+  \begingroup
+  \rcA#2 \rcB#1 %
+  \rcC\rcA
+  \divide\rcC\@cclvi
+  \multiply\rcC\@cclvi
+  \advance\rcA-\rcC
+  \multiply\rcC\sixt@@n
+  \advance\rcA\rcC
+  \multiply\rcB\@cclvi
+  \advance\rcA\rcB
+  \edef\next{#3\the\rcA\noexpand\relax}%
+  \expandafter\endgroup\next
+}
+
+% mathfamchardef FAMILY CHARNAME CODE
+%
+% Encapsule un appel à `mathchardef'.
+
+\def\mathfamchardef#1#2{%
+  \begingroup
+  \def\mathfamchardef@A{\mathfamchardef@M#1#2}%
+  \afterassignment\mathfamchardef@A
+  \rcA
+}
+
+% mathfamcode FAMILY CHARACTERCODE = CODE
+%
+% Encapsule un appel à `mathcode'.
+
+\def\mathfamcode#1{%
+  \begingroup
+  \rcC=#1\relax
+  \afterassignment\mathfamcode@A\rcD
+}
+
+\def\mathfamcode@A{%
+  \afterassignment\mathfamcode@B\rcE
+}
+
+\def\mathfamcode@B{%
+  \countloadmathcode\rcC\rcE\to\rcA
+  \edef\next{\noexpand\mathcode\the\rcD=\the\rcA\noexpand\relax}%
+  \expandafter\endgroup\next
+}
+
+\def\mathfamchardef@M#1#2{%
+  \countloadmathcode#1\rcA\to\rcA
+  \edef\next{\noexpand\mathchardef\noexpand#2\the\rcA\noexpand\relax}%
+  \expandafter\endgroup\next
+}
+
+%
+% Abréviations pour les quatre familles standard
+%
+
+\chardef\mathrm=0
+\chardef\mathit=1
+\chardef\mathsy=2
+\chardef\mathex=3
+\chardef\mathvar=7
+
+\def\mathrmchardef{\mathfamchardef\mathrm}
+\def\mathitchardef{\mathfamchardef\mathit}
+\def\mathsychardef{\mathfamchardef\mathsy}
+\def\mathexchardef{\mathfamchardef\mathex}
+\def\mathvarchardef{\mathfamchardef\mathvar}
+
+\def\mathrmcode{\mathfamcode\mathrm}
+\def\mathitcode{\mathfamcode\mathit}
+\def\mathsycode{\mathfamcode\mathsy}
+\def\mathexcode{\mathfamcode\mathex}
+\def\mathvarcode{\mathfamcode\mathvar}
+
+\setmathfamattributes\mathrm\relax
+\setmathfamattributes\mathit\relax
+\setmathfamattributes\mathsy\relax
+\setmathfamattributes\mathex\relax
+
+\addmathfam\mathrm
+\addmathfam\mathit
+\addmathfam\mathsy
+\addmathfam\mathex
+
+%%% End of file `pfssmath.nw'

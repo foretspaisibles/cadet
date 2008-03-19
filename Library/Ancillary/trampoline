@@ -1,0 +1,45 @@
+#! /bin/sh
+
+### trampoline -- Travailler sur `bhrid'
+
+# Author: Michael Grünewald
+# Date: Ven 14 mar 2008 20:33:55 CET
+
+# Copyright (C) 2006, 2013 Michael Grünewald
+# All rights reserved.
+#
+# This file is part of Bhrìd TeX.
+#
+# Bhrìd TeX is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Bhrìd TeX is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+export MAKEFLAGS="-I${PWD}/Library/Make${MAKEFLAGS:+ ${MAKEFLAGS}}"
+export REPOSITORY="svn://Llea.celt.neu/workshop/bhrid"
+export BHRIDBASEDIR="${PWD}"
+
+if [ "$OSTYPE" = 'darwin' ]; then
+    export TEXDEVICE='pdf'
+elif [ "$1" = 'final' ]; then
+    export TEXDEVICE='ps pdf dvi'
+else
+    export TEXDEVICE='dvi'
+fi
+
+if ! [ "$1" = 'final' ]; then
+    export DRAFT='yes'
+fi
+
+exec ${SHELL:-/bin/sh}
+
+### End of file `trampoline'

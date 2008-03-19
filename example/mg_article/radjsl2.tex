@@ -1,0 +1,84 @@
+%%% radjsl2.tex -- Représentation Adjointe de SL2k
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+
+\begingroup
+\def\G{\SL(2,k)}%
+\def\g{\lie{sl}(2,k)}%
+On étudie \ref[eq:decomp] lorsque~$T$ est un tore maximal de~$\G$
+et~$E$ la représentation adjointe~$\g$.
+
+Comme un tore de~$\G$ est conjugué dans~$\GL(2,k)$ à un tore diagonal
+\ref[pa:redfd] et que~$\G$ est normal dans~$\GL(2,k)$ le tore
+$$
+T =\set{\Matrix{s&0\cr0&1/s\cr}\mid s\in G_m}
+\eqlabel[eq:sl2t]
+$$
+est maximal dans~$\G$, et les tores maximaux de~$\G$ lui sont
+conjugués: de bien des façons, l'étude de~$\g$ sous l'action de~$T$
+ne dépend pas du choix particulier du tore maximal, mais juste de
+cette dernière qualité. Pour étudier la représentation adjointe
+de~$\G$ on introduit les sous-groupes à un paramètre
+$$
+h(s) = \Matrix{s&0\cr 0&1/s\cr}
+\quad s\in G_m
+\qquad\mbox{et}\qquad
+\bar h(s) = \Matrix{1/t&0\cr 0&t\cr}
+\quad t\in G_m
+$$
+et les morphismes
+$$
+x(u) = \Matrix{1&u\cr0&1}
+\quad u\in G_a
+\qquad\mbox{et}\qquad
+y(v) = \Matrix{1&0\cr v&1}
+\quad v\in G_a
+.
+\eqlabel[radjsl2xy]
+$$
+Les caractères de~$T$ forment un groupe~$X(T)$ monogène admettant
+deux générateurs
+$$
+\xi = h^*
+\qquad\mbox{et}\qquad
+\bar\xi = \bar h^*
+$$
+où l'étoile signifie la base duale pour~\ref[pa:tdual].
+
+Déterminons l'ensemble~$\Phi$ des racines de~$\G$ relatives  à~$T$:
+les vecteurs tangents
+$$
+H = h'(1) = \Matrix{1&\hphantom{-}0\cr 0 & -1\cr}
+,\qquad
+X = x'(0) = \Matrix{0&1\cr 0 & 0\cr}
+,\qquad\mbox{et}\qquad
+Y = y'(0) = \Matrix{0&0\cr 1 & 0\cr}
+$$
+forment un système-base de~$\g$ et on calcule~$\Ad h(s) H = H$, puis
+$$
+\Ad h(s) X
+= \left.{d\over du}\;h(s)x(u)\inv{h(s)} \right|_{u = 0}
+=\; \left.{d\over du}\;x\left(\xi(s)^2u\right)\right|_{u = 0}
+=\; \xi^2(s) X
+$$
+ainsi que~$\Ad h(s) Y = \bar\xi^2 (s) Y$. On a donc
+$$
+\Phi = \set{\xi^2, \bar\xi^2} = \set{\alpha,\bar\alpha}
+\eqlabel[radjsl2root]
+$$
+et
+$$
+\g
+= {\lie t}\oplus \g_{\alpha} \oplus \g_{\bar\alpha}
+= kH \oplus kX \oplus kY
+.
+$$
+On peut remarque que dans le calcul de la représentation adjointe, le
+chemin~$x$ choisi pour représenter l'espace tangent~$\g_\alpha$
+vérifie~$h(s)x(u)\inv{h(s)} = x(\alpha(s)u)$. Tous les chemins
+représentant cet espace tangent ne partagent pas cette propriété, par
+exemple~$x(u^2)$ ou~$x(u^3)$, on a fait un choix approprié de~$x$.
+\endgroup
+
+%%% End of file `radjsl2.tex'

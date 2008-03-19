@@ -1,0 +1,519 @@
+%%% mdoclist.tex -- Listes à la mdoc -*- LaTeX -*-
+
+% Author: Michael Grünewald
+% Date: Fri Feb 24 13:14:09 GMT 2006
+% Copyright: (C) 2006, 2013 Michael Grünewald
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+@ \section {Listes à la mdoc}
+
+Les macros \emph{mdoc} utilisées par le système FreeBSD pour préparer
+les pages de manuel avec~\emph{groff} proposent un petit nombre de
+préparations de listes. Ce module propose des définitions permettant
+de réaliser des préparations imitant celles obtenus avec \emph{mdoc}.
+
+Une liste est une succession de termes, chaque terme est introduit par
+une \emph{marque} et est formé d'un ou plusieurs alinéas. Les
+préparations réalisées par ce modules sont de trois sortes, selon le
+type de marque utilisé:
+\begin{description}
+\item les listes \emph{à marque fixe} sont les listes les plus ordinaires,
+  chaque terme est introduit par une marque fixe comme un tiret ou une
+  pastille (listes à l'américaine) ou parfois d'autres caractères
+  décoratifs;
+\item les listes \emph{à marque ordinale}, ou \emph{énumération},
+  apparaissent fréquemment dans les ouvrages techniques, chaque terme
+  est introduit par une marque ordinale comme par exemple un nombre,
+  ou un caractère d'un alphabet déterminé;
+\item les listes \emph{à marque textuelle} apparaissent elles-aussi
+  principalement dans les ouvrages techniques, chaque terme est
+  introduit par un court texte.
+\end{description}
+Les anglicismes que \brTeX\ associse à ces trois listes sont
+respectivement \emph{itemization}, \emph{enumeration}
+et~\emph{description}. L'anglicisme associé au terme marque tel
+qu'employé ci-dessus est~\emph{label}.
+
+<<*>>=
+<<Paramètres de la préparation des listes>>
+<<Préparation des listes>>
+<<Listes à marque fixe>>
+<<Listes à marque ordinale>>
+<<Listes à marque textuelle>>
+
+@ \subsection{Paramètres de la préparation des listes}
+
+La préparation des listes est influencée par les valeurs de plusieurs
+registres. Ces registres sont
+\begin{description}
+\item[beginlistskip] espace vertical précédant la liste (macro);
+\item[interlistskip] espace vertical séparant deux termes de la liste
+  (macro);
+\item[endlistskip] espace vertical succédant à la liste (macro);
+\item[listleftindent] régit la grandeur de la réserve apparaissant à
+  gauche des termes de la liste (dimension);
+\item[listrigthindent] régit la grandeur de la réserve apparaissant à
+  droite des termes de la liste (dimension);
+\item[readlabel] procédure dont le rôle est de lire la marque à
+  utiliser pour introduire un terme de la liste (macro);
+\item[labelindent] espace horizontal précédant la marque (dimension);
+\item[labelwidth] largeur de la marque (dimension);
+\item[labelspace] espace horizontal succédant à la marque (dimension);
+\item[labelmake] régit la préparation de la marque pour le paragraphe
+  (macro);
+\item[labelprepare] régit la préparation de la marque pour la
+  structure (macro).
+\end{description}
+
+La procédure \fn{labelprepare} est chargée de positionner une
+\emph{hbox} sur la page, cette \emph{hbox} contenat la marque. La
+procédure \emph{labelmake} sert à remplir cette boîte, elle peut
+également être utilisée en mode horizontal pour préparer une référence
+à un terme d'une liste. (Voir plus bas.)
+
+<<Paramètres de la préparation des listes>>=
+\newmacro\listbeginskip
+\newmacro\listinterskip
+\newmacro\listendskip
+\newdimen\listleftindent
+\newdimen\listrightindent
+\newmacro\readlabel
+\newdimen\labelindent
+\newdimen\labelwidth
+\newdimen\labelspace
+\newmacro\labelmake
+\newmacro\labelprepare
+
+
+% @ La procédure \fn{newlistparameters} produit une macro dont le
+% texte de remplacement posiitonne les paramètres de préparation des
+% listes. Lors de la création de cette macro, son texte de remplacement
+% est vide, on peut ajouter des liaisons avec \fn{setlistparameters}.
+% Après évaluation des lignes suivantes,
+% \begin{example}
+%   \newlistparameters\mylist@P
+%   \setlistparameters\mylist@P\readlabel\readordinal
+% \end{example}
+% le texte de remplacement de \fn{mylist@p} contient
+% \verb|\let\readlabel=\readordinal|.
+
+% \begin{remark}
+%   Les registres signalés ci-dessus comme des \emph{macros} doivent
+%   avoir un texte de remplacement.
+% \end{remark}
+
+% <Paramètres de la préparation des listes>=
+% \def\newlistparameters#1{\let#1\empty}
+% \let\listparameters@m\empty
+% \let\listparameters@d\empty
+
+% \listrappend{\listbeginskip}\to\listparameters@m
+% \listrappend{\listinterskip}\to\listparameters@m
+% \listrappend{\listendskip}\to\listparameters@m
+% \listrappend{\listleftindent}\to\listparameters@d
+% \listrappend{\listrightindent}\to\listparameters@d
+% \listrappend{\readlabel}\to\listparameters@m
+% \listrappend{\labelindent}\to\listparameters@d
+% \listrappend{\labelwidth}\to\listparameters@d
+% \listrappend{\labelspace}\to\listparameters@d
+% \listrappend{\labelprepare}\to\listparameters@m
+
+% \def\setlistparameters#1#2#3{%
+%   \beginnext
+%   \toksloadcsexpansion#1\to\rtA
+%   \testlistmem\listparameters@m
+%   \iflistitem
+%     \toksrappend\let#2=#3\to\rtA
+%   \else
+%     \toksrappend#2=#3\to\rtA
+%   \fi
+%   \rtB{\def#1}%
+%   \edef\next{\the\rtB{\the\rtA}}%
+%   \endnext
+% }
+
+@ \subsection{Préparation des listes}
+
+La préparation des listes est réalisée par trois routines
+génériques. Les paramètres de ces routines génériques peuvent être
+ajustés pour décliner la préparation de plusieurs façons différentes.
+
+Ces trois routines sont~\fn{beginlist}, \fn{endlist}
+et~\fn{itemprepare}. Brièvement, ces routines sont respectivement
+chargées de commencer et de terminer la préparation de la liste, et de
+préparer chaque terme de la liste. Notons cependant que la procédure
+\emph{itemprepare} n'est normalement pas utilisée directement mais à
+travers la macro~\fn{item}; ceci est expliqué en détail plus loin.
+
+@ \paragraph{Péparation des termes la liste}
+
+Chaque terme de la liste est introduit par la commande~\fn{item},
+cette commande lit la valeur de la marque puis prépare la marque et
+prépare~\TeX\ à traiter les paragraphes suivants; ces paragraphes sont
+le contenu principal de la liste.
+
+<<Préparation des listes>>=
+\newtoks\itemlabel
+
+\def\item@A{%
+  \readlabel\to\itemlabel\then\itemprepare\done
+}
+
+\def\itemprepare{
+  \par
+  \item@I
+  \let\item@I\listinterskip
+  \noindent
+  \beginnext
+    \edef\next{\noexpand\labelprepare{\the\itemlabel}}%
+  \endnext
+  \ignorespaces
+}
+
+@ \begin{remark}
+  Pour préparer automatiquement une liste, on renseigne manuellement
+  la valeur de \va{itemlabel} et on utilise la procédure
+  \fn{itemprepare}.
+\end{remark}
+
+@ Les trois types de liste décrits plus haut utilisent des procédures
+différentes pour lire la marque, pour les routines génériques de
+préparation des listes, cette procédure de lecture est le paramètre
+\fn{readlabel}. La procédure~\fn{readlabel} doit avoir le même format
+que les procédures~\fn{readnothing} et~\fn{readordinal} définies
+ci-dessous, lors de son appel, elle positionne le
+registre~\va{itemlabel} à une valeur à utiliser comme marque pour
+introduire le prochain terme de la liste.
+
+Pour une liste à marque constante, le paramètre \fn{readlabel} prend
+la valeur \fn{readnothing}, pour une liste à marque ordinale il prend
+la valeur \fn{readodinal} et pour une liste à marque textuelle la
+valeur \fn{readline}.
+
+<<Préparation des listes>>=
+\def\readordinal\to#1\then#2\done{%
+  \beginnext
+  \rtA{#1}%
+  \rtB{#2}%
+  \afterassignment\readordinal@N
+  \rcA
+}
+
+\def\readordinal@N{%
+  \edef\next{\the\rtA{\the\rcA}\noexpand\relax\the\rtB}%
+  \endnext
+}
+
+\def\readnothing\to#1\then#2\done{#1{}#2}
+
+
+@ \paragraph{Marqueur des listes à marqueur constant}
+
+Ce marqueur est défini par un paramètre régional, \emph{itemmark}.
+L'enregistrement administratif de la procédure \fn{itemmarkadjustment}
+se fait par le biais du fichier \emph{format.spec} et non avec la
+commande \fn{addlocaleadjustment}.
+
+<<Préparation des listes>>=
+\def\itemmarkadjustment#1#2{%
+  \csbindlocalecsname{itemmark}{#1}{#2}\to{itemmark}%
+}
+
+\addlocalefacility{itemmark}
+\addlocaleadjustment\itemmarkadjustment
+
+\def\itemmark{*}
+
+
+@ \paragraph{Ouverture et fermeture de la liste}
+
+Les procédures \fn{beginlist} et \fn{endlist} doivent être utilisées
+avant de commencer à énumérer les termes d'une liste et après avoir
+terminé. La procédure~\fn{newlist} permet de créer des listes
+personnalisées, elle est utilisée pour définir les listes
+\fn{itemization}, \fn{enumeration} et \fn{description}.
+
+<<Préparation des listes>>=
+\def\beginlist{%
+  \par
+  \listbeginskip
+  \advance\leftskip\listleftindent
+  \advance\rightskip\listrightindent
+  \let\item@I\relax
+  \let\item\item@A
+}
+
+\def\endlist{%
+  \par
+  \listendskip
+  \ignorespaces
+}
+
+\def\newlist#1\with#2\done{%
+  \csdef{begin#1}{\begingroup#2\relax\beginlist}%
+  \csdef{end#1}{\par\endgroup\endlist}
+}
+
+@ \subsection{Listes à marque fixe}
+
+Les listes à marque fixes peuvent utilisent la marque \fn{itemmark}
+pour introduire les termes de la liste. Le texte de remplacement de
+\fn{itemmark} est un paramètre régional.
+
+<<Listes à marque fixe>>=
+\def\labelprepare@mark#1{\llap{\labelmake{#1}\hskip\labelspace}}
+\def\labelmake@itemmark#1{\itemmark}
+
+\newlist{itemization}\with
+  \let\listbeginskip\smallskip
+  \let\listinterskip\smallskip
+  \let\listendskip\smallskip
+  \listleftindent\itemindent
+  \listrightindent\z@
+  \let\readlabel\readnothing
+  \labelspace.16667em
+  \let\labelprepare\labelprepare@mark
+  \let\labelmake\labelmake@itemmark
+\done
+
+
+@ \subsection{Listes à marque ordinale}
+
+Les listes à marque ordinale utilisent un symbole ordinal --- le
+$n$-ième symbole d'une collection donnée, par exemple l'alphabet ou
+l'ensemble des nombres entiers --- pour introduire chacun des termes
+de la liste. Il est fort utile de pouvoir facilement utiliser ces
+symboles dans le texte, on recommande donc que la définition de
+procédures pour la préparation de listes à marqueur ordinal soit
+accompagnée de la définition d'une procédure permettant de la
+reproduction d'une marque ordinale arbitraire.
+
+L'exemple de procédure \fn{enumeration} est donc accompagné d'une
+procédure \fn{refenumeration} utilisée pour faire référence à un terme
+de l'énumération.
+
+<<Listes à marque ordinale>>=
+\newlist{enumeration}\with
+  \let\listbeginskip\smallskip
+  \let\listinterskip\smallskip
+  \let\listendskip\smallskip
+  \listleftindent\itemindent
+  \listrightindent\z@
+  \let\readlabel\readordinal
+  \let\labelprepare\labelprepare@ordinal
+  \let\labelmake\labelmake@decimal
+\done
+
+\let\refenumeration\labelmake@decimal
+
+
+<<Listes à marque ordinale>>=
+\def\labelprepare@ordinal#1{%
+  \begingroup
+  \llap{\labelmake{#1}\enspace}%
+  \endgroup
+}
+
+\def\labelmake@decimal#1{%
+  \beginnext
+  \toksloaddecimal{#1}\to\rtA
+  \edef\next{\the\rtA.}%
+  \endnext
+}
+
+\def\labelmake@alpha#1{%
+  \beginnext
+  \toksloadalpha{#1}\to\rtA
+  \edef\next{\the\rtA)}%
+  \endnext
+}
+
+\def\labelmake@Alpha#1{%
+  \beginnext
+  \toksloadAlpha{#1}\to\rtA
+  \edef\next{\the\rtA.}%
+  \endnext
+}
+
+\def\labelmake@roman#1{%
+  \beginnext
+  \toksloadroman{#1}\to\rtA
+  \edef\next{\em{\the\rtA)}}%
+  \endnext
+}
+
+\def\labelmake@Roman#1{%
+  \beginnext
+  \toksloadRoman{#1}\to\rtA
+  \edef\next{\the\rtA.}%
+  \endnext
+}
+
+\def\labelmake@greek#1{%
+  \beginnext
+  \toksloadgreek{#1}\to\rtA
+  \edef\next{\the\rtA)}%
+  \endnext
+}
+
+\def\labelmake@Greek#1{%
+  \beginnext
+  \toksloadGreek{#1}\to\rtA
+  \edef\next{\the\rtA.}%
+  \endnext
+}
+
+@ \subsection{Listes à marque textuelle}
+
+Les listes à marque textuelle utilisent un court texte pour introduire
+un terme de la liste. Ce type de préparation est utilisé dans les
+ouvrages techniques pour donner des informations succintes sur les
+éléments d'un petit ensemble; on l'utilise par exemple dans les
+manuels de logiciels pour décrire les codes de retour d'une procédure.
+
+<<Listes à marque textuelle>>=
+\newlist{description}\with
+  \let\listbeginskip\medskip
+  \let\listinterskip\medbreak
+  \let\listendskip\smallskip
+  \listleftindent\itemindent
+  \listrightindent\z@
+  \let\readlabel\readline
+  \labelspace 1.5ex
+  \labelindent-\displayleftmargin
+  % \labelwidth est ignoré pour `inset'
+  \let\labelprepare\labelprepare@inset
+  \let\labelmake\labelmake@emphasis
+\done
+
+<<Listes à marque textuelle>>=
+% * MDOC:
+%
+% -tag     A list with tags.  Use -width to specify the tag width.
+%
+%          SL    sleep time of the process (seconds blocked)
+%          PAGEIN
+%                number of disk I/O's resulting from references by
+%                the process to pages not loaded in core.
+%          UID   numerical user-id of process owner
+%          PPID  numerical id of parent of process priority (non-pos-
+%                itive when in non-interruptible wait)
+
+\def\labelprepare@tag#1{%
+  \hskip\labelindent
+  \begingroup
+    \setbox\rbA\hbox{\labelmake{#1}}%
+    \rdA=\labelwidth
+    \advance\rdA\labelspace
+    \advance\rdA-\wd\rbA
+    \ifdim\rdA<\z@
+      \box\rbA\par\noindent
+    \else
+      \box\rbA\hskip\rdA
+    \fi
+    \endgroup
+}
+
+% * MDOC:
+%
+% -hang    A list with hanging tags.
+%
+%          Hanged  labels appear similar to tagged lists when the
+%                  label is smaller than the label width.
+%
+%          Longer hanged list labels blend into the paragraph unlike
+%                  tagged paragraph labels.
+
+\def\labelprepare@hang#1{%
+  \hskip\labelindent
+  \begingroup
+    \setbox\rbA\hbox{\labelmake{#1}}%
+    \rdA=\labelwidth
+    \advance\rdA-\wd\rbA
+    \box\rbA\hskip\labelspace
+    \ifdim\rdA>\z@
+      \box\rbA\hskip\rdA
+    \fi
+    \endgroup
+}
+
+% * MDOC:
+%
+% -ohang   Lists with overhanging tags do not use indentation for the
+%          items; tags are written to a separate line.
+%
+%          SL
+%          sleep time of the process (seconds blocked)
+%
+%          PAGEIN
+%          number of disk I/O's resulting from references by the
+%          process to pages not loaded in core.
+%
+%          UID
+%          numerical user-id of process owner
+%
+%          PPID
+%          numerical id of parent of process priority (non-positive
+%          when in non-interruptible wait)
+
+\def\labelprepare@ohang#1{%
+  \hskip\labelindent
+  \labelmake{#1}%
+  \par
+  \noindent
+}
+
+% * MDOC:
+%
+% -inset   Here is an example of inset labels:
+%
+%          Tag The tagged list (also called a tagged paragraph) is
+%          the most common type of list used in the Berkeley manuals.
+%          Use a -width attribute as described below.
+%
+%          Diag Diag lists create section four diagnostic lists and
+%          are similar to inset lists except callable macros are
+%          ignored.
+%
+%          Hang Hanged labels are a matter of taste.
+%
+%          Ohang Overhanging labels are nice when space is con-
+%          strained.
+%
+%          Inset Inset labels are useful for controlling blocks of
+%          paragraphs and are valuable for converting -mdoc manuals
+%          to other formats.
+
+\def\labelprepare@inset#1{%
+  \hskip\labelindent
+  \labelmake{#1.}%
+  \hskip\labelspace
+}
+
+%
+% Labelmake
+%
+
+\def\labelmake@emphasis#1{{\emphasis #1}}
+\def\labelmake@symbolic#1{{\symbolic #1}}
+\def\labelmake@literal#1{{\literal #1}}
+
+%%% End of file `modclist.tex'

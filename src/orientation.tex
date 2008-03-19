@@ -1,0 +1,82 @@
+%%% orientation.tex -- Orientation dans le jeu de modules
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Ven 20 jul 2007 23:57:47 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Orientation}
+
+Nous examinons ici les différentes sortes de modules présents dans
+\brTeX\ et les façons de les agencer pour obtenir un format. La
+conception de \brTeX\ encourage la création de formats personnalisés
+pour les individus, les associations, les sociétés, et de façon
+générale toute sorte de projet faisant intervenir~\TeX. De plus il n'y
+a pas dans~\brTeX\ de format «principal».
+
+Énumérons les ingrédients de la recette permettant d'obtenir un format à
+partir des modules fournis par \brTeX.
+
+\begin{description}
+
+\item[Noyau]
+Le noyau offre des services de haut niveau et définit des types de
+données pour réaliser ces services. Le noyau de \brTeX\ définit des
+facilités pour la programmation, il rend des services pour
+l'utilisation de plusieurs types de bibliothèques de procédures et
+pour l'utilisation de paramètres régionaux.
+
+\item[Définitions de base]
+Elles sont un regroupement de définitions disparates, un
+sous-enesmble des définitions figurant dans~\emph{plian}.
+
+\item[Plain font selection scheme]
+Ce module définit un accès souple aux fontes de caractères,
+ressemblant à ce qu'on trouve dans~\LaTeX.
+
+\item[Conventions de saisie]
+Les conventions de saisie transforment les séquencesde la
+forme \cs{compguillemteleft}, \cs{puncguillemetleft} et~\cs{euro} en
+les commandes adéquates pour produire le symbole souhaité, avec
+éventuellement un formatage supplémentaire.
+
+\item[Codage de l'entrée]
+Le module~\emph{latin9} s'arrange pour que les caractères hors du
+champ ASCII7 soient traduits dans le langage de la convention
+de saisie.
+
+\end{description}
+
+Les éléments énumérés ci-dessus sont des éléments fixes, communs à
+tous les formats produits avec~\brTeX: chaque rôle évoqué est tenu par
+un et un seul des modules de~\brTeX. Les rôles suivants peuvent être
+endossés par plusieurs modules:
+
+\begin{description}
+\item[Fontes pour le texte]
+Les modules~\emph{fontlm}, \emph{fontaps}, \emph{fontpx}, \emph{fontpx}
+et d'autres, instaurent l'utilisation des fontes Latin Modern, Adobe
+Palatino et d'autres, Adobe Palatino et Times
+\item[]
+\end{description}
+
+
+
+%%% End of file `orientation.tex'

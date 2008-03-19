@@ -1,0 +1,78 @@
+%%% drvpdf.nw -- Pilote pour la sorite PDF -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 24 mar 2007 12:02:40 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier drvpdf.nw}
+<<*>>=
+
+\setdriver{pdf}
+\pdfoutput=1
+
+@ \paragraph{Insertion du format de la page dans le fichier produit}
+
+<<*>>=
+\def\dvipsshipoutpapersize{%
+  \global\let\dvipsshipoutpapersize\relax
+  \global\pdfpagewidth\paperwidth
+  \global\pdfpageheight\paperheight
+}
+
+\addhook{%
+  \addhook\dvipsshipoutpapersize\to\selectlayouthook
+}\to\formatdumphook
+
+\addhook{%
+  \unmagnify\pdfhorigin
+  \unmagnify\pdfvorigin
+}\to\magnificationhook
+
+@ \paragraph{Insertion d'une image}
+
+<<*>>=
+\newdimen\imageheight
+\newdimen\imagewidth
+
+\def\boxloadimage#1\to#2{%
+  \beginnext
+  \let\rmA\empty
+  \let\rmB\empty
+  \ifdim\imagewidth>0pt\edef\rmA{ width \the\imagewidth}\fi
+  \ifdim\imageheight>0pt\edef\rmB{ height \the\imageheight}\fi
+  \testexists{#1.pdf}\ifexists\rtA{#1.pdf}\else\rtA{#1.png}\fi
+  \rtB={#2}%
+  \rtC={\imagewidth\z@\imageheight\z@}%
+  \edef\next{%
+    \noexpand\setbox\the\rtB=\noexpand\hbox{%
+      \noexpand\pdfximage\rmA\rmB{\the\rtA}%
+      \pdfrefximage\pdflastximage
+    }%
+    \the\rtC
+  }%
+  \endnext
+}
+
+\def\image#1{{\boxloadimage#1\to\rbA\box\rbA}}
+
+\def\figure#1{$$\image{#1}$$}
+
+%%% End of file `drvpdf.nw'

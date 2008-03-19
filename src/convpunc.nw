@@ -1,0 +1,68 @@
+%%% convpunc.nw -- BHRID Kernel -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Mer 28 mar 2007 14:54:16 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier convpunc.nw}
+<<*>>=
+
+%
+% Convention pour la ponctuation
+%
+
+% Les conventions pour la ponctuation ont comme domaine les séquences
+% `puncguillemetleft', `punccolon', etc. Ces séquences placent l'espace
+% correct autour des signes, utilisent la convention `text' pour
+% effectivement réaliser le caractère souhaité.
+%
+% Les définitions `puncguillemtleft' etc. sont un paramètre
+% régional. On peut toutefois utiliser la procédure
+% `disableconventionpunc' pour supprimer toute convention.
+
+\addlocalefacility{punctuation}
+
+\addlocaleadjustment\selectconventionpunc
+
+\def\misspuncdef#1{\let#1=\undefined}
+
+\def\disableconventionpunc{%
+  \let\punccolon=\textcolon
+  \let\puncsemicolon=\textsemicolon
+  \let\puncquestion=\textquestion
+  \let\puncexclam=\textexclam
+  \let\puncguillemetleft=\textguillemetleft
+  \let\puncguillemetright=\textguillemetright
+  \let\puncexclamdown=\textexclamdown
+  \let\puncquestiondown=\textquestiondown
+  \let\puncdblquoteleft=\textdblquoteleft
+  \let\puncdblquoteright=\textdblquoteright
+}
+
+\def\enableconventionpunc{%
+  \beginnext
+  \edef\next{\noexpand\selectconventionpunc{\currentlocale}{\currentlocalevariant}}%
+  \endnext
+}
+
+\def\selectconventionpunc#1#2{\cslocale{punctuation}{#1}{#2}}
+
+%%% End of file `convpunc.nw'

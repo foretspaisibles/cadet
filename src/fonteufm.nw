@@ -1,0 +1,61 @@
+%%% fonteufm.nw -- Utilisation de Euler Fraktur -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 31 mar 2007 05:51:50 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier fonteufm.nw}
+<<*>>=
+
+% Ce fichier procède aux déclarations nécessaires à l'utilisation des
+% fontes Euler Fraktur (eufm) de Hermann Zapf. Ces déclarations
+% utilisent l'identifiant `mathfrak' pour accéder aux registres de
+% familles de fontes. Ils remplacent la commande `cal' de façon
+% appropriée.
+
+\ifx\mathfrak\undefined
+  \newfam\mathfrak
+  \addmathfam\mathfrak
+\fi
+
+\def\setmathfrak{%
+  \setfontpage{XXX}%
+  \setfontfamily{eu}%
+  \setfontshape{r}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+}
+
+\setmathfamattributes\mathfrak\setmathfrak
+
+\def\fk{\fam\mathfrak}
+
+\begingroup
+\setmathfrak
+\setfontsize{10}\fontbind{eufm10}
+\setfontsize{7}\fontbind{eufm7}
+\setfontsize{5}\fontbind{eufm5}
+
+\setfontadjustsize{6}{6}{\@m}{eufm7}
+\setfontadjustsize{8}{\@M}{\@m}{eufm10}
+\endgroup
+
+%%% End of file `eufm.nw'

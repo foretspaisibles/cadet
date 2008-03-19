@@ -1,0 +1,305 @@
+%%% convmath.nw -- Convention pour le mode mathématique -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 31 mar 2007 05:31:45 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier convmath.nw}
+<<*>>=
+
+%
+% Sélection des fontes
+%
+
+\addhook\fam\z@\to\rmhook
+
+\def\mit{\fam\@ne}
+
+\def\cal{\fam\tw@}
+
+\begingroup
+
+%
+% Ensembles usuels,
+%  ensembles de nombres, groupes classiques, espaces de fonctions
+%
+
+% On définit des abréviations pour saisir les ensembles usuels, comme
+% les ensebles de nombres, les groupes classiques, les variétés
+% usuelles, comme les espaces affines, projectifs, les sphères et les
+% tores. Ces ensembles sont préparés grâce à la fonte
+% `usualsetfont'. Les espaces de fonctions sont cependant préparés
+% avec `cal'.
+
+\gdef\usualsetfont{\fam\mathbf}
+\def\\#1#2{\gdef#1{{\usualsetfont #2}}}
+%
+% Ensembles de nombres usuels
+%  les quaternions et les octonions ne sont pas considérés comme
+%  usuels.
+%
+\\\N{N}%                Entiers naturels
+\\\Z{Z}%                Entiers relatifs
+\\\Q{Q}%                Nombres rationnels
+\\\R{R}%                Nombres réels
+\\\C{C}%                Nombres complexes
+\\\Quaternions{H}%      Quaternions
+%
+% Groupes classiques
+%
+\\\GL{GL}%              Groupe linéaire
+\\\SL{SL}%              Groupe spécial linéaire
+\\\math@O{O}%           Groupe orthogonal
+\\\GO{GO}%              Groupe des similitudes
+\\\SO{SO}%              Groupe spécial orthogonal
+\\\Sp{Sp}%              Groupe symplectique
+\\\GA{GA}%              Groupe affine
+\\\U{U}%                Groupe unitaire
+\\\SU{U}%               Groupe spécial unitaire
+\\\PGL{PGL}%            Groupe des homographies
+\\\PSL{PSL}%            Groupe des homographies ``spéciales''
+\\\PSO{PSO}%            Groupe des homographies
+%                        stabilisant une quadrique
+%
+% Espaces géométriques
+%
+\\\A{A}%                Espace affine
+\\\math@P{P}%           Espace projectif
+\\\math@S{S}%           Sphère
+\\\T{T}%                Tores
+\\\G{G}%                Variétés de Grassmann
+%
+% Remarque: les liaisons \math@O \O, \math@P \P et \math@S \S sont
+% réalisées dans le module `convent.tex'; ces séquences ont une autre
+% signification dans le mode texte.
+
+\def\\#1#2{\gdef#1{{\cal #2}}}
+
+\\\cont{C}%             Fonctions continues
+\\\rcls{C}%             Classe de régularité
+\\\boun{B}%             Fonctions bornées
+\\\func{F}%             Toutes les fonctions
+\\\holo{O}%		Ensemble de fonctions holomorphes
+\\\sheaf{O}%            Faisceau des fonctions régulières
+
+\\\pset{P}%             Ensemble des parties d'un ensemble
+%			 this is called the ``power set''
+
+%
+% Algèbres de tenseurs
+%
+
+% On définit des séquences pour préparer les algèbres de tenseurs,
+% auxquelles on adjoint les algèbres de matrices. Ces algèbres sont
+% préparées avec la fonte `tensorsetfont'.
+
+\gdef\tensorsetfont{\fam\mathrm}
+
+\def\\#1#2{\gdef#1{{\tensorsetfont #2}}}
+\\\mat{M}%              Algèbre de matrices
+\\\ten{T}%              Algèbre tensorielle/algèbre libre
+\\\sym{S}%              Algèbre symétrique
+\\\alt{\Lambda}%	Algèbre extérieure
+%			 algèbre de Grassmann
+
+%
+% Groupe symétrique
+%
+
+\def\\#1#2{\gdef#1{{\fk #2}}}
+
+\\\sign{p}%		Morphisme signature, (Z fonction signe \sgn)
+\\\gsym{S}%		Groupe symétrique
+\\\galt{A}%		Groupe alterné
+
+%
+% Objets catégoriques
+%
+
+\gdef\categoricfont{\fam\mathrm}
+\def\\#1#2{\gdef#1{\mathop{\categoricfont #2}\nolimits}}
+
+\\\ker{Ker}%            Noyau
+\\\im{Im}%              Image
+\\\pr{pr}%              Projection sur les facteurs
+%                        d'un produit cartésien
+
+\\\homo{Hom}%           Homomorphismes
+\\\endo{End}%           Endomorphismes
+\\\auto{Aut}%           Automorphismes
+\\\isom{Iso}%           Isomorphismes
+
+%
+% Théorie des ensembles
+%
+
+\gdef\card{%            Cardinal d'un ensemble
+  \mathop{\categoricfont Card}\nolimits}%
+
+\gdef\pset{%            Ensemble des parties d'un ensemble
+%                        this is called ``power set''
+  \mathop{\cal P}\nolimits}%
+
+%
+% Opérateurs
+%
+
+\gdef\operatorfont{\fam\mathrm}
+\def\\#1#2{\gdef#1{\mathop{\operatorfont #2}}}
+
+\\\lim{lim}
+\\\limsup{lim\,sup}
+\\\liminf{lim\,inf}
+\\\max{max}
+\\\min{min}
+\\\sup{sup}
+\\\inf{inf}
+\\\Pr{Pr}%              Probabilité, pour les américains
+\\\gcd{gcd}
+
+\\\pgcd{pgcd}
+\\\ppcm{ppcm}
+
+\\\det{det}%            Déterminant
+\\\trace{tr}%           Trace d'une application linéaire
+
+
+%
+% Fonctions usuelles
+%
+
+\gdef\functionfont{\fam\mathrm}
+
+\\\log{log}
+\\\lg{lg}
+\\\ln{ln}
+\\\sin{sin}
+\\\arcsin{arcsin}
+\\\sinh{sinh}
+\\\cos{cos}
+\\\arccos{arccos}
+\\\cosh{cosh}
+\\\tan{tan}
+\\\arctan{arctan}
+\\\tanh{tanh}
+\\\cot{cot}
+\\\coth{coth}
+\\\sec{sec}% sécante
+\\\csc{csc}% cosécante
+\\\arg{arg}
+\\\exp{exp}
+\\\deg{deg}
+
+\\\tg{tg}
+\\\th{th}
+\\\arccos{Arc\,cos}
+\\\arcsin{Arc\,sin}
+\\\arctg{Arc\,tg}
+\\\argch{Arg\,ch}
+\\\argsh{Arg\,sh}
+\\\argth{Arg\,th}
+
+%
+% Derniers regrets
+%
+
+\def\\#1#2{\gdef#1{\mathop{#2}\nolimits}}
+
+\\\primes{\cal P}%		Nombres premiers
+\\\deg{\mit d^\circ}%		Degré, par exemple pour les polynômes
+\\\sgn{\functionfont sgn}%	Fonction signe
+\\\mod{\functionfont mod}%      Modulo
+
+%
+% Géométrie algébrique
+%
+\\\var{\fk Z}%			Variété d'un idéal
+\\\idl{\fk A}%			Équations (idéal) d'un ensemble
+\\{\rad#1}{\fk R(#1)}%		Radical d'un idéal
+\global\let\rad\sqrt
+
+\endgroup
+
+%
+% Ensembles en extension
+%
+
+% La fonction `set' prépare les ensembles avec des accolades un peu
+% repoussées et ajuste autoatiquement la barre verticale `mid' lorsque
+% celle-ci est présente.
+
+\def\set#1{\set@A#1\mid\mid\set@A}
+\def\set@A#1\mid#2\mid#3\set@A{%
+  \teststrempty{#2}\ifstrempty\set@B{#1}\else\set@C{#1}{#2}\fi
+}
+\def\set@B#1{\left\{\,#1\,\right\}}
+\def\set@C#1#2{\mathchoice%
+  {\set@D\displaystyle{#1}{#2}}%
+  {\set@D\textstyle{#1}{#2}}%
+  {\set@D\scriptstyle{#1}{#2}}%
+  {\set@D\scriptscriptstyle{#1}{#2}}%
+}
+
+\def\set@D#1#2#3{%
+  \begingroup
+  \setbox\rbA=\hbox{$#1#2$}%
+  \setbox\rbB=\hbox{$#1#3$}%
+  \setbox\rbC=\vbox{}%
+  \ifdim\ht\rbA>\ht\rbB
+    \ht\rbC=\ht\rbA
+  \else
+    \ht\rbC=\ht\rbB
+  \fi
+  \ifdim\dp\rbA>\dp\rbB
+    \dp\rbC=\dp\rbA
+  \else
+    \dp\rbC=\dp\rbB
+  \fi
+  \left\{\,#1#2\mathrel{\left\vert\box\rbC\right.}#1#3\,\right\}
+  \endgroup
+}
+
+% mbox HORIZONTALSTUFF
+%
+% Mathbox, insertion de textes dans le mode mathématique, pour les
+% ``displayed equations''.
+
+\newhook\mboxhook
+\def\mbox#1{\hbox{\runhook\mboxhook#1}}
+
+%
+% Quelques abréviations
+%
+
+\gdef\impl{\Rightarrow}%	Implique, implies
+\gdef\ifs{il faut, et il suffit, }% pour que ... \ifs que ... .
+\gdef\ssi{si, et seulement si, }% a lieu ... \ssi on a ... .
+\gdef\cqfd{c.\thinspace q.\thinspace f.\thinspace d.}
+\def\inv#1{{#1}^{-1}}
+
+% prop PROIPSITION
+%
+% Pour placer une proposition (``assemblage'' bourbakiste)  entre
+% crochets en ajoutant un petit espace.
+
+\def\prop#1{\left[\;#1\;\right]}
+
+%%% End of file `convmath.nw'

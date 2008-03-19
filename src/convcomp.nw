@@ -1,0 +1,434 @@
+%%% convcomp.nw -- Conventions pour les symboles du texte -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Dim 17 déc 2006 18:19:56 CET
+
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier convcomp.nw}
+<<*>>=
+
+%
+% Convention pour les compagnons du texte
+%
+
+% Les compagnons du texte sont tous les caractères du genre `section'
+% `paragraphe', `copyright', etc.
+
+\defselect{conventioncomp}{latin9}
+
+\let\compchardef=\fontchardef
+
+\csdef{selectconventioncomp@cork}{%
+  \setfontchardefpage{CS1}%
+  \compchardef\compgrave="00
+  \compchardef\compacute="01
+  \compchardef\compcircumflex="02
+  \compchardef\comptilde="03
+  \compchardef\compdieresis="04
+  \compchardef\comphungarumlaut="05
+  \compchardef\compring="06
+  \compchardef\compcaron="07
+  \compchardef\compbreve="08
+  \compchardef\compmacron="09
+  \compchardef\compdotaccent="0A
+  \compchardef\compcedilla="0B
+  \compchardef\compogonek="0C
+  \compchardef\compquotebase="0D
+  \compchardef\compdblquotebase="12
+  \compchardef\comptwelveudash="15
+  \compchardef\compthreequartersemdash="16
+  \compchardef\compcwmcapital="17
+  \compchardef\comparrowleft="18
+  \compchardef\comparrowright="19
+  \compchardef\comptieaccentlowercase="1A
+  \compchardef\comptieaccentcapital="1B
+  \compchardef\comptieaccentlowercasenew="1C
+  \compchardef\comptieaccentcapitalnew="1D
+  \compchardef\compcwmascender="1F
+  \compchardef\compblanksymbol="20
+  \compchardef\compdollar="24
+  \compchardef\compquotesingle="27
+  \compchardef\compasteriskmath="2A
+  \compchardef\compcomma="2C
+  \compchardef\comphyphendbl="2D
+  \compchardef\compperiod="2E
+  \compchardef\compfraction="2F
+  \compchardef\compzerooldstyle="30
+  \compchardef\componeoldstyle="31
+  \compchardef\comptwooldstyle="32
+  \compchardef\compthreeoldstyle="33
+  \compchardef\compfouroldstyle="34
+  \compchardef\compfiveoldstyle="35
+  \compchardef\compsixoldstyle="36
+  \compchardef\compsevenoldstyle="37
+  \compchardef\compeightoldstyle="38
+  \compchardef\compnineoldstyle="39
+  \compchardef\compangleleft="3C
+  \compchardef\compminus="3D
+  \compchardef\compangleright="3E
+  \compchardef\compmho="4D
+  \compchardef\compbigcircle="4F
+  \compchardef\compohm="57
+  \compchardef\compdblbracketleft="5B
+  \compchardef\compdblbracketright="5D
+  \compchardef\comparrowup="5E
+  \compchardef\comparrowdown="5F
+  \compchardef\compgrave="60
+  \compchardef\compborn="62
+  \compchardef\compdivorced="63
+  \compchardef\compdied="64
+  \compchardef\compleaf="6C
+  \compchardef\compmarried="6D
+  \compchardef\compmusicalnote="6E
+  \compchardef\comptildelow="7E
+  \compchardef\compvarhyphendbl="7F
+  \compchardef\compbreve="80
+  \compchardef\compcaron="81
+  \compchardef\comphungarumlaut="82
+  \compchardef\compdblgrave="83
+  \compchardef\compdagger="84
+  \compchardef\compdaggerdbl="85
+  \compchardef\compdblverticalbar="86
+  \compchardef\compperthousand="87
+  \compchardef\compbullet="88
+  \compchardef\compcentigrade="89
+  \compchardef\compdollaroldstyle="8A
+  \compchardef\compcentoldstyle="8B
+  \compchardef\compflorin="8C
+  \compchardef\compcolonmonetary="8D
+  \compchardef\compwon="8E
+  \compchardef\compnaira="8F
+  \compchardef\compguarani="90
+  \compchardef\comppeso="91
+  \compchardef\complira="92
+  \compchardef\comprecipe="93
+  \compchardef\compinterrobang="94
+  \compchardef\compgnaborretni="95
+  \compchardef\compdong="96
+  \compchardef\comptrademark="97
+  \compchardef\comppermyriad="98
+  \compchardef\compvarparagraph="99
+  \compchardef\compbaht="9A
+  \compchardef\compnumero="9B
+  \compchardef\compdiscount="9C
+  \compchardef\compestimated="9D
+  \compchardef\compopenbullet="9E
+  \compchardef\compservicemark="9F
+  \compchardef\compquillbracketleft="A0
+  \compchardef\compquillbracketright="A1
+  \compchardef\compcent="A2
+  \compchardef\compsterling="A3
+  \compchardef\compcurrency="A4
+  \compchardef\compyen="A5
+  \compchardef\compbrokenbar="A6
+  \compchardef\compsection="A7
+  \compchardef\compdieresis="A8
+  \compchardef\compcopyright="A9
+  \compchardef\compordfeminine="AA
+  \compchardef\compcopyleft="AB
+  \compchardef\complogicalnot="AC
+  \compchardef\comppublished="AD
+  \compchardef\compregistered="AE
+  \compchardef\compmacron="AF
+  \compchardef\compdegree="B0
+  \compchardef\compplusminus="B1
+  \compchardef\comptwosuperior="B2
+  \compchardef\compthreesuperior="B3
+  \compchardef\compacute="B4
+  \compchardef\compmu="B5
+  \compchardef\compparagraph="B6
+  \compchardef\compperiodcentered="B7
+  \compchardef\compreferencemark="B8
+  \compchardef\componesuperior="B9
+  \compchardef\compordmasculine="BA
+  \compchardef\compradical="BB
+  \compchardef\componequarter="BC
+  \compchardef\componehalf="BD
+  \compchardef\compthreequarters="BE
+  \compchardef\compeuro="BF
+  \compchardef\compmultiply="D6
+  \compchardef\compdivide="F6
+}
+
+\csdef{selectconventioncomp@original}{%
+  \misschardef\compgrave
+  \misschardef\compacute
+  \misschardef\compcircumflex
+  \misschardef\comptilde
+  \misschardef\compdieresis
+  \misschardef\comphungarumlaut
+  \misschardef\compring
+  \misschardef\compcaron
+  \misschardef\compbreve
+  \misschardef\compmacron
+  \misschardef\compdotaccent
+  \misschardef\compcedilla
+  \misschardef\compogonek
+  \misschardef\compquotebase
+  \misschardef\compdblquotebase
+  \misschardef\comptwelveudash
+  \misschardef\compthreequartersemdash
+  \misschardef\compcwmcapital
+  \misschardef\comparrowleft
+  \misschardef\comparrowright
+  \misschardef\comptieaccentlowercase
+  \misschardef\comptieaccentcapital
+  \misschardef\comptieaccentlowercasenew
+  \misschardef\comptieaccentcapitalnew
+  \misschardef\compcwmascender
+  \misschardef\compblanksymbol
+  \misschardef\compdollar
+  \misschardef\compquotesingle
+  \misschardef\compasteriskmath
+  \misschardef\compcomma
+  \misschardef\comphyphendbl
+  \misschardef\compperiod
+  \misschardef\compfraction
+  \misschardef\compzerooldstyle
+  \misschardef\componeoldstyle
+  \misschardef\comptwooldstyle
+  \misschardef\compthreeoldstyle
+  \misschardef\compfouroldstyle
+  \misschardef\compfiveoldstyle
+  \misschardef\compsixoldstyle
+  \misschardef\compsevenoldstyle
+  \misschardef\compeightoldstyle
+  \misschardef\compnineoldstyle
+  \misschardef\compangleleft
+  \misschardef\compminus
+  \misschardef\compangleright
+  \misschardef\compmho
+  \misschardef\compbigcircle
+  \misschardef\compohm
+  \misschardef\compdblbracketleft
+  \misschardef\compdblbracketright
+  \misschardef\comparrowup
+  \misschardef\comparrowdown
+  \misschardef\compgrave
+  \misschardef\compborn
+  \misschardef\compdivorced
+  \misschardef\compdied
+  \misschardef\compleaf
+  \misschardef\compmarried
+  \misschardef\compmusicalnote
+  \misschardef\comptildelow
+  \misschardef\compvarhyphendbl
+  \misschardef\compbreve
+  \misschardef\compcaron
+  \misschardef\comphungarumlaut
+  \misschardef\compdblgrave
+  \misschardef\compdagger
+  \misschardef\compdaggerdbl
+  \misschardef\compdblverticalbar
+  \misschardef\compperthousand
+  \misschardef\compbullet
+  \misschardef\compcentigrade
+  \misschardef\compdollaroldstyle
+  \misschardef\compcentoldstyle
+  \misschardef\compflorin
+  \misschardef\compcolonmonetary
+  \misschardef\compwon
+  \misschardef\compnaira
+  \misschardef\compguarani
+  \misschardef\comppeso
+  \misschardef\complira
+  \misschardef\comprecipe
+  \misschardef\compinterrobang
+  \misschardef\compgnaborretni
+  \misschardef\compdong
+  \misschardef\comptrademark
+  \misschardef\comppermyriad
+  \misschardef\compvarparagraph
+  \misschardef\compbaht
+  \misschardef\compnumero
+  \misschardef\compdiscount
+  \misschardef\compestimated
+  \misschardef\compopenbullet
+  \misschardef\compservicemark
+  \misschardef\compquillbracketleft
+  \misschardef\compquillbracketright
+  \misschardef\compcent
+  \misschardef\compsterling
+  \misschardef\compcurrency
+  \misschardef\compyen
+  \misschardef\compbrokenbar
+  \misschardef\compsection
+  \misschardef\compdieresis
+  \misschardef\compcopyright
+  \misschardef\compordfeminine
+  \misschardef\compcopyleft
+  \misschardef\complogicalnot
+  \misschardef\comppublished
+  \misschardef\compregistered
+  \misschardef\compmacron
+  \misschardef\compdegree
+  \misschardef\compplusminus
+  \misschardef\comptwosuperior
+  \misschardef\compthreesuperior
+  \misschardef\compacute
+  \misschardef\compmu
+  \misschardef\compparagraph
+  \misschardef\compperiodcentered
+  \misschardef\compreferencemark
+  \misschardef\componesuperior
+  \misschardef\compordmasculine
+  \misschardef\compradical
+  \misschardef\componequarter
+  \misschardef\componehalf
+  \misschardef\compthreequarters
+  \misschardef\compeuro
+  \misschardef\compmultiply
+  \misschardef\compdivide
+}
+
+\csdef{selectconventioncomp@latin9}{%
+  \misschardef\compgrave
+  \misschardef\compacute
+  \misschardef\compcircumflex
+  \misschardef\comptilde
+  \misschardef\compdieresis
+  \misschardef\comphungarumlaut
+  \misschardef\compring
+  \misschardef\compcaron
+  \misschardef\compbreve
+  \misschardef\compmacron
+  \misschardef\compdotaccent
+  \misschardef\compcedilla
+  \misschardef\compogonek
+  \misschardef\compquotebase
+  \misschardef\compdblquotebase
+  \misschardef\comptwelveudash
+  \misschardef\compthreequartersemdash
+  \misschardef\compcwmcapital
+  \misschardef\comparrowleft
+  \misschardef\comparrowright
+  \misschardef\comptieaccentlowercase
+  \misschardef\comptieaccentcapital
+  \misschardef\comptieaccentlowercasenew
+  \misschardef\comptieaccentcapitalnew
+  \misschardef\compcwmascender
+  \misschardef\compblanksymbol
+  \misschardef\compdollar
+  \misschardef\compquotesingle
+  \misschardef\compasteriskmath
+  \misschardef\compcomma
+  \misschardef\comphyphendbl
+  \misschardef\compperiod
+  \misschardef\compfraction
+  \misschardef\compzerooldstyle
+  \misschardef\componeoldstyle
+  \misschardef\comptwooldstyle
+  \misschardef\compthreeoldstyle
+  \misschardef\compfouroldstyle
+  \misschardef\compfiveoldstyle
+  \misschardef\compsixoldstyle
+  \misschardef\compsevenoldstyle
+  \misschardef\compeightoldstyle
+  \misschardef\compnineoldstyle
+  \misschardef\compangleleft
+  \misschardef\compminus
+  \misschardef\compangleright
+  \misschardef\compmho
+  \misschardef\compbigcircle
+  \misschardef\compohm
+  \misschardef\compdblbracketleft
+  \misschardef\compdblbracketright
+  \misschardef\comparrowup
+  \misschardef\comparrowdown
+  \misschardef\compgrave
+  \misschardef\compborn
+  \misschardef\compdivorced
+  \misschardef\compdied
+  \misschardef\compleaf
+  \misschardef\compmarried
+  \misschardef\compmusicalnote
+  \misschardef\comptildelow
+  \misschardef\compvarhyphendbl
+  \misschardef\compbreve
+  \misschardef\compcaron
+  \misschardef\comphungarumlaut
+  \misschardef\compdblgrave
+  \misschardef\compdagger
+  \misschardef\compdaggerdbl
+  \misschardef\compdblverticalbar
+  \misschardef\compperthousand
+  \misschardef\compbullet
+  \misschardef\compcentigrade
+  \misschardef\compdollaroldstyle
+  \misschardef\compcentoldstyle
+  \misschardef\compflorin
+  \misschardef\compcolonmonetary
+  \misschardef\compwon
+  \misschardef\compnaira
+  \misschardef\compguarani
+  \misschardef\comppeso
+  \misschardef\complira
+  \misschardef\comprecipe
+  \misschardef\compinterrobang
+  \misschardef\compgnaborretni
+  \misschardef\compdong
+  \misschardef\comptrademark
+  \misschardef\comppermyriad
+  \misschardef\compvarparagraph
+  \misschardef\compbaht
+  \misschardef\compnumero
+  \misschardef\compdiscount
+  \misschardef\compestimated
+  \misschardef\compopenbullet
+  \misschardef\compservicemark
+  \misschardef\compquillbracketleft
+  \misschardef\compquillbracketright
+  \misschardef\compcent
+  \misschardef\compsterling
+  \misschardef\compcurrency
+  \misschardef\compyen
+  \misschardef\compbrokenbar
+  \misschardef\compsection
+  \misschardef\compdieresis
+  \misschardef\compcopyright
+  \misschardef\compordfeminine
+  \misschardef\compcopyleft
+  \misschardef\complogicalnot
+  \misschardef\comppublished
+  \misschardef\compregistered
+  \misschardef\compmacron
+  \misschardef\compdegree
+  \misschardef\compplusminus
+  \misschardef\comptwosuperior
+  \misschardef\compthreesuperior
+  \misschardef\compacute
+  \misschardef\compmu
+  \misschardef\compparagraph
+  \misschardef\compperiodcentered
+  \misschardef\compreferencemark
+  \misschardef\componesuperior
+  \misschardef\compordmasculine
+  \misschardef\compradical
+  \misschardef\componequarter
+  \misschardef\componehalf
+  \misschardef\compthreequarters
+  \misschardef\compeuro
+  \misschardef\compmultiply
+  \misschardef\compdivide
+}
+
+%%% End of file `convcomp.nw'

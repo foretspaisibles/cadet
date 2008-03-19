@@ -1,0 +1,826 @@
+%%% text.tex -- Préparation du texte
+
+% Author: Michael Grünewald
+% Date: Sun Oct  1 11:48:58 CEST 2006
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\class paper
+\enablehverbatim
+
+\title Préparation du texte du paragraphe
+\author Michael \nm{Grünewald}
+
+Nous décrivons les services que rend BHRID~\TeX\ dans la préparation du
+texte du paragraphe.
+
+
+\section Algorithme de découpe des paragraphes
+
+L'algorithme de de découpe des paragraphes est décrit en détails dans
+le~{\sl\TeX book}, pp.~97--100; les nombreux paramètres influant sur
+son comportement y sont également~discutés. Pour mémoire, des
+descriptions approximatives de leurs rôles sont rassemblées
+ci-dessous.
+
+\begincslist\relax
+\item\pretolerance
+Seuil de laideur pour les lignes. S'il existe un découpage du
+paragraphe qui donne des lignes dont la laideur est chaque fois
+inférieure à |\pretolerance|, \TeX\ n'a pas besoin d'essayer la césure
+des mots du paragraphe. La recherche d'un découpage du paragraphe
+respectant cette contrainte de laideur est la première passe de
+l'algorithme de découpe des paragraphes.
+
+\beginvalues
+\item{100} plain \TeX\ (texte en anglais)
+\item{500} \nm{R.~Séroul} (texte en français)
+\item{-1} ignorer la première passe
+\item{10000} la première passe réussit toujours
+\endvalues
+
+\item\tolerance
+Seuil de laideur pour la deuxième passe de l'algorithme de découpe
+des paragraphes.
+
+\beginvalues
+\item{200} plain TeX (texte en anglais)
+\item{1000} \nm{R.~Séroul} (texte en français)
+\endvalues
+
+\item\hyphenpenalty
+Penalité pour une coupure de ligne dans un mot.
+
+\beginvalues
+\item{50} plain TeX
+\endvalues
+
+\item\exhyphenpenalty
+Pénalité pour une coupure de ligne dans un mot, dans le cas ou le
+\em{pre-text} de l'objet discretionary associé est vide. Pour les
+césures usuelles, le~|\-| signifie |\discretionary{-}{}{}| et le
+\em{pre-break} n'est pas vide, mais après chaque caractère |-| est
+automatiquement inséré un |\discretionary{}{}{}| ou le \em{pre-break}
+est vide. Le \em{pre-break} peut également se trouver vide lorsque
+les~|\discretionary| sont insérés~explicitement.
+
+\beginvalues
+\item{50} plain \TeX
+\endvalues
+
+\item\doublehyphendemerits
+Pénalité pour les césures sur des lignes consécutives.
+
+\beginvalues
+\item{10000} plain \TeX
+\endvalues
+
+\item\finalhyphendemerits
+Pénalité pour une césure sur l'avant-dernière ligne d'un
+paragraphe.
+
+\beginvalues
+\item{5000} plain \TeX
+\endvalues
+
+\item\adjdemerits
+Pénalité appliquée lorsque des lignes de catégorie distantes se
+suivent. (catégories: \em{tight}, \em{loose}, \em{very loose},~\em{descent}\/)
+
+\beginvalues
+\item{10000} plain \TeX
+\endvalues
+
+\endcslist
+
+
+\formalpar Paramètres de l'algorithme
+
+L'algorithme de coupure des lignes de \TeX\ a son comportement régi
+par de nombreux paramètres, |\pretolerance|, |\tolerance|,
+|\hyphenpenalty|, |\exyphenpenalty|, |\doublehyphendemerits|,
+|\finalhyphendemerits|, |\adjdemerits|. Pour la description de chacun
+de ces paramètres, voir le {\sl\TeX book}.
+
+La taille des espaces entre les mots d'un paragraphe est contrôlée par
+deux paramètres |\spaceskip| et~|\xspaceskip|. Il est parfois
+nécessaire d'ajouter une \em{glue} importante à ces paramètres pour
+que \TeX\ arrive à préparer un paragraphe sans \em{overfull hbox}.
+
+De façon générale les paragraphes dont les lignes sont longues et
+nombreuses sont plus faciles à préparer que ceux dont les quelques
+lignes sont très courtes. Aussi, si vous préparez une classe de
+document dont certains paragraphes doivent être très étroits, il vous
+est recommandé de rechercher des paramètres permettant à l'algorithme
+de découpe des lignes de fonctionner dans ces conditions
+particulières.
+
+Certaines caractéristiques linguistiques, comme la longueur des mots
+couramment employés, ont une incidence indirecte sur le travail soumis
+à \TeX\ pour la préparation d'un paragraphe. Les paramètres
+coutumiers~|\selectparagraph| modifient les paramètres de découpe des
+lignes du paragraphe de façon à refléter ces caractéritiques. La
+commande |\selectparagraph| est appelée automatiquement
+par~|\selectlocale|.
+
+
+\formalpar Modification temporaire des paramètres de l'algorithme
+
+BHRID~\TeX\ offre une commande |\pargroup| qui ouvre un groupe et le
+referme à la fin d'un paragraphe; il est ainsi possible de modifier
+temporairement les paramètres de l'algorithme de découpe des lignes en
+vue de traiter un paragraphe particulièrement difficile. De façon
+complémentaire, BHRID~\TeX\ définit trois commandes~|\paragraphtricky|,
+|\paragraphhard|, |\paragraphnasty| qui altèrent ces paramètres de
+façon légèrement permissive pour~|\paragraphtricky|, jusqu'à être très
+permissif avec~|\paragraphnasty|. On écrit par exemple
+\begincode
+\pargroup
+\pretolerance=-1
+\finalhyphendemerits=-500
+Dans ce paragraphe, un coupure de ligne à la fin de
+l'avant-dernière ligne est encouragée.
+\endcode
+La commande~|\pargroup| a un deuxième nom,~|\thisparagraph|, et les
+trois commandes précédentes ont des noms
+spécialisés~|\thisparagraphtricky|, \em{etc.} pour permettre la
+modification rapide des paramètres de l'algorithme de découpe des
+lignes.
+
+
+\formalpar Composition en drapeau
+
+On peut composer les paragraphes en drapeau déchiquetés sur la droite
+avec~|\raggedright|; dont on peut éventuellement limiter la portée à
+un paragraphe en ouvrant celui-ci
+par~|\thisparagraph\raggedright|. Des macros |\raggedleft| et
+|\raggedboth| sont également disponibles.
+
+
+\formalpar Composition étroite
+
+Les règlages~|\paragraphnarrower| (ou |\narrower|)
+et~|\paragraphindent| ajustent les paramètres de~\TeX\ pour qu'il
+compose un paragraphe aux lignes plus étroites, ou un paragraphe en
+retrait vers la droite. Ces macros ont des versions spécialisées
+|\thisparagraphnarrower| et~|\thisparagraphindent|.
+
+La largeur des espaces réservés égale |\marginleft| ou~|\marginright|,
+selon la position de cet espace. Les macros qui présentent un contenu
+centré ou mis en retrait d'un côté ou de l'autre devraient utiliser
+ces valeurs pour calculer la position du contenu qu'elles présentent.
+
+
+
+\section Affichages
+
+Une certaine quantité de matériel vertical peut être mise en exergue
+au moyen de la commande~|\begindisplay...\enddisplay|, dont le
+résultat est un \em{affichage}. Les caractéristiques de ces affichages
+et leurs options de préparation sont discutées ci-dessous
+
+
+\formalpar Premiers exemples
+
+Pour mettre en exergue une citation longue dans un paragraphe, on peut
+écrire dans le manuscrit
+\begincode
+\begindisplay
+Bratteaux, dans son grenier, découpait des pantins tandis que
+le père Longuemare, en face de lui, assemblait par des fils
+leurs membres épars, et il souriait en voyant ainsi naître
+sous ses doigts le rythme et~l'harmonie.
+\enddisplay
+\endcode
+pour obtenir
+\begindisplay
+Bratteaux, dans son grenier, découpait des pantins tandis que le père
+Longuemare, en face de lui, assemblait par des fils leurs membres
+épars, et il souriait en voyant ainsi naître sous ses doigts le rythme
+et~l'harmonie.
+\enddisplay
+Les \em{tokens} situés entre l'ouverture du \em{display} et sa
+fermeture sont assemblés dans une boîte verticale; dans l'exemple le
+premier caractère ouvre un paragraphe, mais on peut très bien insérer
+une liste de boîtes préparées individuellement, ou bien un
+tableau.
+\begindisplay
+\selectlocale{en}
+\leftline{\symbolic the Poultry Example}
+\settabs
+\+\em{Weight}\quad&\em{Servings}\quad&\qquad\em{Approximate Cooking Time}\cr
+\+\em{Weight}&\em{Servings}&\em{Approximate Cooking Time}\cr
+\+8 lbs&6&1 hour and 50 to 55 minutes\cr
+\+9 lbs&7 to 8&About 2 hours\cr
+\enddisplay
+apparaît de la façon suivante dans le manuscrit:
+\begincode
+\begindisplay
+\selectlocale{en}
+\leftline{\symbolic the Poultry Example}
+\settabs
+\+\em{Weight}\quad&\em{Servings}\quad
+ &\qquad\em{Approximate Cooking Time}\cr
+\+\em{Weight}&\em{Servings}&\em{Approximate Cooking Time}\cr
+\+8 lbs&6&1 hour and 50 to 55 minutes\cr
+\+9 lbs&7 to 8&About 2 hours\cr
+\enddisplay
+\endcode
+Les affichages sont des éléments insécables, c'est-à-dire qu'un saut
+de page ne peut avoir lieu dans un affichage. Il est par conséquent,
+souhaitable de n'insérer dans le texte que des affichages de hauteur
+réduite, ou bien de placer ceuc-cis dans des insertions, comme le
+permettent les commandes~|\midinsert| et~|\topinsert|.
+
+
+\formalpar Paramètres
+
+La commande |\begindisplay| est une commande de la structure du
+document. On peut utiliser avec elle les \em{marques} suivantes:
+\begincslist
+\item\compact
+ diminue l'importance des espaces verticaux précédant et
+ succédant~l'affichage.
+\endcslist
+On peut altérer la préparation de l'affichage au moyen de toutes les
+commandes habituelles, notamment~|\emphasis|, |\literal|,
+et~|\raggedleft|; ainsi que les commandes modifiant la taille des
+caractères.
+
+La commande interne~|\display@I| est utilisée comme séquence
+d'initialisation pour le matériel de l'affichage. Sa signification~est
+\begincode
+\def\display@I{\displayfontsize\displayfont\fontselect}
+\endcode
+qui bascule vers une taille et une fonte appropriée. On pourrait fort
+bien définir~|\display@I| de la façon~suivante:
+\begincode
+\def\display@I{\tenpoint\mainfont\fontselect}
+\endcode
+mais l'utilisation des paramètres~|\displayfontsize| et~|\displayfont|
+permet de voir ces valeurs utilisées par d'autres macros, comme des
+spécialisation des affichages. On peut modifier~|\displayfontsize|
+et~|\displayfont| de la façon~suivante
+\begincode
+\let\displayfontsize=\ninepoint
+\let\displayfont=\mainfont
+\endcode
+Pour des affichages présentant du texte ordinaire, comme pour une
+citation ou un exemple, l'utilisation d'une taille légèrement plus
+petite que celle du texte courant peut faciliter une lecture inambigüe
+du~texte.
+
+
+Les espaces situés avant et après l'affichage sont placés
+par~|\displayopenskip| et~|\displaycloseskip|, ils peuvent être
+modifiés temporairement ou de façon permanente pour certaines
+applications.
+
+\formalpar Classes de documents
+
+Des classes de documents peuvent redéfinir~|\display@I| pour leurs
+besoins spécifiques.
+On peut ajouter des marques à celles comprises par la
+commande~|\begindisplay| comme dans l'exemple~suivant.
+\begincode
+\displayoption\compact{%
+  \offinterlineskip
+  \def\displayopenskip{\nobreak\vskip 0pt minus 3em\relax}%
+  \def\displaycloseskip{\vskip 0pt minus 3em\relax}%
+}
+\endcode
+
+
+
+\formalpar Spécialisation des commandes d'affichage
+
+Les séquences~|\displayopen| et~|\displayclose| qui placent les
+espaces précédents et succédants à un affichage et ouverent et ferment
+une boîte de largeur appropriée. Le texte situé entre~|\displayopen|
+et~|\displayclose| doit être bien parenthésé vis-à-vis des deux sortes
+de~groupes, et les affichages peuvent être emboîtés.
+
+Ces commandes peuvent être utilisées par des commandes utilisant des
+affichages spécialisés, par exemple pour afficher une citation, une
+image, un exemple~de~code.
+
+
+
+\section Listes
+
+Une liste est un affichage spécialisé formé de courts paragraphes
+introduits usuellement par une \em{marque}, comme un tiret ou une
+pastille, ou par un~\em{tag}, ces dernières listes sont fort courantes
+dans les manuels techniques. BHRID~\TeX\ propose des commandes pour la
+préparation des listes qui tentent de reproduire les facilités
+introduites par \xr{groff_mdoc(7)} et utilisées pour la rédaction
+des pages du manuel en ligne de~FreeBSD.
+
+\formalpar Premiers exemples
+
+Les listes les plus courantes ont leurs entrées introduites par un
+marqueur, telles que celle apparaissant dans
+\begindisplay
+% p.59
+On retrouve ici les trois degrés de la spécification tels qu'ils ont
+été définis au premier chapitre~(cf.~p.~23):
+\beginlist\marker
+\item valeur spécifique lexicalisée: \em{aller à Paris, presser sur le
+      bouton};
+\item valeur générique: \em{obéir à son père, c'est de ma faute,
+      s'ennuyer de sa fille};
+\item marque zéro: \em{écrire une lettre, manger une pomme}.
+\endlist
+\enddisplay
+qui est produit par
+\begincode
+\begindisplay
+On retrouve ici les trois degrés de la spécification tels qu'ils ont
+été définis au premier chapitre~(cf.~p.~23):
+\beginlist
+\item valeur spécifique lexicalisée: \em{aller à Paris, presser sur le
+      bouton};
+\item valeur générique: \em{obéir à son père, c'est de ma faute,
+      s'ennuyer de sa fille};
+\item marque zéro: \em{écrire une lettre, manger une pomme}.
+\endlist
+\enddisplay
+\endcode
+La marque utilisée dépend de la coutume, par exemple
+\begindisplay
+\selectlocale{en}
+\beginlist
+\item This is the first of several cases that are being enumerated,
+      with hanging indentation applied to entire paragraphs.
+\item The second case is smilar.
+\endlist
+\enddisplay
+est produit par
+\begincode
+\selectlocale{en}
+\beginlist
+\item This is the first of several cases that are being enumerated,
+      with hanging indentation applied to entire paragraphs.
+\item The second case is smilar.
+\endlist
+\endcode
+\endgraf
+\medskip
+
+Une autre sorte de liste que l'on rencontre fréquemment est la liste
+énumérative, dont les entrées sont introduites par un compteur,
+généralement un nombre ou une lettre. Par exemple
+\begindisplay
+\selectlocale{en}
+\beginlist\enum\1
+\item This is the first of several cases that are being enumerated,
+      with hanging indentation applied to entire paragraphs.
+\beginlist\enum\a
+\item This is the first subcase.
+\item And this is the second. Notice that subcases have twice as much
+      hanging indentation.
+\endlist
+\item The second case is smilar.
+\endlist
+\enddisplay
+est produit par
+\begincode
+\selectlocale{en}
+\beginlist\enum\1
+\item This is the first of several cases that are being enumerated,
+      with hanging indentation applied to entire paragraphs.
+\beginlist\enum\a
+\item This is the first subcase.
+\item And this is the second. Notice that subcases have twice as much
+      hanging indentation.
+\endlist
+\item The second case is smilar.
+\endlist
+\endcode
+La dernière présentation de liste proposée par BHRID~\TeX\ introduit
+une entrée par une étiquette, un~\em{tag}; ces listes apparaissent
+notamment dans les manuels techniques. Par exemple
+\begindisplay
+\selectlocale{en}
+\beginlist\tag
+\item{EX\_USAGE (64)}
+The command was used incorrectly, e.g., with the wrong number of
+arguments, a bad flag, a bad syntax in a parameter, or whatever.
+
+\item{EX\_DATAERR (65)}
+The input data was incorrect in some way.  This should only be used
+for user's data and not system files.
+
+\item{EX\_NOINPUT (66)}
+An input file (not a system file) did not exist or was not readable.
+This could also include errors like ``No message'' to a mailer (if it
+cared to catch it).
+
+\item{EX\_NOUSER (67)}
+The user specified did not exist.  This might be used for mail
+addresses or remote logins.
+
+\endlist
+\enddisplay
+est le produit de
+\begincode
+\selectlocale{en}
+\beginlist\tag
+\item{EX\_USAGE (64)}
+The command was used incorrectly, e.g., with the wrong number of
+arguments, a bad flag, a bad syntax in a parameter, or whatever.
+
+\item{EX\_DATAERR (65)}
+The input data was incorrect in some way.  This should only be used
+for user's data and not system files.
+
+\item{EX\_NOINPUT (66)}
+An input file (not a system file) did not exist or was not readable.
+This could also include errors like ``No message'' to a mailer (if it
+cared to catch it).
+
+\item{EX\_NOUSER (67)}
+The user specified did not exist.  This might be used for mail
+addresses or remote logins.
+\endlist
+\endcode
+
+\formalpar Paramètres
+
+La commande |\beginlist| est une commande de la structure du
+document. On peut utiliser avec elle les \em{marques} suivantes:
+\begincslist
+\item\compact
+ diminue l'importance des espaces verticaux précédant et
+ succédant~l'affichage.
+\medskip
+\item\marker
+ prépare une liste dont les entrées sont introduites par un marqueur
+ prédéfini (comme le premier~exemple), le marqueur est préparé avec la
+ sélection de fonte~|\listmarkfont|;
+\item\item
+ prépare une liste dont les entrées sont introduites par un marqueuer
+ précisé par l'utilisateur, pour chaque entrée, ce ce marqueur est le
+ premier argument de la commande~|\item|, le marqueur est préparé avec la
+ sélection de fonte~|\listmarkfont|;
+\item\hyphen
+ sélectionne un marqueur prédéfini en forme de tiret court;
+\item\dash
+ synonyme de~|\hyphen|;
+\item\bullet
+ sélectionne un marqueur prédéfini en forme de puce noire;
+\medskip
+\item\enum
+ prépare une liste dont les entrées sont introduites par un compteur
+ (comme le second~exemple), le compteur est préparé avec la
+ fonte~|\listmarkfont|;
+\item\1
+ utilise pour représenter le compteur les nombres décimaux;
+\item\i
+ utilise pour représenter le compteur les nombres romains en minuscules;
+\item\I
+ utilise pour représenter le compteur les nombres romains en majuscules;
+\item\a
+ utilise pour représenter le compteur les lettres de l'alphabet latin
+ en~minuscules;
+\item\A
+ utilise pour représenter le compteur les lettres de l'alphabet latin
+ en~majuscules;
+\item\alpha
+ utilise pour représenter le compteur les lettres de l'alphabet grec
+ en~minuscules;
+\item\Alpha
+ utilise pour représenter le compteur les lettres de l'alphabet grec
+ en~majuscules;
+\medskip
+\item\tag
+ prépare une liste dont les entrées sont introduites par un~\em{tag},
+ si ce dernier est trop large pour tenir dans la réserve située à
+ gauche de l'entrée il apparaît seul sur la ligne précédent l'entrée;
+\item\hang
+ prépare une liste dont les entrées sont introduites par un~\em{tag},
+ si ce dernier est trop large pour tenir dans la réserve située à
+ gauche de l'entrée il dépasse sur l'entrée;
+\item\ohang
+ prépare une liste dont les entrées sont introduites par un~\em{tag},
+ situé sur la ligne précédant l'entrée;
+\item\diag
+ prépare une liste dont les entrées sont introduites par un~\em{tag},
+ ces listes peuvent être utilisées pour les diagnostiques des
+ programmes (messages~d'erreur), le~\em{tag} n'est pas placé dans une
+ réserve, il ouvre l'entrée;
+\item\inset
+ prépare une liste dont les entrées sont introduites par un~\em{tag},
+ qui ouvre le paragraphe, le~\em{tag} est composé avec~|\listtagfont|;
+\medskip
+\item\literal
+ utilise |\literalfont| pour~|\listtagfont|;
+\item\symbolic
+ utilise |\symbolicfont| pour~|\listtagfont|;
+\item\emphasis
+ utilise |\emphasisfont| pour~|\listtagfont|;
+\item\natural
+ utilise |\mainfont| pour~|\listtagfont|, la forme~|\main|
+ a la même mnémotechnie que~les marques~précédentes;
+\item\main
+ synonyme de~|\natural|;
+\endcslist
+
+Des paramètres globaux affectent également la préparation des listes,
+en voici le détail.
+\begincslist
+\item\listtagfont
+ Paramètres pour la fonte utilisée dans la préparation des~\em{tags} pour
+ les listes de type approprié;
+\item\listmarkfont
+ Paramètres pour la fonte utilisée dans la préparation des marques
+ pour les listes marquées et les listes énumérées;
+\item\listtagwidthadjust
+ Commande lancée à chaque changement de la taille des fontes au moyen
+ des commandes~|\tenpoint|,~\em{etc.}, elle ajuste la largeur
+ des~\em{tags} pour les listes de ce type; on dit par exemple
+ |\def\listtagwidthadjust{\listtagwidth=4em\relax}|, rappelons que
+ l'unité~\li{em} voit sa valeur exacte dépendre de la fonte en cours
+ d'utilisation.
+\endcslist
+
+
+\formalpar Classes de documents
+
+Des classes de documents peuvent redéfinir~|\list@I| pour leurs
+besoins spécifiques.
+
+On peut ajouter des marques à celles comprises par la
+commande~|\beginlist| comme dans l'exemple~suivant.
+\begincode
+\listoption\compact{%
+  \offinterlineskip
+  \def\displayopenskip{\nobreak\vskip 0pt minus 3em\relax}%
+  \def\displaycloseskip{\vskip 0pt minus 3em\relax}%
+}
+\endcode
+
+
+\formalpar Spécialisations des listes
+
+On peut spécialiser les listes comme le montre l'exemple suivant. Il
+est utilisé pour préparer les listes de diagnositiques pour la pager
+de manuel~\em{jot(1)}.
+\begincode
+\pdef\begindiagnostics#1#2{\pdef@@beginlist{\inset\symbolic#1}{#2}}
+\def\enddiagnostics{\endlist}
+\let\tag@@begindisagnostics=\tag@@beginlist
+
+\selectlocale{en}
+The following diagnostic messages deserve special explanation:
+\begindiagnostics
+\item{illegal or unsupported format \li{'\%s'}}
+ The requested conversion format specifier for \em{printf(3)} was not
+ of the form |%[#][ ][{+,-}][0-9]*[.[0-9]*]?|
+ where \qu{\li{?}} must be one of |[l]{d,i,o,u,x}| or
+ |{c,e,f,g,D,E,G,O,U,X}|.
+
+\item{range error in conversion}
+A value to be printed fell outside the range of the data type
+associated with the requested output format.
+
+\item{too many conversions}
+More than one conversion format specifier has been supplied, but only
+one is allowed.
+\enddiagnostics
+\endcode
+donne le résultat suivant
+\begingroup
+\enableprivate
+\pdef\begindiagnostics#1#2{\pdef@@beginlist{\inset\symbolic#1}{#2}}
+\def\enddiagnostics{\endlist}
+\let\tag@@begindisagnostics=\tag@@beginlist
+\disableprivate
+
+\begindisplay
+\selectlocale{en}
+The following diagnostic messages deserve special explanation:
+\begindiagnostics
+\item{illegal or unsupported format \li{'\%s'}}
+ The requested conversion format specifier for \em{printf(3)} was not
+ of the form |%[#][ ][{+,-}][0-9]*[.[0-9]*]?|
+ where \qu{\li{?}} must be one of |[l]{d,i,o,u,x}| or
+ |{c,e,f,g,D,E,G,O,U,X}|.
+
+\item{range error in conversion}
+A value to be printed fell outside the range of the data type
+associated with the requested output format.
+
+\item{too many conversions}
+More than one conversion format specifier has been supplied, but only
+one is allowed.
+\enddiagnostics
+\enddisplay
+\endgroup
+
+
+\section Marquage de groupes de mots
+
+On marque un groupe de mot au moyen d'une séquence appropriée pour
+obtenir un effet visuel approprié. Nous avons déjà rencontré un
+marquage de ce type, en la personne de~\em{la mise en relief}, on
+écrit par exemple
+\begincode
+en la personne de~\em{la mise en relief},
+\endcode
+pour indiquer à \TeX\ que l'on souhaite mettre en relief le texte en
+argument de la commande~|\em|, ce type de marquage est
+dit~\em{abstrait} car on n'indique pas quelle fonte ou quel effet
+visuel doit être obtenu. On peut marquer le texte de
+façon~\em{concrète} en écrivant par exemple
+\begincode
+en la personne de~{\it la mise en relief},
+\endcode
+mais il est en général préférable d'utiliser un marquage~\em{abstrait}
+plutôt qu'un marquage~\em{concret} lorsqu'on prépare un texte, pour
+plusieurs raisons:
+\beginlist
+\item
+l'aspect visuel adéquat peut dépendre du contexte, pour mettre en
+relief un groupe de mot dans un texte en italiques, il est souhaitable
+d'utiliser des romaines et non des italiques; dans ce cas le marquage
+concret est difficile puisque l'utilisateur doit savoir précisément
+quelle fonte est utilisée, en revanche le marquage abstrait avec~|\em|
+se charge de composer le texte avec une fonte adaptée;
+
+\item
+l'aspect visuel adéquat peut dépendre de la coutume, dans ce cas il
+faut apprendre les règles pour chaque coutume, et lorsque plusieur
+règles coexistent, celles-cis doivent être employées de façon
+cohérente à travers le manuscrit; l'utilisation d'un marquage abstrait
+permet de déléguer ces détails au système de préparation;
+
+\item
+des traitements supplémentaires peuvent profiter des marquages
+abstraits, comme par exemple la préparation d'un index des noms cités,
+si tous les noms sont marqués de façon convenable.
+\endlist
+BHRID \TeX\ rend quelques services pour le marquage abstrait que nous
+discutons ci-dessous.
+
+
+\formalpar Mise en relief d'un groupe de mots
+
+On peut mettre en relief un groupe de mots au moyen de~|\em|, on
+obtient par exemple
+\begindisplay
+\parindent=0pt
+\def\example{Isaïe avait déjà demandé avant vous: \em{Quomodo
+cecidisti de c½lo, Lucifer, qui maneo riebaris!}\par}
+\thisparagraph\rm\example
+\smallskip
+%\thisparagraph\sl\example
+\thisparagraph\it\example
+%\thisparagraph\bf\example
+%\thisparagraph\sf\example
+\enddisplay
+à partir de l'extrait de manuscrit
+\begincode
+\def\example{Isaïe avait déjà demandé avant vous: \em{Quomodo
+cecidisti de c½lo, Lucifer, qui maneo riebaris!}\par}
+\thisparagraph\rm\example
+\smallskip
+\thisparagraph\it\example
+\endcode
+
+\formalpar Mise en relief symbolique
+
+On obtient une mise en relief symbolique grâce à~|\sy|, comme dans
+\begindisplay
+\sy{Note importante.} Plop plop fizz fizz.
+\enddisplay
+XXX ce nom curieux vient de groff\_man(7).
+
+
+\formalpar Expression littérales
+
+Une expression littérale est à prendre telle quelle, on utilise le
+marquage littéral pour indiquer une saisie pour un système
+informatique, etc. |\li|
+\begindisplay
+\li{literal}
+\enddisplay
+
+\formalpar Marquage des noms propres
+
+On marque les noms propres avec~|\nm|, comme dans
+\begindisplay
+\noindent
+\nm{Mme des Aubels}, Maurice \nm{d'Esparvieu}, ou~D.~\nm{Hilbert}.
+\enddisplay
+\begincode
+\nm{Mme des Aubels}, Maurice \nm{d'Esparvieu}, ou D.~\nm{Hilbert}.
+\endcode
+Les prénoms, les initiales et les dignités doivent faire partir du
+marquage. Lorsque plusieurs noms sont accolés, comme par exemple dans
+les noms de théorèmes, chaque nom est marqué, mais lorsqu'il s'agit
+d'un nom composé, il n'y a qu'une seule marque. On écrit donc
+\begindisplay
+\parindent=0pt
+Théorème de \nm{Hahn}-\nm{Banach}\par
+\nm{Mme Royal-Hollande}\par
+\enddisplay
+\begincode
+Théorème de \nm{Hahn}-\nm{Banach}\par
+\nm{Mme Royal-Hollande}\par
+\endcode
+
+\formalpar Guillemets
+
+On obtient des guillemets avec~|\qu|, qui propose des guillemets de
+second rang, on écrit ainsi
+\begindisplay
+\parindent=0pt
+\qu{Où il apparaît que, comme l'a dit un vieux poète grec, \qu{rien n'est
+plus doux qu'Aphrodite d'or}.}
+\enddisplay
+\begincode
+\qu{Où il apparaît que, comme l'a dit un vieux poète grec, \qu{rien
+n'est plus doux qu'Aphrodite d'or}.}
+\endcode
+\sy{Remarque.} Certains préfèrent intercaler ainsi les points et les
+fins de guillemets:~|.}}| au lieu de~|}.}| comme on l'a écrit
+ci-dessus. Avec cette convention, les points et les virgules flottent
+vers la gauche à travers les guillemets. Ceci n'est pas recommandé.
+\smallbreak
+
+Les guillemets de premier et de second rang sont définis par la
+coutume, pour modifier ces paramètres on peut utiliser un définition
+ressemblant~à:
+\begincode
+\def\quote@fr{\quote@S
+  \pnguillemetleft\pnguillemetright
+  \pndblquoteleft\pndblquoteright
+}
+\endcode
+
+
+\formalpar Domaine du manuel
+
+Les marques regroupées ici sont adaptées de celle proposées
+dans~\xr{groff_mdoc(7)}, elles sont avant-tout destinées à la
+préparation de manuels informatiques, comme par exemple la
+documentation d'une bibliothèque~C.
+\begincslist
+\item\pa
+pour les n½uds du système de fichiers, comme~\pa{/etc/rc.conf}
+ou~\pa{$\br{HOME}/my_backup}, obtenus par les saisies~|\pa{/etc/rc.conf}|
+et~|\pa{$\br{HOME}/my_backup}|, dans l'argument les caractères~|~|, |_|
+et~|$| sont des lettres;%$
+
+\item\xr
+pour les références extérieures, comme notamment les pages de
+manuel~\xr{groff_mdoc} et les URL~\xr{http://www.freebsd.org}, on a
+saisi respectivement |\xr{groff_mdoc}|
+et~|\xr{http://www.freebsd.org}|, les mêmes conventions que pour~|\pa|
+sont vraies pour l'argument;
+
+\item\bc
+entourer l'argument d'accolades, comme~\pa{$\br{HOME}/.vacation}
+produit par la séquence~|\pa{$\br{HOME}/.vacation}|;
+
+\item\bk
+entourer l'argument de crochets;
+
+\item\ev
+variables d'environnement, comme~\ev{PATH};
+
+\item\dv
+variables définies, par exemple avec un~\#define en~C,
+soit~\dv{O_RDONLY}.
+\endcslist
+La commande~|\xr| peut-être considérée d'un intérêt légèrment plus
+général que les autres.
+
+\formalpar Désactivation du marquage
+On utilise~|\disablemarkup| pour remplacer les commades de marquage
+décrites dans cette section par des~NOP; il existe des exceptions,
+pour~|\qu| qui produit des guillemets~ASCII, et pour~|~| qui produit
+une~espace.
+
+
+\bye
+
+%%% End of file `text.tex'

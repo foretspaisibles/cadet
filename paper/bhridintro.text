@@ -1,0 +1,123 @@
+bhridintro.text -- Introduction à Bhrìd TeX
+
+Copyright (C) 2006, 2013 Michael Grünewald
+All rights reserved.
+
+This file is part of Bhrìd TeX.
+
+Bhrìd TeX is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Bhrìd TeX is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Bhrìd TeX est un logiciel destiné à être utilisé avec TeX. L'élément
+central de ce logiciel est un ensemble de macros TeX qui peuvent être
+utilisées pour préparer des formats, des classes de documents, etc.
+Nous présentons les raisons pour lesquelles ce logiciel a été crée et
+la façon dont il se positionne par rapport à ses cousins Plain TeX et
+LaTeX.
+
+
+1. Formats et bibliothèques
+
+Un format est un ensemble de macros TeX préévalué que TeX charge lors
+de son démarrage. Par exemple la commande tex charge ordinairement le
+format plain et la commande latex le format latex. Une bibliothèque de
+macros est un ensemble de macros chargé à la demande d'un programme
+TeX, lors de l'évaluation de ce programme. Par exemple, une
+bibliothèque peut être une famille de procédures spécialisées pour la
+production d'articles scientifiques, de sujets d'examens, de rapports
+administratifs, de devis et de factures, etc.; ce type de
+bibliothèque est ordinairement appelé une classe de document. Par
+exemple une bibliothèque peut être une famille de macros spécialisées
+pour la préparation d'extraits de programmes informatiques, d'arbres
+généalogiques, etc.
+
+Lorsqu'on prépare un programme TeX, il faut décider quelles parties du
+programmes doivent apparaître dans le format et quelles parties
+doivent apparaître des bibliothèques chargées après le début de
+l'évaluation d'un programme TeX. Nous donnons ici une liste d'éléments
+définissant un format:
+
+  * un noyau définissant des types de données et des opérations sur
+    ces types;
+
+  * une couche basse formée de fonctions simples de formatage, comme
+    par exemple medskip, quad, etc.;
+
+  * un schéma de sélection de fontes, il définit l'interface par
+    laquelle l'utilisateur ou les classes de document recquièrent que
+    la fonte utilisée pour la composition du texte courant soit
+    modifiée;
+
+  * une famille de fontes, qui donne sa substance au schéma de
+    sélection, par exemple Computer Modern, Latin Modern, Kepler,
+    Fourier, Adobe Palatino;
+
+  * une famille de paramètres régionaux, identifiant les langages dans
+    lesquels le format va composer des textes;
+
+  * une convention de saisie, spécifiant notamment le codage attendu
+    des fichiers à traiter, par exemple ISO8859-15 ou UTF-8;
+
+  * un pilote de sortie, par exemple DVI, PDF, DVIPS, etc.
+
+Le format plain TeX permet la préparation de textes rédigés en anglais
+avec les fontes Computer Modern, la sortie est le format DVI, et les
+fichiers sources doivent être en ASCII-7. Le format latex a des
+caractéristiques presqu'identitiques; au regard des éléments
+précédents il diffère de plain TeX seulement par le noyau, la couche
+basse et le schéma de sélection des fontes. Ces paramètres ne sont pas
+figés, ils peuvent généralement être modifiés par l'emploi de
+bibliothèques qppropriées.
+
+
+2. Utilisation inadéquate de LaTeX
+
+Voici ce que dit le fichier CLSGUIDE.PDF distribué avec LaTeX, à
+propos du système LaTeX:
+
+  LATEX is a document preparation system that enables the document
+  writer to concentrate on the contents of their text, without
+  bothering too much about the formatting of it. For example, chapters
+  are indicated by \chapter{title} rather than by selecting 18pt bold.
+
+  The file that contains the information about how to turn logical
+  structure (like `\chapter') into formatting (like `18pt bold ragged
+  right') is a document class.  In addition, some features (such as
+  colour or included graphics) are independent of the document class
+  and these are contained in packages.
+
+De nombreux utilisateurs de LaTeX sont confrontés aux problèmes
+suivants:
+
+  1. la présentation adoptée par une classe de document ne leur
+     convient pas;
+
+  2. aucune classe de document ne convient à leurs besoins;
+
+  3. ils souhaitent reprendre de temps à autre reprendre le contrôle
+     sur la présesntation de leur document au lieu de l'abandonner aux
+     macros de la classe de documents utilisées.
+
+De très nombreuses bibliothèques ont été crées pour aider les
+utilisateurs à surmonter le problème numéro un. Cette situation est
+peu saine, il est préférable de définir une nouvelle classe de
+document différant légèrement de la première plutôt que d'utiliser une
+bibliothèque. Conceptuellement, la bibliothèque utilisée pour
+améliorer la présentation du document fait partie de la classe de
+document, mais cette réalité n'est pas reflétéee par la répartition
+des macros dans divers fichiers.
+
+Le problème numéro deux est aussi fort ennuyeux.
+
+

@@ -1,0 +1,369 @@
+%%% btfonts.tex -- BHRID TeX fonts
+
+% Author: Michael Grünewald
+% Date: Wed Sep 27 00:00:01 CEST 2006
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+\class bhridpaper
+\enablehverbatim
+
+\title les Fontes de caractères de BHRID \TeX
+\author Michael Grünewald
+
+Lorsqu'on rédige un mansucrit avec BHRID \TeX, il est utile de savoir
+quels symboles sont à disposition, et comment les insérer dans le
+manuscrit. Si la plupart des conventions établies par le {\sl \TeX
+book} pour la saisie des documents dans le chapitre~$9$ {\it \TeX's
+Roman Fonts} restent valables pour BHRID \TeX, des modifications ont
+été nécessaires pour utiliser les fontes Latin Modern à la place des
+fontes Computer Modern.
+
+
+\section Rappels
+
+\formalpar Insérer un caractère par d'après son numéro
+
+Les commandes |\fontchar| et ses spécialisations peuvent être
+utilisées pour insérer un caractère arbitraire d'une fonte
+particulière. On écrit par exemple |\fontchar\mainfontselect"65| pour
+insérer le caractère situé à la position héxadécimale~65, les
+quantités numériques peuvent être exprimées en~\em{octal} ou
+en~\em{décimal}, dans la syntaxe habituelle pour les constantes
+numériques de \TeX. On peut également
+écrire~|\fontchar\mainfontselect\the\rnA\relax|,
+ou~|\fontchar\mainfontselect\rnA|; en l'absence du |\relax| dans la
+version avec |\the|, les \em{tokens} suivants sont examinés pour
+rechercher des chiffres supplémentaires.
+
+Les spécialisations de la commande |\fontchar| sont obtenues par des
+définitions ressemblant~à |\def\tlchar{\fontchar\tlfontselect}|,
+on peut alors dire~|\tlchar\rnA|, \em{etc.}, pour accéder directement
+à n'importe quel caractère de la fonte choisie par |\tlfontselect|.
+
+
+\formalpar Nom symbolique des caractères
+
+Il peut être utile de nommer symboliquement des caractères, tout comme
+on le fait avec |\chardef|, on peut par exemple
+dire~|\def\tlchardef{\fontchardef\tlfontselect}|;
+et~|\tlchardef\theTextLatinLetterA=65|.
+
+
+\section Fontes de caractères romains
+
+Dans votre manuscrit, les caractères |A-Z|, |a-z| et |0-9| jouent leur
+propre rôle, ainsi que certaines marques de ponctuation
+|( ) [ ] ` ' - * / . , @|.
+Les marques |; : ! ?| sont traitées spécialement par BHRID
+\TeX\ qui place automatiquement les espaces nécessaires avant ces
+caractères, en accord avec les usages linguistiques en vigueur; pour
+obtenir le bon résultat, ces marques ne doivent être précédées par
+aucun blanc.
+
+\formalpar Ligatures
+
+\TeX\ reconnaît certaines combinaisons particulières comme des
+\em{ligatures}; ainsi
+\begindisplay
+\settabs 3\columns
+\def\\#1{\li{#1} donne #1;}%
+\+\\{ff}&\\{ffi}&\li{`{}`} donne ``\cr
+\+\\{fi}&\\{ffl}&\li{'{}'} donne ''\cr
+\+\\{fl}&\li{-{}-} donne {--}&\li{-{}-{}-} donne ---\cr
+\+\li{!{}`} donne !`;&\li{?{}`} donne ?`\cr
+\enddisplay
+On peut cacher une ligature à \TeX, on écrit par exemple pour
+cela~|f{}f| ou~|-{}-{}-|; ceci est peu commode, mais il est rare que
+les ligatures soient indésirables, un exemple de cette situation est
+le mot anglais \hbox{\qu{shelf{}ful} qui ne doit pas être écrit
+\hbox{\qu{shelfful}}}.
+
+Si vous utilisez d'autres fontes que celles de la famille Latin
+Modern, il se peut qu'elles présentent un autre jeu de
+ligatures, consultez alors la documentation apropriée.
+
+
+\formalpar Sur le mode mathématique
+
+Les caractères \li{+} et \li{=} jouent également leur propre rôle,
+mais il vaut mieux ne jamais les utiliser hors du \em{mode
+mathématique} où ils sont respectivement considérés comme une
+opération et comme une relation, et les espaces sont automatiquement
+positionnées autour d'eux. En mode texte on obtient par
+exemple~\hbox{3+2=5} contre~$3+2 = 5$ avec le mode mathématique.
+
+Remarquons finalement que les chiffres peuvent produire un résultat
+différent si vous utilisez le mode mathématique ou le mode texte pour
+les saisir. Cela n'est pas le cas avec BHRID \TeX, mais des fichiers de
+macros peuvent créer ce comportement dissymétrique; dans ce cas suivez
+les recommendations de la documentation sur ce point.
+
+Les caractères \li{-} et \li{/} peuvent être utilisés dans et hors du
+mode mathématique, ils acquièrent alors des sens différents. La
+soustraction et la division ne devraient appraraître qu'au sein du
+mode mathématique; le tiret et l'oblique ne devraient apparaître que
+dans le mode texte.
+
+
+\formalpar Autres caractères du jeu ASCII
+
+Les caractères |$ # % &| %$
+jouent un rôle particulier pour BHRID \TeX, on peut les représenter
+dans un manuscrit par les séquences respectives~|\$ \# \% \&|. Les
+caractères |\ { } ^ _ ~| jouent également un rôle spécial, mais leur
+prence dans un texte est inhabituelle; on peut les obtenir par des
+noms longs comme expliqué dans la suite. Enfin les quatre symboles
+\disablehverbatim\li{" < > |}\enablehverbatim\ n'ont pas à être
+utilisés lorsqu'on prépare un texte, la double apostrophe droite
+doit être remplacée par des guillemets ou des \em{quotes} ouvrants ou
+fermants; les trois autres sont à utiliser en mode mathématique.
+
+
+\formalpar Sur les tirets
+
+On utilise usuellement trois longueurs de tirets dans le texte, comme
+on l'a déjà vu, il sont reprentés dans le manuscrit par les séquences
+\li{-}, \li{-{}-} et \li{-{-}-}. Le tiret le plus court est utilisé
+dans les noms composés, ou lorsque la grammaire le demande, par
+exemple on écrit
+\beginlist\inset\literal
+\item{franc-tireur} pour \qu{franc-tireur};
+\item{a-t-il} pour \qu{a-t-il};
+\endlist
+et c'est cette longueur de tiret qui est insérée automatiquement par
+le mécanisme des césures. Le tiret de longueur intermédiaire est
+utilisé dans les intervalles, comme par exemple
+\beginlist\inset\literal
+\item{pp.\tstilde55-{}-61}
+ pour \qu{pp.~55--61};
+\item{durant l'hiver 1789-{}-1790}
+ pour \qu{durant l'hiver 1789--1790}.
+\endlist
+Les tirets de longueur supérieure sont quant à eux utilisés pour
+délimiter certaines incises, comme dans
+\beginlist\inset\literal
+\item{une -{-}- ou plusieurs -{-}- d'entr'elles}
+ pour \qu{une --- ou plusieurs --- d'entr'elles};
+\endlist
+les règles comcernant les espaces autour de ces tirets ne sont pas les
+mêmes pour toutes les langues, ainsi les anglais ne placent aucune
+espace autour de ces tirets. On utilise aussi ces tirets au début d'un
+paragraphe pour indiquer le commencement d'un dialogue, puis chaque
+fois que la parole change de personnage dans ce dialogue.
+
+
+\formalpar Sur le code Latin 9
+
+BHRID \TeX\ accepte comme entrée un fichier codé avec le jeu Latin~9,
+ou ISO~8859~15, ce format interprète alors correctement les codes de
+caractères hors du domaine ASCII, ocuppant les positions dans
+l'intervalle~128--255.
+
+Les caractères dans ces positions sont \em{actifs}, ils jouent le rôle
+d'une séquence de contrôle qui s'arrange pour insérer le caractère
+souhaité dans le document. On peut donc entrer |«éléphant»|,
+|Lårs Øre| et |süßkind| pour obtenir \em{«éléphant»}, \em{Lårs Øre}
+et~\em{süßkind}.
+
+\em{Remarque. Les caractères dans les positions 128--255 ont un
+comportement indéfini dans le mode mathématique, ils ont aussi
+un comportement indéfini lorsque la fonte courante n'a pas~\li{T1}
+comme paramètre \li{fontpage}.}
+
+Le code Latin~9 ne correspond à aucun \em{codepage}, dans la
+terminologie propre aux systèmes Microsoft, mais il est assez proche
+du code Latin~1 qui correspond lui au~\em{codepage} CP819, ou
+IBM819. Les utilisateurs de systèmes Microsoft peuvent éditer et
+enregistrer des fichiers dans le code Latin~9 au moyen d'éditeurs
+appropriés, comme par exemple GNU~Emacs. Dans tous les cas, n'importe
+que caractère de l'entrée peut être obtenu au moyen de la \em{caret
+notation}, comme expliqué dans le {\sl\TeX book}~pp.~46--48.
+
+\formalpar Accents
+
+Si le code Latin~9 comprend bon nombre de caractères accentués,
+certains peuvent manquer, et BHRID \TeX\ permet d'utiliser le mécanisme
+familier aux utilisateurs de PLAIN \TeX:
+\begindisplay
+\relax
+\+Type\qquad&to get\cr
+\+|\`o|&\`o\cr
+\+|\'o|&\'o\cr
+\+|\^o|&\^o\cr
+\+|\"o|&\"o\cr
+\+|\~o|&\~o\cr
+\+|\=o|&\=o\cr
+\+|\.o|&\.o\cr
+\+|\u o|&\u o\cr
+\+|\v o|&\v o\cr
+\+|\H o|&\H o\cr
+\+|\t oo|&\t oo\cr
+\+|\c o|&\c o\cr
+\+|\d o|&\d o\cr
+\+|\b o|&\b o\cr
+\enddisplay
+Deux caractères spéciaux sont destinés à être utilisés avec les
+commandes d'accent, il s'agit des `i sans point' et `j sans point',
+que l'on obtient respectivement par |\i| et~|\j|. On écrit~|\`\i| et
+non~|\`i| pour obtenir~`\`\i'.
+
+\formalpar Caractères spéciaux
+
+Certaines ligatures ont un nom, comme avec PLAIN \TeX, ce sont
+|\oe|, |\OE|, |\ae|, |\AE|, |\ss| (es-zet) et~|\SS|. Les caractères
+`\aa' et `\AA' peuvent être obtenus par~|\aa| et~|\AA|. En revanche,
+PLAIN \TeX\ prévoit que l'on puisse saisir `Ø' avec |\O|, ce qui est
+abandonné ici au profit du \em{groupe orthogonal} des géomètres
+désigné par cette macro, les conventions voisines pour |\o|, |\L| et
+|\l| sont également abandonnées.
+
+Les signes de ponctuation sont des caractères spéciaux à plus d'un
+titre, d'une part certains d'entre eux sont actifs et ajoutent
+automatiquement certaines espaces autour d'eux, d'autre part certains
+ne figurent pas dans la table ASCII, mais seulement avec le jeu
+Latin~9.
+\beginchartable
+3a pncolon
+3b pnsemicolon
+3f pnquestion
+21 pnexclam
+a1 pnexclamdown
+bf pnquestiondown
+ab pnguillemetleft
+bb pnguillemetright
+xx pndblquoteleft
+xx pndblquoteright
+xx pndblquotebase
+\endchartable
+Si vous pouvez produire certains de ces caractères par une ligature,
+ce mécanisme peut biaiser l'ajout automatique des espaces autour de
+certains de ces signes.
+
+Le placement des espaces autour des signes de ponctuation est
+subordonné aux usages linguistiques, vous sélectionnez tel ou tel
+usage avec la commande |\selectpunct{whatever}|, ou avec
+|\selectlocale{whatever}| qui ajuste tous les paramètres dépendant des
+usages linguistiques.
+
+\smallskip
+Liste des symboles pour le texte.
+\beginchartable
+b6 P
+a7 S
+aa ordfeminine
+ba ordmasculine
+b0 degree
+xx centigrade
+xx No
+xx dag
+xx ddag
+xx dblverticalbar
+xx percent
+xx perthousand
+xx permyriad
+\endchartable
+Rappelons que vous pouvez aussi obtenir le caractère~\% avec la
+séquence courte~|\%|.
+
+
+\smallskip
+Liste des symboles utilisés pour le commerce.
+\beginchartable
+a2 cent
+a3 sterling
+a4 euro
+a5 yen
+xx dollar
+ae registered
+a9 copyright
+xx copyleft
+xx published
+xx trademark
+\endchartable
+Vous obtenez également le symbole~\$ par~|\$|. Dans PLAIN \TeX\ le
+symbole \sterling\ peut être obtenu avec un signe dollar lorsqu'une
+fonte italique est active, ceci n'est pas vrai dans BHRID \TeX.
+
+
+\formalpar Caractères hors liste
+
+Les fontes Latin Modern dans les pages \li{T1} et \li{S1} comportent
+beaucoup d'autres symboles, qui ont des noms comme~|\tl...|
+et~|\ts...|; ils n'ont pas de nom adéquat pour figurer dans vos
+manuscrits mais il est facile d'en ajouter selon vos besoins.
+
+Supposons par exemple que vous souhaitiez utiliser les symboles
+\beginchartable
+xx tsborn
+xx tsdied
+xx tsmarried
+xx tsdivorced
+xx tsleaf
+\endchartable
+pour préparer des documents généalogiques. Les noms |\ts...| sont
+inadéquats pour votre manuscrit parce qu'ils commandent très
+précisément l'insertion d'un caractère dans une fonte fixée, alors que
+d'une part vous voudriez peut-être ajouter des espaces à ces
+caractères ou leur prêter un comportement particulier, et que d'autre
+part vous voudriez peut-être un jour utiliser des symboles provenant
+d'une fonte différente. La bonne façon de faire est de choisir des
+noms symboliques pour ces caractères, comme par exemple \li{born},
+\li{died}, \li{married}, \li{divorced}, \li{leaf} s'il ne sont pas
+déjà utilisés; et d'ajouter les définitions
+\begincode
+\def\born{\tsborn}
+\def\died{\tsdied}
+...
+\endcode
+à votre manuscrit. Pour modifier le comportement de ces séquences il
+suffit alors d'altérer ces définitions, au lieu de modifier les noms
+|\tsborn| \em{etc.} utilisés par BHRID~\TeX, ce qui provoque un
+comportement indéfini et ne doit être effectué sous aucun prétexte:
+les macros peuvent donc utiliser les noms |\ts...| et |\tl...| avec la
+certitude que ceux-cis font ce qui leur est demandé.
+
+
+\formalpar  Fontes Latin Modern
+
+\begincode
+\csdef{selectfont@Latin Modern}{%
+  \selecttl{Latin Modern}%
+  \selectts{Latin Modern}%
+  \selectmit{Latin Modern}%
+  \selectms{Latin Modern}%
+  \selectmx{Latin Modern}%
+  \selectmrm{Latin Modern}%
+  \selectmbf{Latin Modern}%
+  \selectmsf{Latin Modern}%
+  %
+  % Final Setup
+  %
+  \def\fontrmfamily{lmr}%
+  \def\fontttfamily{lmtt}%
+  \def\fontsffamily{lmss}%
+  \def\mainfontselect{\mainfont\fontselect}%
+  \def\mainfont{\rmfamily\fontpage{T1}\fontseries{m}\fontshape{n}}%
+  \def\mainsize{\tenpoint}%
+}
+\endcode
+
+\bye
+
+%%% End of file `btfonts.tex'

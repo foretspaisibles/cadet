@@ -1,0 +1,788 @@
+%%% pfssintro.tex -- Introduction au PFSS
+
+% Author: Michael Grünewald
+% Date: Wed Sep 27 00:00:01 CEST 2006
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\class bhridpaper
+\macro zapfd
+\title Introduction à la sélection des fontes
+
+% Pour les exemples, on a besoin d'une macro produisant des caractères
+% dans une forte taille. Pour compenser cela, on utilise une teinte
+% éclaircie, bien que l'utilisation de la couleur n'ait pas encore
+% été ajouté à Bhrìd TeX.
+
+\def\fontsample#1#2{%
+   \hbox{\disableconventionpunc#1\selectfontsize{38}%
+   \testdriver{dvips}\ifdriver\special{color push CadetBlue}\fi
+   #2\relax
+   \testdriver{dvips}\ifdriver\special{color pop}\fi
+   }%
+}
+
+\def\sampleline#1{\nobreak\bigskip\centerline{#1}\bigbreak}
+
+% On charge quelques fontes Adobe.
+
+\begingroup
+\gdef\setTimes{%
+  \setfontfamily{tx}%
+  \setfontshape{r}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontpage{CT1}%
+  \setfontsize{10}%
+}
+\gdef\Times{\setTimes\selectfont}
+\setTimes
+\fontbind{t1xr}
+\gdef\setHelvetica{%
+  \setfontfamily{txss}%
+  \setfontshape{r}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontpage{CT1}%
+  \setfontsize{10}%
+}
+\gdef\Helvetica{\setHelvetica\selectfont}
+\setHelvetica
+\fontbind{t1xss}
+\gdef\setAltHelvetica{%
+  \setfontfamily{txssalt}%
+  \setfontshape{r}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontpage{CT1}%
+  \setfontsize{10}%
+}
+\gdef\AltHelvetica{\setAltHelvetica\selectfont}
+\setAltHelvetica
+\fontbind{t1xss scaled 868}
+\endgroup
+
+
+La sélection des fontes avec \brTeX\ se fait au moyen d'un module
+sophistiqué que ce document décrit. Utiliser une fonte avec
+\brTeX\ demande apparemment un peu plus de travail que pour l'utiliser
+avec~\TeX; il faut en effet prendre le temps d'inscrire la fonte
+auprès d'une administration. La patience se trouve cependant
+récompensée car le système s'avère plus flexible. Le module que l'on
+utilise pour la sélection des fontes ressemble beaucoup à la solution
+que propose \LaTeX\ pour fournir le même type de service.
+
+Ces informations sont utiles au programmeur écrivant des macros pour
+le système \brTeX, mais peu vraisemblablement à l'utilisateur
+ordinaire.
+
+\begindescription
+
+\item 1. Définition des termes techniques
+  On définit un certain nombre de termes techniques, afin d'écarter
+  toute ambigüité dans la discussion suivante. En particulier, on
+  qualifie diversement le terme \em{fonte} car on l'emploie pour
+  désigner plusieurs choses différentes.
+
+\item 2. Paramètres de description des fontes
+  Les fontes sont enregistrées auprès d'une administration, dans un
+  registre faisant se correspondre le nom externe d'une fonte ---
+  celui du fichier TFM --- et ses caractéristiques visuelles.
+
+\item 3. Couche inférieure du sytème
+  On définit les commandes modifiant les registres du système de
+  sélection des fontes, réalisant l'inscription d'une fonte externe
+  auprès de l'administration, puis les fonctions effectuant des
+  recherches dans ces inscriptions.
+
+\item 4. Ajustement des paramètres
+  On ajoute des facilités permettant de faire face à la situtation qui
+  consiste à devoir répondre à une requête dont les paramètres ne
+  décrivent aucune fonte.
+
+\item 5. Couche supérieure du système
+  Lorsqu'on change la taille du corps d'une fonte, il peut être
+  nécessaire d'ajuster certains paramètres, par
+  exemple~\va{\selectlocale{en}{gb}normalbaselineskip}. Les commandes
+  de haut niveau destinées à l'utilisateur définissent des \em{hooks}
+  que les dans lesquels les bibliothèques de macros peuvent
+  enregistrer une procédure appelée à chaque changement de taille.
+
+\enddescription
+
+
+\section 1. Définition des termes techniques
+
+Une \em{fonte} est un assortiment de caractères. Cet assortiment
+contient généralement les lettres de l'alphabet latin et des signes de
+ponctuation mais certaines fontes présentent de très riches
+assortiments, d'autres encore peuvent n'offrir qu'un jeu de capitales.
+On dit aussi parfois \em{police de caractères} pour \em{fonte de
+caractères}, car il semblerait qu'on ne fonde plus toujours les
+caractères. Nous n'emploierons cependant jamais ce mot et lui
+préfèrerons toujours \em{fonte}, à cause de l'expression très
+plaisante~\em{fonderie éléctronique}. Nous examinerons bientôt les
+différentes qualifications de ce terme que nous employons, mais pour
+l'heure, examinons les sortes de caractères que peut présenter une
+fonte.
+
+Un alphabet de vingt-six lettres ne permet pas d'écrire les français,
+car il faut en effet considérer comme distinctes les lettres munies de
+signes diacritiques --- par exemple l'accent grave et la cédille ---
+et les lettres naturelles. Avec cette façon de compter, \em{u, ü
+\em{et}~ù} sont donc trois lettres distinctes entre elles. Les signes
+\em{æ} et \em{½} doivent aussi être comptés, la ligature entre
+l'\em{o} et l'\em{e} n'est pas un simple effet esthétique mais produit
+bien un signe différent: on écrit~\em{½uvre} mais~\em{coercitif}, et
+les orthographes~\em{oeuvre} et~\em{c½rcitif} sont fausses. Une fonte
+destinée à composer un texte, comme un courrier ou un roman, doit donc
+posséder un grand nombre de lettres, en voici quelques unes:
+
+\sampleline{%
+\fontsample\rm f\hfil
+\fontsample\rm ¼\hfil
+\fontsample\rm ÿ\hfil
+\fontsample\rm g%
+}
+
+À coté des lettres, il faut pour composer un texte un grand nombre de
+signes de poncutation, dont voici quelques uns:
+
+\sampleline{%
+\fontsample\rm «\hfil%»
+\fontsample\rm{---}\hfil
+\fontsample\rm ;\hfil
+\fontsample\rm ?%
+}
+
+Dans un texte ordinaire se trouvent enfin des chiffres, et une grande
+variété d'autres signes:
+
+\sampleline{%
+\fontsample\rm 7\hfil
+\fontsample\rm *\hfil
+\fontsample\rm \dag\hfil
+\fontsample\rm \P%
+}
+
+Des compositions spécialisées nécessitent l'utilisation de caractères
+supplémentaires, notamment les compositions de textes mathématiques
+pour lesquelles on utilise un grand nombre de formes de caractères
+différentes aussi bien que des symboles spécifiques:
+
+\sampleline{%
+\fontsample\rm{$\int$}\hfil
+\fontsample\rm{$\star$}\hfil
+\fontsample\rm{$\otimes$}\hfil%
+\fontsample\rm{$\coprod$}
+}
+
+Terminons ces exemples sur les caractères décoratifs:
+
+\sampleline{%
+\fontsample\rm{\zdchar'41}\hfil
+\fontsample\rm{\zdchar'46}\hfil
+\fontsample\rm{\zdchar'55}\hfil
+\fontsample\rm{\zdchar'141}%
+}
+
+Une fonte de caractères peut consister en un assortiment très complet
+de caractères, une autre en un ensemble de belles capitales, une autre
+en une famille de symboles décoratifs, etc. Nous avons besoin de
+classer les caractères présents dans une fonte en sous assortiments,
+que nous appelons~\em{domaines}. Voici la liste de ces domaines:
+
+\begindescription
+
+\item Domaine des lettres
+  Les caractères figurant dans ce domaine sont toutes les lettres,
+  comme~\em{f}, \em ¼, \em ÿ et~\em g, ainsi que les chiffres arabes
+  et les signes de ponctuation tels que~\em«, \em{---}, \em{;}
+  et\em{?}%.%»
+
+\item Domaine compagnon
+  Le domaine compagnon est le domaine des symboles accompagant le
+  texte, comme~\em\dag\ et~\em\P.
+
+\item Domaine mathématique
+  Il comprend tous les caractères spécifiques à la composition des
+  mathématiques.
+
+\enddescription
+Ceci dit, tournons nous vers les différentes qualifications du
+terme~\em{fonte}. Pour le programme~\TeX, une fonte est un assortiment
+de caractères étiquetté par les nombres entre~0 et~255; et un
+caractère n'est que la donnée des dimensions d'une boîte pouvant le
+contenir. Cette donnée est consignée dans un fichier de
+type~TFM~\em{(pour \TeX\ font metrics),} que le programme~\TeX\ lit
+lorsqu'il rencontre une instruction~\fn{font} l'y obligeant. Nous
+appelons \em{fonte métrique} ce type de fonte. Le nombre limité de
+caractères présents dans une fonte métrique rend l'utilisation des
+fontes pourvues d'un grand nombre de caractères quelque peu
+acrobatique puisqu'elle est représentée du point de vue de \TeX\ par
+plusieurs fontes métriques. On dit qu'une telle fonte est \em{paginée}
+et les fontes métriques qui la représentent dans~\TeX\ en sont
+les~\em{pages}. nous utilisons le terme~\em{fonte} sans qualification
+pour parler d'un assortiment de caractères.
+
+
+
+\section 2. Paramètres de description des fontes
+
+L'utilisation simple des fontes métriques présente des limites
+inconfortables. Commençons par discuter sur le choix des formes de
+fontes. Pour souligner une partie du texte, il est ordinaire de la
+composer avec une fonte d'une forme différente de celle employée pour
+le texte où apparaît cette partie. On peut par exemple utiliser des
+caractères italiques, dont l'aspect tranche sur celui des caractères
+romains. Avec \TeX\ on écrit par exemple
+\beginverbatim
+à cause de l'expression très plaisante {\it fonderie éléctronique}.
+\endverbatim
+Mais si notre texte doit être composé en italiques, on utilise les
+caractères romains pour la mise en relief, on écrit alors:
+\beginverbatim
+à cause de l'expression très plaisante {\rm fonderie éléctronique}.
+\endverbatim
+Puisque~\TeX\ est un système programmable, on peut exiger de lui qu'il
+se débrouille pour savoir quelle forme de caractères utiliser pour la
+mise en relief. Le programmeur doit donc créer une commande \fn{em}
+qui s'utilise comme suit:
+\beginverbatim
+à cause de l'expression très plaisante \em{fonderie éléctronique}.
+\endverbatim
+et produit des italiques ou des romains, selon ce qui est qpproprié à
+la mise en relief d'une portion de texte. Une manière de s'y prendre
+est de définir une variable \va{emphasisfont} qu'utilise~\fn{em} pour
+savoir quel forme utiliser pour la mise en relief, et les commandes de
+sélection de fontes modifient la valeur de~\va{emphasisfont} de façon
+convenable chaque fois qu'elles mettent en vigueur une fonte métrique.
+Cette méthode simplette fonctionne mais est difficile à maintenir et
+s'adapte mal à la multiplication des situations analogues.
+
+Une bien meilleure manière de résoudre ce problème est de sélectionner
+la fonte métrique devant être mise en vigueur à tel instant au moyen
+de paramètres décrivant cette fonte plutôt qu'au moyen d'un nom de
+fichier. Pour mettre en ½uvre cette solution, on établit une table de
+correspondance entre les noms externes des fontes métriques et des
+paramètres décrivant ces fontes métriques, et on définit une procédure
+capable de mettre en vigueur l'utilisation d'une fonte mérique à
+partir d'un ensemble de paramètres. Les moyens techniques sont
+discutés dans le paragraphe~3, nous discutons ici des paramètres.
+
+Un premier paramètre est la \em{famille}. Une famille de fontes
+regroupe plusieurs fontes pouvant être utilisées simultanément dans un
+même document. Par exemple, voici quelques mots composés en caractères
+\em{Latin Modern,} romains et italiques:
+\begindisplay
+à cause de l'expression très plaisante \em{fonderie éléctronique}.
+\enddisplay
+\noindent
+Au sein d'une même famille peuvent coexister plusieurs formes de
+caractères très différentes, comme le romain et l'italique, mais ces
+différentes formes ont été conçues pour s'utiliser ensemble et
+s'harmonisent. Voici la lettre~\em{m} majuscule et la ligature~{fl}
+dans les caractères romains des familles \em{Latin Modern}, \em{Latin
+  Modern Typewriter Type} et~\em{Latin Modern Sans Serif}:
+
+\sampleline{%
+\fontsample\rm{M}\hfil
+\fontsample\tt{M}\hfil
+\fontsample\sf{M}%
+}
+
+\sampleline{%
+\fontsample\rm{fl}\hfil
+\fontsample\tt{fl}\hfil
+\fontsample\sf{fl}%
+}
+
+Un second paramètre est la forme des caractères. Montrons pour la
+famille \em{Latin Modern}, la lettre~{g} et la ligature~{fl} pour
+chacune des formes, romaine, oblique, italique, petites capitales et
+petites capitales obliques:
+\sampleline{%
+\fontsample\rm{g\thinspace fl}\hfil
+\fontsample\sl{g\thinspace  fl}\hfil
+\fontsample\it{g\thinspace  fl}%
+}
+
+\sampleline{%
+\fontsample\sc{g\thinspace  fl}\hfil
+\fontsample{\sl\sc}{g\thinspace  fl}%
+}
+
+Un autre paramètre est la graisse des caractères.
+
+Un autre paramètre est l'extension des caractères.
+
+Un autre paramètre est la taille optique des cractères.
+
+On termine sur un paramètre propre aux fontes métriques, la page de
+codes. On appelle ainsi la correspondance particulière entre les~256
+positions de la fonte et les caractères qu'ils représentent. On peut
+accéder avec \TeX\ à une fonte composée d'un très large assortiment de
+caractères en découpant la fonte en plusieurs fontes métrique, chacune
+paramétrée par une page de codes différente. Pour insérer un caractère
+particulier, il faut donc connaître sa page de codes et sa position
+dans cette page.
+
+\section 3. Couche inférieure du système
+
+La couche inférieure du système de sélection des fontes établit une
+table mettant en correspondance les attributs des fontes et les noms
+des fontes métriques auxquels ils correspondent. Il fournit également
+des procédures permettant de manipuler cette table.
+
+Pour commencer, on énumère les \em{paramètres de sélection des
+fontes}. Tous les paramètres sont contenus dans des macros, sauf l'un
+d'entre eux, la taille optique, qui est contenu dans un registre
+numérique. Les paramètres sont:
+
+\begindescription%\variables
+
+\item fontfamily
+  Décrit la famille d'une fonte. Ces noms sont généralement abrégés,
+  comme \li{lm} pour \em{Latin Modern}, \li{px} pour \em{Palatino
+    Extra}, etc.
+
+\item fontshape
+  Décrit la forme d'une fonte. Les valeurs sont les suivantes: \li{r}
+  pour les romains (les caractères ordinaires), \li{o} pour les
+  caractères romains obliques, \li{i} pour les caractères
+  italiques. Les variantes en petites majuscules utilisent la même
+  lettre que la forme ordinaire, mais en majuscule: \li{R} pour les
+  romains en petites majsucules, etc. Pour certaines fontes, la notion
+  de forme n'est pas très adaptée, notamment pour les fontes de
+  symboles qui ne proposent pas de variantes oblique ou italique. Dans
+  ce cas on peut utiliser comme valeur pour \va{fontshape} la
+  lettre~\li{n} pour~\em{naturel}.
+
+\item fontweight
+  Décrit la graisse d'une fonte. Les valeurs sont~\li{m} pour la
+  graisse moyenne, celle utilisée pour le texte ordinaire, \li{l} pour
+  une graisse plus faible que la graisse ordinaire, \li{d} pour des
+  caractères demi-gras et~\li{b} pour les caractères gras. On trouve
+  parfois d'autres appelations pour la graisse comme~\em{book},
+  ou~\em{semibold}.
+
+\item fontwidth
+  Décrit l'extension d'une fonte. Les valeurs sont~\li{m} pour
+  l'extension moyenne, celle des caractères utilisés pour le texte
+  ordinaire, \li{c}~pour les caractères condensés et~\li{x} pour les
+  caractères étendus.
+
+\item fontpage
+  Décrit la page de codes présentée par une fonte métrique. Les
+  appelations des pages de code sont décrites ci-dessous.
+
+\item fontsize
+  La taille optique de la fonte. Cette taille optique est exprimée en
+  nombre entier de points. Cette restriction ne signifie pas que la
+  taille optique de la fonte doit toujours être un nombre entier de
+  points. Lorsqu'on compose un texte avec des caractères de dix
+  points, les caractères d'autres fontes peuvent avoir des tailles
+  optiques voisines de dix points, mais légèrement différente de cette
+  valeur. Cf.~Alan~Hoenig, \em{\TeX\ unbound},~p.~151.
+
+\enddescription
+\noindent
+Pour affecter une valeur à ces paramètres on utilise les
+commandes~\fn{setfontfamily}, etc. Le paramètre~\va{fontsize} est un
+registre numérique, on obtient donc sa valeur avec~|\the\fontsize|,
+les autres sont des macros et on écrit simplement |\fontpage|,~etc.
+
+\formalpar
+L'inscription d'une fonte dans la table de l'administration et la
+consultation de cette table se fait dans un premier temps en
+positionnant les valeurs des registres précédents, puis on appelle la
+procédure effectuant l'action souhaitée. On discute de ces
+procédures dans la suite de ce paragraphe.
+
+\formalpar Procédure fontbind.
+La procédure~\fn{fontbind} inscrit une fonte métrique dans les tables
+de l'administration, et charge cette fonte métrique au moyen de la
+primitive~\fn{font} de~\TeX. Par exemple, enregistrons auprès de
+l'administraton les fontes Adobe Times Roman et Adobe Helvetica en dix
+points. Pour Adobe Times Roman, on procède ainsi:
+\beginverbatim
+\setfontfamily{tx}
+\setfontshape{r}
+\setfontweight{m}
+\setfontwidth{m}
+\setfontpage{CT1}
+\setfontsize{10}
+\fontbind{t1xr}
+\endverbatim
+Le fichier~\pa{t1xr.tfm} décrit en effet les propriétés métriques des
+caractères de la page de code~\li{CT1} de la fonte Adobe Times Roman.
+Pour procéder à l'enregistrement de la fonte Adobe Helvetica, on
+procède de façon analogue:
+\beginverbatim
+\setfontfamily{txss}
+\setfontshape{r}
+\setfontweight{m}
+\setfontwidth{m}
+\setfontpage{CT1}
+\setfontsize{10}
+\fontbind{t1xss}
+\endverbatim
+Il apparaît que ces deux fontes présentent dans leur taille optique de
+dix points une différence de taille considérable:
+\begindisplay
+\Times Adobe Times\quad
+\Helvetica Adobe Helvetica
+\enddisplay
+Pour utiliser ces fontes dans le même document, il faut procéder à un
+réajustement des dimensions d'une des deux fontes, ou bien des deux. À
+titre d'exemple, choisissons de réduire la taille de Adobe
+Helvetica. Après quelques essais, il semble qu'une réduction de la
+fonte Adobe Helvetica à~$868/1000$ de sa taille fournit un résultat
+satisfaisant. On peut donc choisir d'enregistrer la fonte Adobe
+Helvetica comme précedemment avec la déclaration
+\beginverbatim
+\fontbind{t1xss scaled 868}
+\endverbatim
+Lorsque les deux fontes apparaissent côte à côte, la différence n'est
+plus si dérangeante qu'auparavant:
+\begindisplay
+\Times Adobe Times\quad
+\AltHelvetica Adobe Helvetica
+\enddisplay
+Il peut arriver que certaines fontes ne puissent pas être utilisées
+dans un même document, même après un réajustement de leur taille:
+certaines formes ne vont pas ensemble, et on ne peut rien faire contre
+cela.
+
+\formalpar Procédure toksloadfontname et apparentées.
+La procédure \fn{fontbind} charge la fonte métrique indiquée au moyen
+de la primitive~\fn{font}. Le noms sous laquelle cette fonte est
+chargée est produit par la procédure \fn{toksloadfontname}. L'appel
+\beginverbatim
+\toksloadfontname\rtA
+\endverbatim
+charge le registre~\va{rtA} avec le nom d'une macro utilisée pour lier
+la fonte. Par exemple, l'appel |\fontbind{t1xss scaled 868}| est une
+version améliorée de
+\beginverbatim
+\toksloadfontname\rtA
+\expandafter\font\the\rtA=t1xss scaled 868
+\endverbatim
+Cette procédure lie la fonte \pa{t1xss} à la séquence
+\li{%
+  \setAltHelvetica
+  \toksloadfontname\rtA
+  \expandafter\string\the\rtA
+}, produite grâce la primitive~\fn{csname}.
+
+Pour produire l'identifiant~\li{\setAltHelvetica\fontname}, la
+procédure~\fn{toksloadfontname} utilise la macro~\fn{fontname}. La
+variante~\fn{fontshortname} produit cet identifiant sans indication de
+taille, par exemple~\li{\setAltHelvetica\fontshortname} et la
+macro~\fn{toksloadcsfontshortname} charge cet identifiant dans un
+registre de~\em{tokens}.
+
+\formalpar Sauvegarder les paramètres de sélection.
+La procédure~\fn{toksloadfontstate} sauvegarde l'ensemble des
+paramètres de sélection des fontes dans un registre. On restaure ces
+paramètres sauvegardés en évaluant les~\em{tokens} contenus dans le
+registre.  La variante~\fn{toksloadfontstatealt} fait la même chose
+mais omet de sauvegarder la taille.
+
+\formalpar Procédure fontswitch.  Cette procédure consulte la table
+administrative pour trouver une fonte correspondant aux paramètres de
+description des fontes en vigueur au moment de l'appel. Lorsqu'une
+fonte correspondante est trouvée, cette-dernière devient la fonte
+courante pour le mode texte (cet appel ne modifie pas la fonte
+courante en mode mathématique).  Lorsqu'aucune fonte inscrite dans les
+tables ne concorde avec les paramètres, une procédure d'ajustement des
+paramètres est utilisée. Cette procédure est définie par l'utilisateur
+de \fn{fontswitch}, d'une façon décrite ci-dessous, sous le
+titre~\em{Ajustement des paramètres}. Tout se passe comme si aucun
+paramètre de sélection des fontes n'est modifié entre le début et la
+fin de la procédure, même lorsque les paramètres ont été ajutés
+pendant la recherche.
+
+La procédure \fn{fontswitch} a deux pendants, \fn{toksloadfontswitch}
+et \fn{fontloadfontswitch}. Au lieu de faire du résultat de la requête
+la fonte courante, le premier range une séquence de contrôle activant
+cette fonte dans un registre de tokens, l'autre lie cette séquence de
+contrôle à une autre séquence de contrôle ou a un registre de fontes
+du mode mathématique. Voici un exemple d'utilisation de
+\fn{toksloadfontswitch}:
+\beginverbatim
+\toksloadfontswitch\setsectionfont\to\rtA
+\endverbatim
+\noindent
+Dans ce exemple on suppose que la procédure~\fn{setsectionfont} a pour
+rôle de charger des paramètres de sélection des fontes. Une recherche
+a lieu et le résultat de cette recherche est une séquence de contrôle
+placée dans~\va{rtA}. Par exemple, après une requête, le
+registre~\va{rtA} peut contenir~|\txss/r/m/m/CT1/10|~(un~seul
+\em{token}).
+Voici un exemple d'utilisation de \fn{fontloadfontswitch}:
+\beginverbatim
+\fontloadfontswitch\setsectionfont\to{\textfont0}
+\fontloadfontswitch\setsectionfont\to\shorthand
+\endverbatim
+Avec le deuxième exemple,~\fn{shorthand} est une séquence de contrôle
+ayant le même effet que |\txss/r/m/m/CT1/10|, si les paramètres sont
+les mêmes que dans l'exemple précédent.
+
+\formalpar Ajustement des paramètres.
+Comme il a été dit plus haut, lorsque les paramètres de description
+des fontes ne correspondent à aucune fonte enregistrée
+par~\fn{fontbind}, un mécanisme d'ajustement des paramètres est
+utilisé. Ce mécanisme n'est pas défini par le schéma de sélection des
+fontes mais par l'utilisateur de cette bibliothèque. On trouve un
+exemple de mécanisme d'ajustment dans la bibliothèque~\pa{pfssadj}.
+
+Le mécanisme d'ajustement des paramètres est défini par deux
+procédures, \fn{fontswitchadjust} et \fn{fontswitchadjustinit}. La
+première est le corps d'une boucle et la seconde est un séquence
+d'initialisation pour cette boucle. Le mécanisme peut être représenté
+par le pseudo-code suivant:
+\beginlines
+\fn{fontswitchadjustinit}
+\sy{while} \sy(\fn{font parameters have no match}\sy) \sy{do}
+\quad\fn{fontswitchadjust}
+\sy{done}
+\endlines
+Le mécanisme d'ajustement des paramètres peut prendre plusieurs
+décisions, parmi lesquelles:
+
+\beginitemization
+
+\item lorsqu'une fonte dont les paramètres d'enregistrement
+diffèrent seulement des paramètres actuels par la valeur de
+\va{fontsize}, on peut charger cette dernière fonte métrique avec un
+facteur d'échelle;
+
+\item lorsque des petites capitales ne sont pas disponibles, on peut
+prendre des lettres ordinaires;
+
+\item  lorsque les italiques ne sont pas disponibles mais que les
+obliques le sont, on peut utiliser ces derniers.
+
+\enditemization
+Les décisions particulières dépendent généralement de la famille de
+fontes utilisée. Les procédures \fn{testfontfamily}, etc. et
+\fn{testfontglob} peuvent être utilisées pour programmer une procédure
+\fn{fontswitchadjust}.
+
+
+\formalpar Prédicats examinant les paramètres.
+Plusieurs prédicats permettent d'examiner les paramètres de sélection
+des fontes. Des prédicats permettent d'examiner un paramètre à la
+fois, il s'agit de \fn{testfontfamily}, \fn{testfontshape},
+\fn{testfontweight} et \fn{testfontwidth}. Le prédicat
+\fn{testfontglob} permet de tester plusieurs paramètres simultanément.
+La valeur \va{fontsize} peut être examinée avec le test
+primitif~\fn{ifnum}.  On dit par exemple
+\beginverbatim
+\testfontwidth m%
+\iffontwidth
+  \ifx\relax\undefined A\else B\fi
+\else
+  \ifx\relax\undefined A\else B\fi
+\fi
+\endverbatim
+
+La commande~\fn{testfontglob} permet de tester simultanément plusieurs
+paramètres: la forme, la graisse et l'extension. Par exemple:
+\beginverbatim
+\testfontglob R*c%
+\iffontglob
+   texte vrai
+\else
+   texte faux
+\fi
+\endverbatim
+Cet appel exécute le texte vrai lorsque la forme est~\li{R}, la
+graisse quelconque (i.e.~il n'y a pas de condition sur la~graisse) et
+l'extension~\li{c}. Les positions où l'argument est une étoile ne sont
+pas examinées, et le test~|\testfontglob ***| évalue toujours le texte
+vrai.
+
+Remarquons pour terminer que les paramètres de forme, de graisse et
+d'extension sont représentés par une seule lettre, ce qui permet
+d'utiliser le test primitif~\fn{if} au lieu de~\fn{testfontshape},
+de~\fn{testfontweight} et de~\fn{testfontwidth}. Cette pratique est
+découragée.
+
+
+\section 4. Ajustement des paramètres
+
+Ce paragraphe présente la procédure d'ajustement des paramètres
+définies par la bibliothèque~\pa{pfssadj}. Rappelons que la procédure
+d'ajustement est mise en ½uvre par~\fn{fontswitch},
+\fn{fontloadfontswitch} et~\fn{toksloadfontswitch} lorsque les
+paramètres de description de fonte ne correspondent pas aux paramètres
+d'enregistrement d'une fonte avec~\fn{fontbind}. La bibliothèque
+définit la séquence d'initialisation~\fn{fontswitchadjustinit} de
+cette procédure et le corps de la boucle~\fn{fontswitchadjust} de
+cette procédure.
+
+
+\section 5. Couche supérieure du système
+
+Ce paragraphe décrit les commandes du schéma de sélection des fontes
+destinées à être utilisées par le rédacteur d'un document ou le
+concepteur d'une classe de document. La commande~\fn{selectfontsize}
+modifie la taille des caractères utilisés pour composer le texte. La
+commande~\fn{selectfont} modifie la fonte utilisée pour composer le
+texte. Des commandes~\fn{rm}, \fn{tt}, \fn{bf}, etc. ressemblant à
+celles de plain~\TeX\ permettent d'activer certains ensembles de
+paramètres de sélection des fontes.
+
+\formalpar Procédure selectfont.
+Un point important à relever est que la commande~\fn{fontswitch} est
+une commande de bas niveau, qui opère une instruction élémentaire dans
+la sélection des fontes.  Cependant, le changement de fonte pour la
+préparation du texte peut appeler d'autres modifications, surtout
+lorsqu'une taille différente de la taille utilisée précedemment est
+demandée. Dans ce cas, il est nécessaire de changer les paramètres
+définissant les espaces interlignes et de rafraîchir les contenus des
+registres de fontes du mode mathématique. Dans certaines applications,
+il peut être nécessaire nécessaire d'effectuer des ajustements lorsque
+la taille du texte que l'on compose est changée. Pour cela, la
+commande~\fn{selectfont} définit un~\em{hook},
+nommé~\va{fontsizehook}, auquel on peut ajouter des instructions
+devant être traitées chaque fois qu'un nouveau jeu de caractères est
+activé. Les concepteurs de classe de document doivent utiliser
+\fn{selectfont} pour changer de caractères pour la préparation du
+texte, et jamais la commande~\fn{fontswitch}.
+
+Il est commode de définir des commandes pour charger une fonte
+particulière, par exemple la fonte utilisée pour préparer les titres
+peut être activée par~\fn{titlefont}, la fonte pour composer les haut
+de page par~\fn{runningheaderfont}, etc. Il est commode d'écrire ces
+macros avec une commande auxiliaire dont le rôle est de modifier les
+valeurs des registres; dans nos exemples on
+définirait~\fn{settitlefont} et~\fn{setrunningheaderfont}, puis
+\beginverbatim
+\def\titlefont{\settitlefont\selectfont}
+\def\runningheaderfont{\setrunningheaderfont\selectfont}
+\endverbatim
+Cette façon de procéder permet de réaliser l'héritage des
+attributs. Si par exemple on souhaite utiliser pour les titres de
+paragraphes la même fonte que pour le titre du document, on peut
+définir~\fn{setsectiontitlefont} de la façon suivante:
+\beginverbatim
+\def\setsectiontitlefont{\settitlefont\setfontsize{12}}
+\def\sectiontitlefont{\setsectiontitlefont\selectfont}
+\endverbatim
+Les modifications ultérieures apportées au style des titres réalisé
+par~\fn{settitlefont} se répercute alors automatiquement sur les
+titres des sections. On aurait aussi pu~écrire
+\beginverbatim
+\def\sectiontitlefont{\titlefont\setfontsize{12}\selectfont}
+\endverbatim
+Il n'est cependant pas très satisfaisant de savoir que dans l'appel
+à~\fn{sectiontitlefont} ainsi définie, la procédure~\fn{selectfont}
+est évaluée deux fois. Le choix du préfixe~\fn{set} pour nommer ces
+procédures est en accord avec les recommandations générales sur le
+nommage des commandes.
+
+\formalpar Procédure selectfontsize.
+Le format plain~\TeX\ définit des commande~\fn{tenpoint}, etc. Le
+format~\brTeX\ définit les commandes~\fn{twelvepoint}, \fn{elfpoint},
+et ainsi de suite jusqu'à~\fn{fivepoint} pour changer de taille de
+texte. On définit aussi des commandes de changement de taille dont les
+identifiant ne font pas référence à la mesure de la taille de
+caractères utilisée mais à une appréciation de sa grosseur relativement
+à la taille des caractères pour le texte normal. Ces commandes
+sont~\fn{normalsize}, \fn{smallsize}, \fn{verysmallsize}, \fn{bigsize}
+et~\fn{verybigsize}. À chacune de ces commandes correspond une
+commande modifiant la valeur du paramètre~\va{fontsize} sans effectuer
+l'appel~\fn{selectfontsize}, ces commandes sont
+nommées~\fn{setnormalsize}, etc.; dans~\brTeX\ elles correspondent aux
+tailles~10, 9, 7, 12 et~17, mais elles peuvent être redéfinies par une
+classe de document ou une bibliothèque de macros. À cet ensemble de
+commandes s'ajoutent les procédures~\fn{setlargersize},
+\fn{largersize}, \fn{setsmallersize} et~\fn{smallersize}, qui font ce
+qu'indique leur nom.
+
+Une classe de document devrait définir des noms symboliques pour les
+tailles de différents éléments apparaissant dans le document, par
+exemple~\fn{settitlesize} ou~\fn{setdocumenttitlesize} pour une
+commande chargeant la taille utilisée pour préparer le titre du
+document,~\fn{setfootnotesize} pour charger la taille des caractères
+utilisée pour préparer les notes de bas page, etc.
+
+
+\formalpar Sélection de certaines fontes.
+Comme dans plain~\TeX, on définit un certain nombre de commandes
+permettant d'activer directement une fonte particulière. Ces commandes
+sont les suivantes:
+\begindescription\functions
+\item rm
+  bascule vers la fonte définie par~\fn{setnormalfont} et sélectionne
+  la famille~\va{rmfontfamily} (caractères romains), on attend que
+  cette fonte soit celle utilisée pour le texte ordinaire du document;
+
+\item tt
+  bascule vers la fonte définie par~\fn{setnormalfont} et sélectionne
+  la famille~\va{ttfontfamily} \em{(typewriter type)\/};
+
+\item sf
+  bascule vers la fonte définie par~\fn{setnormalfont} et sélectionne
+  la famille~\va{sffontfamily} (caractères sans serifs).
+
+\enddescription
+Chacune de ces commandes applique un~\em{hook}, la première
+applique~\va{rmhook} et ainsi de suite. On peut ajouter à
+ces~\em{hook} des commandes modifiant les paramètres du mode
+mathématique pour utiliser des~\em{typewriter type} dans le mode
+mathématique,~etc. La documentation sur les conventions de saisie dans
+le mode mathématique explique en détails quels commandes sont ajoutées
+à ces~\em{hooks}. Les commandes suivantes servent à modifier la forme
+ou la graisse des caractères employés dans le texte:
+\begindescription%\functions
+
+\item it
+  pour les italiques;
+
+\item sl
+  pour les obliques;
+
+\item bf
+  pour les caractères gras;
+
+\item sc
+  pour les petites capitales.
+
+\enddescription
+Ces différentes procédures peuvent être combinées, par exemple pour
+obtenir des caractères gras italiques si ceux-cis sont
+disponibles. Chacune de ces commandes applique un~\em{hook}, comme
+précedemment.
+
+Remarque: 1/La procédure~\va{setnormalfont} et les
+variables~\fn{rmfontfamily}, \fn{ttfontfamily} et~\fn{sffontfamily} ne
+sont pas définies par le module de sélection des fontes. Elles doivent
+être définies par le module chargeant les fontes du format. 2/Le
+module \pa{basedef} définit des commandes de marquage du texte, comme
+par exemple~\fn{em} et~\fn{sy} pour le soulignement, \fn{pa} pour un
+chemin ou une~URL, etc.
+
+\bye
+
+%%% End of file `pfssintro.tex'

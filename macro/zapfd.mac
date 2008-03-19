@@ -1,0 +1,55 @@
+%%% zapfd.mac -- Hermann Zapf's Dingbats
+
+% Author: Michael Grünewald
+% Date: Sun Aug 20 09:42:16 CEST 2006
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+% Cette bibliothèque charge la fonte de `Dingbats' de Hermann
+% Zapf. Les dingbats peuvent être utilisés avec la commande `zdchar'
+% et on peut nommer des caractères de cette fonte avec `zdchardef'.
+
+%%% 1. Inscription de la fonte Zapf's dingbats
+
+\def\setzdfont{%
+  \setfontpage{XZD}%
+  \setfontfamily{zd}%
+  \setfontshape{n}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+}
+
+\def\zdfont{\setzdfont\fontswitch}
+
+\begingroup
+\setzdfont
+\fontbind{pzdr}
+\setfontadjustsize{\@ne}{\@M}{\@m}{pzdr}
+\endgroup
+
+\def\zdchar{\fontchar\zdfont}
+\def\zdchardef#1{\fontchardef#1\zdfont}
+
+%%% 2. Inscription administrative de la bibliothèque
+
+\def\libraryname{zapfd}
+\def\libraryversion{1.0}
+
+%%% End of file `zapfd.mac'

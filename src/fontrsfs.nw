@@ -1,0 +1,65 @@
+%%% fontrsfs.nw -- Utilisation de Formal Script -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 31 mar 2007 05:51:50 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier fontrsfs.nw}
+<<*>>=
+
+
+% Ce fichier procède aux déclarations nécessaires à l'utilisation des
+% fontes Formal Script (rsfs) de R.A. Smith. Ces déclarations
+% utilisent l'identifiant `mathcal' pour accéder aux registres de
+% familles de fontes. Ils remplacent la commande `cal' de façon
+% appropriée.
+
+% Note: les fontes euxm ont quelques caractères supplémentaires mais
+%  ne sont pas encore disponibles comme fontes de type 1.
+
+\ifx\mathcal\undefined
+  \newfam\mathcal
+  \addmathfam\mathcal
+\fi
+
+\def\cal{\fam\mathcal}
+
+\def\setmathcal{%
+  \setfontpage{ALP}%
+  \setfontfamily{fs}%
+  \setfontshape{r}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+}
+
+\setmathfamattributes\mathcal\setmathcal
+
+\begingroup
+\setmathcal
+\setfontsize{10}\fontbind{rsfs10}
+\setfontsize{7}\fontbind{rsfs7}
+\setfontsize{5}\fontbind{rsfs5}
+
+\setfontadjustsize{6}{6}{\@m}{rsfs7}
+\setfontadjustsize{8}{\@M}{\@m}{rsfs10}
+\endgroup
+
+%%% End of file `fontrsfs.nw'

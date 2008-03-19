@@ -1,0 +1,255 @@
+%%% paper.nw -- Différents papiers pour l'impression -*- LaTeX -*-
+
+% Author: Michael Grünewald
+% Date: Tue Feb 21 22:34:46 GMT 2006
+% Copyright: (C) 2006, 2013 Michael Grünewald
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Dimensions du papier utilisé}
+Ce module réalise des procédures définissant un cadre pour
+l'utilisation de formats de papiers variés pour la composition des
+documents.
+
+La première partie du module définit les registres \va{paperwidth} et
+\va{paperheight} que l'utilisateur règle de façon à ce que leurs
+valeurs correspondent aux dimensions du papier sur lequel doit être
+imprimé le document.
+
+Ce module définit une table des tailles de papier couramment
+utilisées. Il réalise un fonction \fn{setpaper} qui modifie les
+valeurs des registres \fn{paperwidth} et \fn{paperheight} en accord
+avec cette table.
+
+La procédure \fn{addpaper} permet à une bibliothèque de définir de
+nouvelles tailles de papier.
+
+La procédure \fn{setpaperlandscape} échange la hauteur et la largeur
+du papier.
+
+<<*>>=
+<<Déclaration des registres>>
+<<Table des formats usuels: définition>>
+<<Table des formats usuels: manipulation>>
+<<Mode paysage>>
+
+
+@ \subsection{Déclaration des registres}
+
+On réserve les registres \va{paperwidth} et \va{paperheight}. Ces
+registres sont des arguments de la procédure \va{selectlayout} qui
+ajuste la procédure de sortie à la taille du papier. Cette procédure
+est définie dans le module [[output]]; mais un classe de document peut
+fournir sa propre définition de la procédure
+\fn{selectlayout}. Lorsque l'utilisateur souhaite modifier les
+paramètres de mise en page d'une classe de document, il doit donc
+procéder à ces modifications comme à l'appel à \fn{selectlayout}
+\emph{après} avoir cahrgé la classe de document.
+
+<<Déclaration des registres>>=
+\newdimen\paperwidth
+\newdimen\paperheight
+
+@ La sémantique des registres \va{paperwidth} et \va{paperheight} est
+la suivante: après leur règlage, la valeur de ces registres exprimées
+en unités vraies est constantes. Les unités vraies sont celles tenant
+compte du registre \va{mag}, lorsqu'on altère ce registre, il est donc
+nécessaire d'ajuster en conséquence les paramètres décrivant la page.
+
+<<Déclaration des registres>>=
+\addhook{%
+  \unmagnify\paperheight
+  \unmagnify\paperwidth
+}\to\magnificationhook
+
+@ \begin{remark}
+Les procédures souhaitant travailler sur les dimensions réelles de la
+page doivent appliquer le coefficient~\va{mag}. Pour obtenir la
+véritable largeur de la page dans le registre~\va{rdA}, on peut
+procéder ainsi:
+\begin{example}
+\rdA=\paperwidth
+\divide\rdA by 1000 % \divide\rdA\@M
+\multiply\rdA\mag
+\end{example}
+\end{remark}
+
+@ \subsection{Table des formats usuels}
+
+La table des formats usuels est une \emph{alist} dont les clefs sont
+les noms des formats et les valeurs des couples~$(\mathrm{largeur},
+\mathrm{hauteur})$.
+
+Les fichiers de paramètres régionaux peuvent certainement contribuer à
+enrichir cette table (voir \fn{paperformatadd}\/).
+
+La RFC2346 présente des recommendations à mettre en ½uvre lors du
+choix du format d'une publication éléctronique.
+
+ftp://ftp.isi.edu/in-notes/rfc2346.txt
+
+Le document suivant derit des éléments des tailles en vigueur dans le
+système impérial.
+
+http://gwydir.demon.co.uk/jo/units/print.htm
+
+<<Table des formats usuels: définition>>=
+\def\paperformat@l{%
+  %
+  % Formats ISO 216
+  %
+  % Dans la Wikipædia, l'article ISO 216 présente ces formats
+  % et des exemples de leur utilisation.
+  %
+  \\{{A0}{{841mm}{1189mm}}}%
+  \\{{A1}{{595mm}{841mm}}}%
+  \\{{A2}{{420mm}{595mm}}}%
+  \\{{A3}{{297mm}{420mm}}}%
+  \\{{A4}{{210mm}{297mm}}}%
+  \\{{A5}{{149mm}{210mm}}}%
+  \\{{A6}{{105mm}{149mm}}}%
+  \\{{A7}{{74mm}{105mm}}}%
+  \\{{A8}{{52mm}{74mm}}}%
+  \\{{A9}{{37mm}{52mm}}}%
+  \\{{A10}{{26mm}{37mm}}}%
+  \\{{B0}{{1000mm}{1414mm}}}%
+  \\{{B1}{{707mm}{1000mm}}}%
+  \\{{B2}{{500mm}{707mm}}}%
+  \\{{B3}{{353mm}{500mm}}}%
+  \\{{B4}{{250mm}{353mm}}}%
+  \\{{B5}{{176mm}{250mm}}}%
+  \\{{B6}{{125mm}{176mm}}}%
+  \\{{B7}{{88mm}{125mm}}}%
+  \\{{B8}{{62mm}{88mm}}}%
+  \\{{B9}{{44mm}{62mm}}}%
+  \\{{B10}{{31mm}{44mm}}}%
+  \\{{C0}{{917mm}{1297mm}}}%
+  \\{{C1}{{648mm}{917mm}}}%
+  \\{{C2}{{458mm}{648mm}}}%
+  \\{{C3}{{324mm}{458mm}}}%
+  \\{{C4}{{229mm}{324mm}}}%
+  \\{{C5}{{162mm}{229mm}}}%
+  \\{{C6}{{114mm}{162mm}}}%
+  \\{{C6/7}{{81mm}{162mm}}}%
+  \\{{C7}{{81mm}{114mm}}}%
+  \\{{C8}{{57mm}{81mm}}}%
+  \\{{C9}{{40mm}{57mm}}}%
+  \\{{C10}{{28mm}{40mm}}}%
+  \\{{DL}%                      Format d'enveloppe
+    {{110mm}{220mm}}}%		 divisé dans la longueur
+  \\{{ID-1}%                    Format des pièces d'identité
+    {{85.6mm}{53.98mm}}}%        cartes bancaires, permis de conduire EU
+  \\{{ID-2}%                    Format de pièces d'identité
+    {{74mm}{105mm}}}%            identique à A7
+  \\{{ID-3}%                    Format de pièces d'identité
+    {{88mm}{125mm}}}%            identique à B7
+  %
+  % Formats courants en Amérique du Nord
+  %
+  \\{{letter}{{8.5in}{11in}}}%
+  \\{{legal}{{8.5in}{14in}}}%
+  \\{{executive}{{7.25in}{10.5in}}}%
+  %
+  % Autres formats
+  %
+  \\{{in8}{{160mm}{250mm}}}%	in octavo
+}
+
+@ \paracommand{\fn{paperformatadd}\fa{papername}\fa{width}\fa{height}}
+
+Inscrit un nouveau format de papier dans la table. Les caractères
+autorisés pour le nom du format sont: A--Z, a--z et 0--9,
+
+\begin{example}
+\paperformatadd{A4}{210mm}{297mm}
+\end{example}
+
+<<Table des formats usuels: manipulation>>=
+\def\paperformatadd#1#2#3{\alistadd\paper@l{#1}{{#2}{#3}}}
+
+
+@ \paracommand{\fn{setpaperformat}\fa{papername}}
+
+Modifie les valeurs de \va{paperwidth} et~\va{paperheight} en accord
+avec le contenu de la table des formats et~\fa{papername}. Lorsque le
+format~\fa{papername} ne fait l'objet d'aucune liaison dans la table,
+une erreur se produit.
+
+<<Table des formats usuels: manipulation>>=
+\def\paperformat{none}
+\def\setpaperformat#1{%
+  \def\paperformat{#1}%
+  \alistprocess\paperformat@l\paperformat@S\paperformat@E{#1}%
+}
+
+\def\paperformat@S#1{\paperformat@T#1}
+
+\def\paperformat@T#1#2{%
+  \paperwidth=#1
+  \paperheight=#2
+  \unmagnify\paperheight
+  \unmagnify\paperwidth
+  \relax
+}
+
+\def\paperformat@E{%
+  \errhelp{You asked me to load `paperwidth' and `paperheight'
+  registers with information describing the `\paperformat' paper
+  format. But nothing is known about `\paperformat'! Check for
+  mispelling or try to provide information about `\paperformat' with
+  `addpaperformat'. You can also set manually `paperwidth' and
+  `paperheight'.}%
+  \error{selectpaperformat: nothing is known about \paperformat.}%
+}
+
+@
+\begin{remark}
+Remarquons bien que la procédure \fn{setpaperformat} ne fait que
+modifier les valeurs des registres décrivant les dimensions du format
+de papier visé. Cette procédure ne recalcule pas automatiqument les
+paramètres de mise en page; il faut pour cela appeler explicitement la
+procédure~\fn{selectlayout}.
+\end{remark}
+
+@ \subsection{Mode paysage}
+
+La commande~\fn{setpaperlandscape} inverse les deux dimensions du
+format (présentation à l'italienne). Tout comme la
+procédure~\fn{setpaperformat}, les paramètres de mise en page ne sont
+pas ajustés automatiquement, et il faut appeler
+explicitement~\fn{selectlayout} pour opérer cet ajustement.
+
+Pour présenter un document à l'italienne, l'échange des deux
+dimensions du support devrait certainement être accompagné d'autres
+modifications. Une classe de document permettant les préparations à
+l'italienne devrait définir une procédure particulière, l'usage
+de~\fn{setpaperlandscape} par les scripteurs est donc découragé.
+
+<<Mode paysage>>=
+\def\setpaperlandscape{%
+  \beginnext
+  \edef\next{%
+    \noexpand\paperwidth=\the\paperheight
+    \noexpand\paperheight=\the\paperwidth
+  }%
+  \endnext
+}
+@
+%%% End of file `paper.nw'

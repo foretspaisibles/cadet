@@ -1,0 +1,408 @@
+%%% fontlm.nw -- PFSS Latin Modern Declaration -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Ven  9 mar 2007 17:23:04 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier fontlm.nw}
+<<*>>=
+
+% Ce fichier contient les déclarations permettant d'utiliser les
+% fontes Latin Modern avec le PFSS. On peut consulter avec profit
+% l'article ``An exploration of the Latin Modern fonts'', Will
+% Robertson, PracTeX journal, TPJ 2006 No 01 2006-02-01.
+
+
+%%% 0. INFORMATIONS SUR LES FONTES LATIN MODERN
+
+% Les fichiers des fontes Latin Modern contiennent quelques
+% informations permettant de définir correctement les paramètres pour
+% PFSS. Ces informations peuvent être obtenues avec FontForge, par
+% exemple, ou en scrutant le fichier PFB avec un programme approprié
+% (comme sed).
+%
+% FICHIER         NOM COMPLET                         GRAISSE
+%
+% lmbx10.pfb     LMRoman10-Bold                             Bold
+% lmbxi10.pfb    LMRoman10-BoldItalic                       Bold
+% lmbxo10.pfb    LMRoman10-BoldOblique                      Bold
+% lmcsco10.pfb   LMRoman10-CapsOblique                      Normal
+% lmcsc10.pfb    LMRoman10-CapsRegular                      Normal
+% lmb10.pfb      LMRoman10-Demi                             Demi
+% lmbo10.pfb     LMRoman10-DemiOblique                      Demi
+% lmdunh10.pfb   LMRoman10-Dunhill                          Normal
+% lmduno10.pfb   LMRoman10-DunhillOblique                   Normal
+% lmri10.pfb     LMRoman10-Italic                           Normal
+% lmro10.pfb     LMRoman10-Oblique                          Normal
+% lmr10.pfb      LMRoman10-Regular                          Normal
+% lmu10.pfb      LMRoman10-Unslanted                        Normal
+% lmbx12.pfb     LMRoman12-Bold                             Bold
+% lmri12.pfb     LMRoman12-Italic                           Normal
+% lmro12.pfb     LMRoman12-Oblique                          Normal
+% lmr12.pfb      LMRoman12-Regular                          Normal
+% lmro17.pfb     LMRoman17-Oblique                          Normal
+% lmr17.pfb      LMRoman17-Regular                          Normal
+% lmbx5.pfb      LMRoman5-Bold                              Bold
+% lmr5.pfb       LMRoman5-Regular                           Normal
+% lmbx6.pfb      LMRoman6-Bold                              Bold
+% lmr6.pfb       LMRoman6-Regular                           Normal
+% lmbx7.pfb      LMRoman7-Bold                              Bold
+% lmri7.pfb      LMRoman7-Italic                            Normal
+% lmr7.pfb       LMRoman7-Regular                           Normal
+% lmbx8.pfb      LMRoman8-Bold                              Bold
+% lmri8.pfb      LMRoman8-Italic                            Normal
+% lmro8.pfb      LMRoman8-Oblique                           Normal
+% lmr8.pfb       LMRoman8-Regular                           Normal
+% lmbx9.pfb      LMRoman9-Bold                              Bold
+% lmri9.pfb      LMRoman9-Italic                            Normal
+% lmro9.pfb      LMRoman9-Oblique                           Normal
+% lmr9.pfb       LMRoman9-Regular                           Normal
+% lmssbx10.pfb   LMSans10-Bold                              Bold
+% lmssbo10.pfb   LMSans10-BoldOblique                       Bold
+% lmssdc10.pfb   LMSans10-DemiCondensed                     Demi
+% lmssdo10.pfb   LMSans10-DemiCondensedOblique              Demi
+% lmsso10.pfb    LMSans10-Oblique                           Normal
+% lmss10.pfb     LMSans10-Regular                           Normal
+% lmsso12.pfb    LMSans12-Oblique                           Normal
+% lmss12.pfb     LMSans12-Regular                           Normal
+% lmsso17.pfb    LMSans17-Oblique                           Normal
+% lmss17.pfb     LMSans17-Regular                           Normal
+% lmsso8.pfb     LMSans8-Oblique                            Normal
+% lmss8.pfb      LMSans8-Regular                            Normal
+% lmsso9.pfb     LMSans9-Oblique                            Normal
+% lmss9.pfb      LMSans9-Regular                            Normal
+% lmssqbx8.pfb   LMSansQuotation8-Bold                      Bold
+% lmssqbo8.pfb   LMSansQuotation8-BoldOblique               Bold
+% lmssqo8.pfb    LMSansQuotation8-Oblique                   Normal
+% lmssq8.pfb     LMSansQuotation8-Regular                   Normal
+% lmtcso10.pfb   LMTypewriter10-CapsOblique                 Normal
+% lmtcsc10.pfb   LMTypewriter10-CapsRegular                 Normal
+% lmtk10.pfb     LMTypewriter10-Dark                        Bold
+% lmtko10.pfb    LMTypewriter10-DarkOblique                 Bold
+% lmtti10.pfb    LMTypewriter10-Italic                      Normal
+% lmtl10.pfb     LMTypewriter10-Light                       Light
+% lmtlc10.pfb    LMTypewriter10-LightCondensed              Light
+% lmtlco10.pfb   LMTypewriter10-LightCondensedOblique       Light
+% lmtlo10.pfb    LMTypewriter10-LightOblique                Light
+% lmtto10.pfb    LMTypewriter10-Oblique                     Normal
+% lmtt10.pfb     LMTypewriter10-Regular                     Normal
+% lmtt12.pfb     LMTypewriter12-Regular                     Normal
+% lmtt8.pfb      LMTypewriter8-Regular                      Normal
+% lmtt9.pfb      LMTypewriter9-Regular                      Normal
+% lmvtk10.pfb    LMTypewriterVarWd10-Dark                   Bold
+% lmvtko10.pfb   LMTypewriterVarWd10-DarkOblique            Bold
+% lmvtl10.pfb    LMTypewriterVarWd10-Light                  Light
+% lmvtlo10.pfb   LMTypewriterVarWd10-LightOblique           Light
+% lmvtto10.pfb   LMTypewriterVarWd10-Oblique                Normal
+% lmvtt10.pfb    LMTypewriterVarWd10-Regular                Normal
+%
+% Les fontes Latin Modern se répartissent en plusieurs familles:
+% romain, typewriter type, et sans serif.
+
+
+%%% 1. LIAISON DES PARAMÈTRES PFSS ET DES FONTES EXTERNES
+
+\begingroup
+
+\def\LM#1 #2 #3 #4 #5 {%
+  \setfontfamily{#1}\setfontshape{#2}\setfontweight{#3}%
+  \setfontwidth{#4}\def\LM@f{#5}%
+  \rcB=\z@
+  \rcC=\z@
+  \LM@L
+}
+
+\def\LM@BIND#1#2{\setfontpage{#1}\fontbind{#2}}
+\def\LM@ADJS#1#2#3#4{\setfontpage{#3}\setfontadjustsize{#1}{#2}{\@m}{#4}}
+
+\def\LM@L{\futurelet\LM@n\LM@A}
+
+\def\LM@A{\ifx\LM@n\relax\let\LM@N\LM@E\else\let\LM@N\LM@B\fi\LM@N}
+
+\def\LM@B{\afterassignment\LM@C\rcA}
+
+\def\LM@C{%
+  \LM@X
+  \let\next\relax
+  \ifnum\rcC=\z@
+  \else
+    \ifnum\rcC>\rcB
+      \rcD=\rcC
+      \advance\rcD by \m@ne
+      \edef\next{%
+         \noexpand\LM@ADJS{\the\rcB}{\the\rcD}{CT1}{ec-\LM@f\the\rcC}%
+         \noexpand\LM@ADJS{\the\rcB}{\the\rcD}{CS1}{ts1-\LM@f\the\rcC}%
+       }%
+    \fi
+  \fi
+  \next
+  \rcB=\rcC
+  \rcC=\rcA
+  \advance\rcB by \@ne
+  \LM@L
+}
+
+\def\LM@X{%
+  \fontsize=\rcA
+  \edef\next{%
+    \noexpand\LM@BIND{CT1}{ec-\LM@f\the\rcA}%
+    \noexpand\LM@BIND{CS1}{ts1-\LM@f\the\rcA}%
+  }%
+  \next
+}
+
+\def\LM@E{%
+  \edef\next{%
+    \noexpand\LM@ADJS{\the\rcB}{\@M}{CT1}{ec-\LM@f\the\rcA}%
+    \noexpand\LM@ADJS{\the\rcB}{\@M}{CS1}{ts1-\LM@f\the\rcA}%
+  }%
+  \next
+}
+
+\setcatcodeactive\^^M\let ^^M\relax
+
+\LM lm    r m m lmr     5 6 7 8 9 10 12 17
+\LM lm    o m m lmro    8 9 10 12 17
+\LM lm    i m m lmri    7 8 9 10 12
+% La forme `unslanted' n'est pas entièrement intégrée.
+%
+%\LM lm    u m m lmu     10
+
+\LM lmd   r m m lmdunh  10
+\LM lmd   o m m lmduno  10
+
+\LM lm    r b x lmbx    5 6 7 8 9 10 12
+\LM lm    o b x lmbxo   10
+\LM lm    i b x lmbxi   10
+
+\LM lm    r b m lmb     10
+\LM lm    o b m lmbo    10
+
+\LM lm    R m m lmcsc   10
+\LM lm    O m m lmcsco  10
+
+\LM lmtt  r m m lmtt    8 9 10 12
+\LM lmtt  i m m lmtti   10
+\LM lmtt  o m m lmtto   10
+\LM lmtt  R m m lmtcsc  10
+\LM lmtt  O m m lmtcso  10
+\LM lmtt  r b m lmtk    10
+\LM lmtt  o b m lmtko   10
+\LM lmtt  r l m lmtl    10
+\LM lmtt  o l m lmtlo   10
+\LM lmtt  r l c lmtlc   10
+\LM lmtt  o l c lmtlco  10
+
+\LM lmss  r m m lmss    8 9 10 12 17
+\LM lmss  o m m lmsso   8 9 10 12 17
+
+\LM lmss  r b m lmssbx  10
+\LM lmss  o b m lmssbo  10
+
+\LM lmss  r b c lmssdc  10
+\LM lmss  o b c lmssdo  10
+
+\LM lmss  r m x lmssq   8
+\LM lmss  o m x lmssqo  8
+
+\LM lmss  r b x lmssqbx 8
+\LM lmss  o b x lmssqbo 8
+
+\LM lmvtt r m m lmvtt   10
+\LM lmvtt r b m lmvtk   10
+\LM lmvtt r l m lmvtl   10
+\LM lmvtt o m m lmvtto  10
+\LM lmvtt o b m lmvtko  10
+\LM lmvtt o l m lmvtlo  10
+
+\endgroup
+
+%%% 2. FONCTION D'AJUSTEMENT
+
+% La collection `Latin Modern' est très riche et la fonction
+% définissant les ajustements pour les fontes non présentes est donc
+% un petit peu complexe. Faisons la liste des règles d'ajustement
+% réalisées par cette fonction.
+%
+% Ajustement pour `Latin Modern':
+%  * on transforme la forme 'I' en 'O';
+%  * on transforme la forme 'R' en 'r', etc.;
+%  * on transforme l'extension en 'm'.
+%
+% Ajustement pour `Latin Modern Dunhil':
+%  * on transforme les formes 'R' en 'r', etc.;
+%    on transforme les formes 'o' en 'i', etc.;
+%    on transforme l'extension en 'm' et la graisse en 'm';
+%  * on transforme la forme en r.
+%
+% Ajustement pour `Latin Modern Typewriter Type':
+%  * on transforme la forme `i' en forme `o', idem pour les petites
+%    capitales;
+%  * on transforme l'extension en `m;;
+%  * on transforme `R' en `r' et `O' en `o';
+%  * on transforme la graisse en `m'.
+%
+% Ajustement pour `Latin Modern Variable Typewriter Type':
+%  * on transforme l'extension en `m' et on réduit la forme en
+%    minuscule;
+%  * on positionne la graisse à `m';
+%  * on positionne la forme à `r'.
+%
+% Ajustement pour `Latin Modern Sans Serif':
+%  * on transforme la forme 'R' en 'r', etc., on transforme la forme
+%    'i' en 'o';
+%  * on transforme l'extension en 'm'.
+
+
+\def\fontlmadjustment@lm@i{%
+  \\{\testfontweight l\iffontweight\setfontweight m\fi}%
+  \\{\testfontweight d\iffontweight\setfontweight b\fi}%
+  \\{\testfontwidth c\iffontwidth\setfontwidth m\fi}%
+  \\{\testfontglob *bx\iffontglob\else\setfontwidth{m}\fi}%
+  \\{\testfontshape I\iffontshape\setfontshape O\fi}%
+  \\{\csexpansionlowercase\fontshape}%
+  \\{\testfontglob ibm\iffontglob\setfontshape o\fi}%
+  \\{\setfontwidth m}%
+}
+
+\def\fontlmadjustment@lmd@i{%
+  \\{%
+    \csexpansionlowercase\fontshape
+    \testfontshape i\iffontshape\setfontshape o\fi
+    \setfontweight m%
+    \setfontwidth m%
+  }%
+  \\{\setfontshape r}%
+}
+
+\def\fontlmadjustment@lmtt@i{%
+  \\{%
+    \testfontshape i\iffontshape\setfontshape o\fi
+    \testfontshape I\iffontshape\setfontshape O\fi
+  }%
+  \\{\setfontwidth m}%
+  \\{\csexpansionlowercase\fontshape}%
+  \\{\setfontweight m}%
+  \\{\setfontshape r}%
+}
+
+\def\fontlmadjustment@lmvtt@i{%
+  \\{\csexpansionlowercase\fontshape\setfontwidth m}%
+  \\{\setfontweight m}%
+  \\{\setfontshape r}%
+}
+
+\def\fontlmadjustment@lmss@i{%
+  \\{\testfontweight l\iffontweight\setfontweight m\fi}%
+  \\{\testfontweight d\iffontweight\setfontweight b\fi}%
+  \\{\csexpansionlowercase\fontshape}%
+  \\{\testfontshape i\iffontshape\setfontshape o\fi}%
+  \\{\setfontwidth m}%
+}
+
+\def\fontlmadjustinit@M#1{%
+  \begingroup
+  \toksloadcsname fontlmadjustment@#1\to\rtA
+  \toksloadcsname fontlmadjustment@#1@i\to\rtB
+  \edef\next{\let\the\rtA\the\rtB}%
+  \expandafter\endgroup\next
+}
+
+\def\fontlmadjustmentinit{%
+  \fontlmadjustinit@M{lm}%
+  \fontlmadjustinit@M{lmd}%
+  \fontlmadjustinit@M{lmtt}%
+  \fontlmadjustinit@M{lmvtt}%
+  \fontlmadjustinit@M{lmss}%
+}
+
+\def\fontlmadjustment{%
+  \fontlmadjustment@M{lm}%
+  \fontlmadjustment@M{lmd}%
+  \fontlmadjustment@M{lmtt}%
+  \fontlmadjustment@M{lmvtt}%
+  \fontlmadjustment@M{lmss}%
+}
+
+\def\fontlmadjustment@M#1{%
+  \let\next\relax
+  \testfontfamily{#1}%
+  \iffontfamily
+    \toksloadcsname fontlmadjustment@#1\to\rtA
+    \expandafter\ifx\the\rtA\empty
+    \else
+      \expandafter\listlop\the\rtA\to\next
+      \fontadjustmentdone
+    \fi
+  \fi
+  \next
+}
+
+\fontadjustmentinit\fontlmadjustmentinit
+\fontadjustment\fontlmadjustment
+
+%%% 3. INSCRIPTION AUPRÈS DE LA COUCHE HAUTE DE PFSS
+
+\def\setnormalfont{%
+  \selectconventiontext{cork}%
+  \selectconventioncomp{cork}%
+  \let\fontfamily=\rmfontfamily
+  \setfontshape{r}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontpage{CT1}%
+}
+
+\def\settitlefont{%
+  \setnormalfont
+  \setfontweight{b}%
+  \setverylargesize
+}
+
+\def\setsectionfont{%
+  \setnormalfont
+  \let\fontfamily=\sffontfamily
+  \setfontshape{o}%
+  \setfontweight{b}%
+}
+
+\def\rmfontfamily{lm}
+\def\sffontfamily{lmss}
+\def\ttfontfamily{lmtt}
+
+%%% 4. FONTES POUR LE MODE MATHÉMATIQUE
+
+\input fontcmm
+
+%%% 5. FONTE SYSTÈME
+
+\def\setsystemfont{%
+  \let\fontfamily=\ttfontfamily
+  \setfontshape{r}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontpage{CT1}%
+  \setfontsize{10}%
+}
+
+\def\systemfont{\setsystemfont\fontswitch}
+
+%%% End of file `fontlm.nw'

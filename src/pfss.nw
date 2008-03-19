@@ -1,0 +1,784 @@
+%%% pfss.nw -- Plain font selection scheme -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 10 fév 2007 21:51:03 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Plain Font Selection Scheme}
+
+Pour insérer un caractère dans un document, il faut sélectionner comme
+fonte active celle où figure le caractère, et demander l'insertion de
+ce caractère en le désignant par sa position dans la fonte. Ainsi, la
+lettre `A' dans le fichier source est interprètée par \TeX\ comme la
+commande `insérer le caractère figurant à la position~65 de la fonte
+active.' On sélectionne une fonte active parmi celles qui ont été
+chargées grâce à la commande~\fn{font} de \TeX, en utilisant le nom
+symbolique donné lors de ce chargement.
+
+Nous réalisons des procédures d'interface avec la sélection de la
+fonte active. Ces procédures sont une administration recensant les
+fontes chargées en mémoire et leurs caractéristiques, elles permettent
+de sélectionner la fonte active à partir de ces caractéristiques au
+lieu du nom symbolique utilisé lors du chargement de la
+fonte. Lorsqu'aucune fonte chargée ne correspond aux caractéristiques
+souhaitées une procédure spéciale est déclenchée pour satisfaire au
+mieux la demande formulée.
+
+Cette manière d'accéder aux fontes facilite certaines
+constructions. Ce module est un outil de bas niveau destiné au
+programmeur; il n'est pas adapté aux besoins ordinaires de
+l'utilisateur.
+
+\subsection{Chargement des fontes dans \TeX}
+
+Le chargement d'une fonte dans~\TeX\ se fait au moyen de la
+primitive~\fn{font}. Du point de vue des programmes formant le
+logiciel~\TeX\ une fonte est décrite par plusieurs fichiers, les
+fichiers décrivant un fonte au programme~\TeX\ sont les
+fichiers~TFM. Ainsi, si une fonte~\emph{Computer Modern~5pt} est décrite
+par un fichier~\pa{cmr5.tfm}, la commande
+\begin{example}
+\font\romanfive = cmr5
+\end{example}
+permet d'utiliser la séquence de contrôle~\fn{romanfive} pour
+sélectionner la fonte~\emph{Computer Modern~5pt} comme fonte
+active. On dit que~\pa{cmr5} est une fonte externe. La distintion
+entre les fontes externes et les fontes en elle-mêmes réside dans le
+fait qu'une fonte externe ne peut, pour des raisons techniques,
+contenir que~256 caractères, et qu'une fonte contenant de nombreux
+caractères peut nécessiter plusieurs fontes externes pour être
+décrite complètement. Le sous-enesemble d'une fonte représenté par une
+fonte externe s'appelle une page de code --- plus précisément une page
+de codes est l'application qui associe aux positions~0,~\dots, 255 un
+caractère de la fonte décrite par la fonte externe.
+
+\subsection{Attributs des fontes}
+
+Un ensemble de fontes dont les qualités visuelles autorisent
+l'utilisation conjointe --- d'apparence semblable mais présentant des
+variations dans la graisse, l'espacement ou la forme exacte --- est
+une \emph{famille de fontes}. Des exemples de telles familles sont:
+\begin{itemize}
+\item Computer Modern Roman
+\item Computer Modern Typewriter Type
+\item Latin Modern Roman
+\item Latin Modern Sans Serifs
+\item Adobe Palatino
+\end{itemize}
+Les familles utilisées pour préparer le texte du paragraphe (par
+opposition à la préparatation des titres) regroupent usuellement les
+quatre formes suivantes:
+\begin{quote}% There is no way to display a single line of text!
+naturel, naturel \& gras, italique, italique \& gras;
+\end{quote}
+on trouve parfois une famille qui propose des caractères penchés ou
+obliques, dérivés des caractères droits (à ne pas confondre avec les
+italiques qui sont penchées \emph{et} présentent une forme originale), ou
+des petites et grandes capitales, avec leur déclinaisons penchées
+(pour les capitales les caractères penchés et italiques sont le plus
+souvent identiques), etc.
+
+Parfois au contraire, une famille ne compte qu'un seul membre, c'est
+fréquemment le cas avec les fontes décoratives, qui ne sont pas
+destinées à rédiger le texte d'un paragraphe. On fait de ces fontes
+décoratives plusieurs usages, selon l'aspect visuel de la fonte: 1)
+pour produire des lettrines; 2) pour réaliser des titres; 3) pour
+préparer d'autres affichages dans des préparations graphiques, comme
+par exemple un message publicitaire.
+
+Le choix de la fonte active dans~\brTeX\ ne se fait pas à l'aide de
+séquences de contrôle correspondant à une forme bien déterminée,
+telles~\fn{romafive} décrite ci-dessus, mais plutôt à l'aide de
+séquences de contrôles recevant un souhait et parcourant le catalogue
+des fontes connues de \brTeX\ pour exaucer au mieux ce souhait.
+
+Les fontes externes connues de \brTeX\ sont catloguées, la description
+de chaque fonte dans ce catalogue comprend un paramètre pour chacun
+des attributs~\emph{page, family, weight, width, shape} et~\emph{size}
+présentés ci-dessous.
+
+\textbf{page:}
+Une fonte externe présente des glyphes disposés dans 256
+emplacements, dont certains ou même la totalité peuvent être
+vides. Le paramètre de \emph{page} décrit la disposition des glyphes sur
+les 256 positions disponibles. On utilise les valeurs suivantes:
+\begin{verbatim}
+CT1 cork text 1, for european languages
+CT5   "     " 5, for vietnamese
+CS1   "     " symbols
+OT1 original TeX text 1 encoding
+OML   "     "    math letter
+OMS   "     "    math symbol
+OMX   "     "    math extension
+UNK unknown
+Lxx local encoding
+Xxx expert Encoding
+\end{verbatim}
+Cela n'est peut-être pas une idée très judicieuse de ne pas adopter
+les noms de codage utilisés par \LaTeX, mais je n'ai jamais vu les
+définitions des codes T1, TS1, etc. et il n'est pas poli de prétendre
+réaliser ces codes dans ces conditions.
+
+\textbf{family:}
+La famille à laquelle appartient une fonte, c'est à dire le nom de
+la police. Ces noms sont par exemple `Computer Modern' `Latin
+Modern' `Monotype Garamond' (ou `Garamond', mais plusieurs
+fondeurs proposent des caractères Garamond). On utilise en fait en
+général des abréviations, comme par exemple:
+\begin{verbatim}
+cmr   Computer Modern Roman
+cmss  Computer Modern Sans Serif
+cmtt  Computer Modern Typewriter Type
+etc.
+\end{verbatim}
+
+\textbf{weight:}
+La graisse désigne l'épaisseur du trait du caractère, on utlise
+les valeurs suivantes:
+\begin{verbatim}
+m     medium
+b     bold
+s     semi bold
+\end{verbatim}
+Lorsque vous déclarez des caractères et que vous n'êtes pas sûr du
+choix à faire pour décrire vos caractères, choisissez `m' (medium).
+
+\textbf{width:}
+L'extension des caractères:
+\begin{verbatim}
+n     narrow
+c     condensed
+x     extended
+m     medium
+\end{verbatim}
+Lorsque vous déclarez des caractères et que vous n'êtes pas sûr du
+choix à faire pour décrire vos caractères, choisissez `m' (medium).
+
+\textbf{shape:}
+la forme des caractères, il s'agit de
+\begin{verbatim}
+r    romains, ou droits (par opposition aux caractères
+      gothiques, p.ex.)
+i    italiques
+o    obliques, ou penchés
+N    petites et grandes capitales romaines
+I    petites et grandes capitales italiques
+O    petites et grandes capitales obliques
+\end{verbatim}
+Ces six formes de caractères sont celles que l'on utilise
+ordinairement pour préparer le texte du paragraphe. On trouve
+parfois des caractères de forme autre, comme par exemple les
+caractères `unslanted' qui sont des caractères italiques droits qu'
+a produit D.E.Knuth avec METAFONT. Un autre exemple de forme de
+caractères dont il n'est pas tenu compte dans la classification
+ci-dessus est celle des caractères gothiques, les caractères
+introduits par Gutenberg.
+
+
+\subsection{Noyau de PFSS}
+
+Dans cette partie on définit des types de données et des procédures
+manipulant ces types. Les types de données sont des pseudo-registres:
+du point de vue de l'utilisateur du module les paramètres de sélection
+des fontes ressemblent à des registres de la machine programmée. Les
+procédures permettent de transférer le contenu de ces registres vers
+un mémoire, de façon à pouvoir le restaurer; de construire des listes
+de tokens à partir des valeurs de ces registres; et enfin d'asssocier
+des fontes externes à un ensemble de valeurs des paramètres de fontes.
+
+<<*>>=
+<<Manipulation des paramètres des fontes>>
+<<Liaison des paramètres à une fonte externe>>
+<<Sélection de la fonte active>>
+
+
+@ \subsection{Manipulation des paramètres des fontes}
+
+La réalisation du schéma PFSS est conçue pour pouvoir facilement
+augmenter ou diminuer le nombre des attributs utilisés pour associer
+une description de fontes et une fonte externe (en gros, un fichier
+TFM). On utilise pour cela une liste d'attributs.
+
+<<Manipulation des paramètres des fontes>>=
+\def\fontattributes{\\{family}\\{shape}\\{weight}\\{width}\\{page}}
+
+@ Les noms intervenant dans cette liste correspondent aux attributs
+décrits dans la section~\emph{Attributs des fontes} précente. Un
+attribut est absent de cette liste, la taille optique des caractères
+de la fonte. Cette grandeur numérique, exprimée en nombre entier de
+points, joue un rôle un peu à part puisqu'elle est la seule grandeur
+numérique intervenant dans la description d'une fonte. Les traitements
+généraux applicables aux autres attributs ne s'appliquent en général
+pas à cet attribut qui doit chaque fois faire l'objet d'un traitement
+exceptionnel.
+
+\paragraph{Modifications des registres de description des fontes}
+À partir de cette liste, on définit les macros modifiant les valeurs
+de ces registres et les registres eux mêmes. Les registres ont leur
+nom de la forme '[[font@r1]]' etc. et les macros modifiant ces
+registres sont de la forme '[[\setfontpage...]]'.
+
+<<Manipulation des paramètres des fontes>>=
+\begingroup
+\def\\#1{%
+  \toksloadcsname setfont#1\to\rtA
+  \toksloadcsname font#1\to\rtB
+  \edef\next{%
+    \global\def\the\rtB{}%
+    \global\def\the\rtA####1{\def\the\rtB{####1}}%
+  }\next
+}
+\fontattributes
+\endgroup
+
+@ Comme on l'a expliqué plus haut, la taille optique de la fonte est
+un paramètre nécessitant un traitement spécial.
+
+<<Manipulation des paramètres des fontes>>=
+\newcount\fontsize
+\def\setfontsize#1{\fontsize=#1\relax}
+
+@ Pour écrire une valeur dans un registre, on utilise les
+commandes~\fn{setanything}, comme dans l'exemple suivant:
+\begin{example}
+\setfontshape{r}
+\setfontweight{b}
+\setfontpage{OT1}
+\end{example}
+
+
+@ \paragraph{Sauvegarde et restauration de l'ensemble des valeurs des
+registres des fontes}
+La commande \fn{toksloadfontstate} charge un registre \emph{token
+list} avec une liste de commandes rétablissant lorsque elle est
+évaluée, les valeurs des registres de paramètres de fontes en vigueur
+au moment de l'appel à~\fn{toksloadfont}. La
+commande~\fn{toksloadfontshortstate} fait la même chose en ignorant le
+paramètre~\va{fontsize}
+
+<<Manipulation des paramètres des fontes>>=
+\begingroup
+\rtA={}
+\def\\#1{%
+  \toksloadcsname setfont#1\to\rtB
+  \toksloadcsname font#1\to\rtC
+  \rtD={\noexpand}%
+  \edef\rmA{\the\rtA\the\rtD\the\rtB{\the\rtC}}%
+  \rtA=\expandafter{\rmA}%
+}\fontattributes
+\rtB={\edef\toksload@A}
+\rtC={\expandafter{\toksload@A}}
+\rtD={\noexpand\setfontsize{\the\fontsize}}%
+
+\global\edef\toksloadfontstate#1{%
+  \the\rtB{\the\rtA\the\rtD}%
+  #1=\the\rtC
+}
+
+\global\edef\toksloadfontshortstate#1{%
+  \the\rtB{\the\rtA}%
+  #1=\the\rtC
+}
+\endgroup
+
+
+@ \paragraph{Prédicats} Pour faciliter l'examen des valeurs des
+registres des fontes, nous définissons des prédicats spécialisés.
+Ces prédicats, comme tous les prédicats dans~\brTeX\ fonctionnent en
+deux temps, sur un couple~`test/if'.
+
+On définit une famille de prédicats \fn{testfontfamily} etc., dont
+chaque membre teste la valeur d'un registre déterminé contre une
+valeur fixée, passée en argument du prédicat. Ces défintions sont
+paramétrées par \va{fontattributes}.
+
+<<Manipulation des paramètres des fontes>>=
+\begingroup
+\let\newif\relax
+\global\def\\#1{%
+  \beginnext
+  \toksloadcsname iffont#1\to\rtA
+  \edef\next{\noexpand\newif\the\rtA}%
+  \endnext
+}
+\endgroup
+\fontattributes
+
+\def\\#1{%
+  \toksloadcsname testfont#1\to\rtA
+  \toksloadcsname font#1true\to\rtB
+  \toksloadcsname font#1false\to\rtC
+  \toksloadcsname font#1\to\rtD
+  \edef\next{%
+    \noexpand\gdef\the\rtA####1{%
+      \noexpand\begingroup
+      \noexpand\def\noexpand\rmA{####1}%
+      \noexpand\ifx\noexpand\rmA\the\rtD
+        \noexpand\aftergroup\the\rtB
+      \noexpand\else
+        \noexpand\aftergroup\the\rtC
+      \noexpand\fi
+      \noexpand\endgroup
+  }}%
+  \next
+}
+\fontattributes
+
+\let\\=\undefined
+
+@ Il est parfois commode de tester simultanément plusieurs valeurs des
+registres de fontes, on introduit pour cela un test \fn{testfontglob},
+accompagné de son~\fn{iffontglob}.
+
+
+@ \paracommand{\cs{testfontglob}\fa{shape}\fa{weight}\fa{width}}
+Compare simultanément la forme \fa{shape}, la graisse \fa{weight} et
+l'extension \fa{width} aux valeurs des registres correspondant.  Le
+caractère~`*' est comparé avec succès à toutes les valeurs.
+
+<<Manipulation des paramètres des fontes>>=
+\newif\iffontglob
+
+\def\testfontglob#1#2#3{%
+  \begingroup
+  \flagtrue
+  \def\rmB{*}%
+  \testfontglob@L\fontshape{#1}%
+  \testfontglob@L\fontweight{#2}%
+  \testfontglob@L\fontwidth{#3}%
+  \ifflag\let\next\fontglobtrue\else\let\next\fontglobfalse\fi
+  \expandafter\endgroup\next
+}
+
+\def\testfontglob@L#1#2{%
+   \def\rmA{#2}%
+   \ifx\rmA\rmB
+   \else
+     \ifx\rmA#1%
+     \else
+       \flagfalse
+     \fi
+   \fi
+}
+
+
+
+@ \paragraph{Nom interne d'une fonte} La macro~\fn{fontname} a comme
+texte de remplacement l'identifiant du registre utilisé pour conserver
+la fonte correspondant aux paramètres de fontes actifs. La
+macro~\fn{fontshortname} est une variante qui omet dans le nom le
+paramètre de taille optique. Les procédures~\fn{toksloadfontname}
+et~\fn{toksloadfontshortname} placent dans un registre l'identifiant
+produit par~\fn{fontname} ou~\fn{fontshortname}, les
+procédures~\fn{toksloadcsfontname} et~\fn{toksloadcsfontshortname}
+placent dans un registre les séquences de contrôle correspondant à ces
+identifiants.
+
+\begin{example}
+\setfontshape{r}
+\setfontfamily{lmr}
+\setfontsize{12}
+\fontname -> lmr/r/.../12
+\fontshortname -> lmr/r/...
+\toksloadcsfontname\rtA -> \rtA{\lmr/r/.../12}
+\toksloadcsfontshortname\rtB -> \rtB{\lmr/r/...}
+\end{example}
+Les registres~\va{rtA} et~\va{rtB} contiennent un seul token après
+évaluation de ces commandes.
+
+<<Manipulation des paramètres des fontes>>=
+\begingroup
+\rtA={}
+\def\\#1{%
+  \toksloadcsname font#1\to\rtB
+  \edef\next{\noexpand\toksrappend{\the\rtB/}\noexpand\to\rtA}%
+  \next
+}\fontattributes
+
+\global\edef\fontname{\the\rtA\noexpand\the\noexpand\fontsize}
+
+\global\def\toksloadfontname#1{%
+  \edef\toksload@A{\fontname}%
+  #1=\expandafter{\toksload@A}%
+}%
+
+\global\def\toksloadcsfontname#1{%
+  \edef\toksload@A{\csname\fontname\endcsname}%
+  #1=\expandafter{\toksload@A}%
+}%
+
+\global\edef\fontshortname{\the\rtA}%
+
+\global\def\toksloadfontshortname#1{%
+  \edef\toksload@A{\fontshortname}%
+  #1=\expandafter{\toksload@A}%
+}%
+
+\global\def\toksloadcsfontshortname#1{%
+  \edef\toksload@A{\csname\fontshortname\endcsname}%
+  #1=\expandafter{\toksload@A}%
+}%
+
+\endgroup
+
+
+@ \subsection{Liaison des paramètres à une fonte externe}
+
+La commande \fn{fontbind} lie l'ensemble des paramètres avec leurs
+valeurs actuelles à une fonte externe. La liaison est globale, on peut
+donc utiliser un petit calcul local pour lier tous les membres
+d'une même famille, ce qui est d'autant plus facile que les noms des
+fontes externes reflètent usuellement les attributs reconnus par~PFSS.
+
+La commande~\fn{fontbind} encapsule donc l'appel à la
+primitive~\fn{font} de~\TeX, c'est la commande qu'on utilise pour
+charger une fonte dans~\brTeX.
+
+\begin{example}
+\setfontfamily{cmr}
+\setfontshape{r}
+...
+\setfontsize{10}
+\fontbind{cmr10}
+\end{example}
+Les déclarations précédentes doivent être évaluées en mode vertical,
+pour les adapter au mode horizontal il faut faire suivre chaque ligne
+d'un caractère~`\%' pour masquer l'espace parasite suivant l'accolade
+fermante.
+
+<<Liaison des paramètres à une fonte externe>>=
+\def\fontbind#1{%
+  \begingroup
+  \toksloadcsfontname\rtA
+  \edef\next{\noexpand\global\font\the\rtA=#1\relax}%
+  \expandafter\endgroup\next
+}
+
+
+@ \subsection{Sélection de la fonte active}
+
+La procédure \fn{fontswitch} est chargée de basculer vers la fonte
+correspondant aux paramètres chargés dans les registres de
+fontes. Lorsque ces paramètres ne sont pas l'objet d'une liaison vers
+une fonte extérieure, \fn{fontswitch} appelle de façon réitérée la
+fonction \fn{fontswitchadjust}, celle-ci modifie à chaque itération
+les paramètres des fontes pour obtenir finalement des paramètres
+effectivement liés à une fonte externe. La boucle d'appels
+à~\fn{fontswitchadjust} est précédée d'un appel à
+\fn{fontswitchadjustinit} qui permet d'initialiser les paramètres de
+la procédure~\fn{fontswitchadjust}.
+
+\begin{remark}
+La procédure d'ajustement définie par le couple de
+macros~\fn{fontswitchadjust}, \fn{fontswitchadjustinit} n'est pas
+définie par les commandes de bas niveau de~PFSS. Sa définition est
+donc retardée.
+\end{remark}
+
+
+Pour analyser le déroulement des opérations menées par les procédures
+de~PFSS, on définit un nouvel indicateur de
+trace~\va{tracingpfss}. Lorsque cet indicateur de trace est positionné
+à une valeur non nulle, certaines procédures du module~PFSS sont
+tracées dans le journal d'éxécution~\pa{jobname.log}.
+
+<<Sélection de la fonte active>>=
+\newcount\tracingpfss
+\tracingpfss=0
+
+@ La commande \fn{fontswitchquery} demande si les paramètres de fontes
+actuels font l'objet d'une liaison. Si c'est le cas le drapeau
+\va{exception} est abaissé après l'appel, autrement il est levé.
+
+<<Sélection de la fonte active>>=
+\def\fontswitchquery{%
+  \begingroup
+  \toksloadcsfontname\rtA
+  \expandafter\ifx\the\rtA\relax
+    \def\next{\exceptiontrue}%
+  \else
+    \def\next{\exceptionfalse}%
+  \fi
+  \expandafter\endgroup\next
+}
+
+@ \paracommand{\cs{toksloadfontswitch}\fa{fontspec}\cs{to}\fa{tokenregister}}
+Cette procédure recherche une fonte correspondant aux attributs
+actuels des registres de fontes, modifiés par \fa{fontpsec}. À la fin
+de la procédure, le registre \fa{tokenregister} contient une séquence
+basculant vers cette fonte.
+
+<<Sélection de la fonte active>>=
+\def\toksloadfontswitch#1\to#2{%
+  \begingroup
+  \tracingmacros=\tracingpfss
+  #1\relax
+  \fontswitchadjustinit
+  \loop\fontswitchquery\ifexception\fontswitchadjust\repeat
+  \toksloadcsfontname\rtA
+  \rtB{#2}%
+  \edef\next{\the\rtB{\the\rtA}}%
+  \expandafter\endgroup\next
+}
+
+
+@ \paracommand{\cs{fontloadfontswitch}\fa{fontspec}\cs{to}\fa{fontregister}}
+Cette procédure ressemble à `toksloadfontswitch' mais place sa réponse
+dans un registre de fonte, comme par exemple une des familles du
+mode mathématique.
+
+<<Sélection de la fonte active>>=
+\def\fontloadfontswitch#1\to#2{%
+  \begingroup
+  \toksloadfontswitch#1\to\rtA
+  \rtB{#2}%
+  \edef\next{\the\rtB=\the\rtA}%
+  \expandafter\endgroup\next
+}
+
+
+@ \paracommand{\cs{fontswitch}}
+Cette procédure recherche une fonte correspondant aux attributs
+actuels des registres de fontes. À la fin de la procédure, cette
+fonte est la fonte courante pour le texte.
+
+<<Sélection de la fonte active>>=
+\def\fontswitch{%
+  \begingroup
+  \toksloadfontswitch\to\rtA
+  \expandafter\endgroup\the\rtA
+}
+
+@ Lorsque les paramètres des registres de description des fontes ne
+sont pas liés à une fonte extérieure, la commande \fn{fontswitch}
+appelle \fn{fontswitchadjust} qui doit modifier ces
+paramètres. L'appel à \fn{fontswitchadjust} peut ne pas résulter en un
+ensemble de paramètres lié à une fonte, mais le processus
+\fn{fontswitchadjust} doit être \emph{convergeant}.
+
+<<Sélection de la fonte active>>=
+\def\fontswitchadjust{}
+\def\fontswitchadjustinit{}
+
+@ \begin{remark}
+La commande \fn{fontswitch} --- la commande principale définie par ce
+module, activant la fonte associée à l'ensemble des paramètres de
+fonte --- est une commande de bas niveau qui n'a pas lieu d'être
+utilisée par le scripteur du document final. Il est en effet
+souhaitable que le choix d'une nouvelle fonte active s'accompagne
+d'autres actions, par exemple on modifie les paramètres d'interligne,
+des classes de documents particulières pourront vouloir modifier les
+paramètres de l'algorithme de découpe des paragraphes, il faut encore
+mettre à jour les registres de fontes du mode mathématique, etc. Pour
+cela on définit une commande~\fn{selectfont} qui évalue une liste de
+tokens définie par ses usagers (un~\emph{hook}) et appelle
+enfin~\fn{fontswitch}.
+\end{remark}
+
+
+@ \subsection{Manipulations de haut niveau}
+
+Dans cette partie on définit les procédures de PFSS qui sont
+utilisées dans le document pour manipuler les fontes. La procédure la
+plus importante est~\fn{selectfont}, dont le rôle est d'accompagner un
+appel~\fn{fontswitch} de toutes sortes d'ajustements dépendant de la
+taille du nouveau corps de fonte.
+
+
+\paragraph{Sélection de la taille}
+
+Le \emph{hook} \va{fontsizehook} permet à d'autres parties du noyau
+d'enregistrer des actions à effectuer lorsque l'utilisateur
+sélectionne une nouvelle taille de texte. Les actions enregistrées
+dans ce~\emph{hook} sont déclenchées lorsque~\fn{selectfontsize} est
+utilisée pour basculer vers une certaine taille de fonte, et
+lorsque~\fn{selectfont} est utilisée. Ce~\emph{hook} permet par
+exemple à des modules de commander l'ajustement des interlignes en
+fonction de la taille nominale de la fonte principale.
+
+<<*>>=
+\newhook\fontsizehook
+
+@ \paracommand{\fn{selectfont}}
+
+Cette procédure recherche une fonte correspondant aux attributs
+actuels des registres de fontes. À la fin de la procédure, cette
+fonte est la fonte courante pour le texte. De plus, cette fonction
+traite \va{fontsizehook} après que la fonte active soit modifiée.
+
+\paracommand{\fn{selectfontsize}\fa{size}}
+
+Modifie la fonte active en demandant une fonte de la taille \fa{size}
+pt. Cette fonction traite \va{fontsizehook} après avoir modifié
+\va{fontsize}.
+
+<<*>>=
+\def\selectfont{\runhook\fontsizehook\fontswitch}
+
+\def\selectfontsize#1{%
+  \fontsize=#1\relax
+  \selectfont
+}
+
+@ Le format~PLAIN~\TeX\ définit des commandes \fn{ninepoint},
+etc. permettant de choisir la taille du corps de texte. Les
+définitions suivantes permettent d'utiliser ces commandes
+dans~\brTeX.
+
+<<*>>=
+\def\twelvepoint{\selectfontsize{12}}
+\def\elfpoint{\selectfontsize{11}}
+\def\tenpoint{\selectfontsize{10}}
+\def\ninepoint{\selectfontsize{9}}
+\def\eightpoint{\selectfontsize{8}}
+\def\sevenpoint{\selectfontsize{7}}
+\def\sixpoint{\selectfontsize{6}}
+\def\fivepoint{\selectfontsize{5}}
+
+@ Le choix de la taille du corps de texte par sa grandeur est mal
+adapté à certaines situations où il est préférable d'utiliser des noms
+symboliques pour les tailles. On définit donc quelques noms de tailles
+symboliques, exprimant la nouvelle taille relativement à la taille
+normale du texte, et des procédures pour choisir la taille de fonte
+principale d'un document.
+
+Les noms symboliques définis ici sont les suivants: \emph{normalsize},
+\emph{smallsize}, \emph{verysmallsize}, \emph{largesize}
+et~\emph{verylargesize}. Les tailles ordinaires de documents sont dix
+point et douze points, on choisit la taille avec la procédure
+\emph{selectnormalsize}.
+
+Ces commandes vont en couple: une première variante modifie la valeur
+du registre~\va{fontsize} et la seconde variante procède à cette
+modification puis la valide par un appel à~\fn{selectfont}.
+
+<<*>>=
+\def\setnormalsize{\fontsize=10 }%
+\def\setsmallsize{\fontsize=9 }%
+\def\setverysmallsize{\fontsize=7 }%
+\def\setlargesize{\fontsize=12 }%
+\def\setverylargesize{\fontsize=17 }%
+
+\def\normalsize{\setnormalsize\selectfont}
+\def\smallsize{\setsmallsize\selectfont}
+\def\verysmallsize{\setverysmallsize\selectfont}
+\def\largesize{\setlargesize\selectfont}
+\def\verylargesize{\setverylargesize\selectfont}
+
+@ On peut facilement définir de nouveaux noms de taille, en mimant les
+déclarations ci-dessus.
+
+Pour composer le texte avec une fonte de douze points, on peut
+utiliser les paramètres suivants:
+\begin{example}
+\def\setnormalsize{\fontsize=12 }%
+\def\setsmallsize{\fontsize=11 }%
+\def\setverysmallsize{\fontsize=9 }%
+\def\setlargesize{\fontsize=14 }%
+\def\setverylargesize{\fontsize=21 }%
+\end{example}
+Ces déclarations peuvent par exemple apparaître dans une bibliothèque
+de type~\emph{classe de document}.
+
+
+@ \paragraph{Fonte de référence}
+
+Pour la plupart des documents, il existe un notion de fonte
+\emph{normale}, celle avec laquelle est composée la plus grande partie
+du texte.
+
+
+@ \paracommand{\fn{setnormalfont}}
+
+Demande le positionnement des registres de description des fontes sur
+les paramètes décrivant la fonte normale du document. Cette procédure
+n'affecte pas le registre de dimension~\va{fontsize}. Cette procédure
+doit être définie par le format.
+
+
+@ \paracommand{\fn{setnormalsize}}
+
+Demande le positionnement du registre~\va{fontsize} sur la valeur
+correspondant à la fonte normale du document. Cette procédure
+doit être définie par le format.
+
+
+@ \paracommand{\fn{normalfont}}
+Demande l'utilisation de la fonte \emph{normale}, la fonte de base
+avec laquelle est composé le document. La définition de
+\fn{setnormalfont} est à la charge du format utilisé.
+
+<<*>>=
+\def\normalfont{\setnormalfont\setnormalsize\selectfont}
+\let\setnormalfont\undefined
+
+%
+% Commandes pour la sélection des fontes
+%
+
+% On définit les macros `rm' `it', etc. qui commandent le chargement
+% d'une fonte particulière pour le texte.
+
+\newhook\rmhook
+\newhook\tthook
+\newhook\sfhook
+\newhook\ithook
+\newhook\slhook
+\newhook\bfhook
+\newhook\schook
+
+\def\rm{\setnormalfont\let\fontfamily\rmfontfamily\selectfont\runhook\rmhook}
+\def\tt{\setnormalfont\let\fontfamily\ttfontfamily\selectfont\runhook\tthook}
+\def\sf{\setnormalfont\let\fontfamily\sffontfamily\selectfont\runhook\sfhook}
+
+\def\it{\setfontshape{i}\selectfont\runhook\ithook}
+\def\sl{\setfontshape{o}\selectfont\runhook\slhook}
+\def\bf{\setfontweight{b}\selectfont\runhook\bfhook}
+
+\def\sc{\csexpansionuppercase\fontshape\selectfont\runhook\schook}
+
+
+%
+% Taille de l'interligne
+%
+
+% Lorsqu'on modifie la taille de la fonte utilisée, il est en principe
+% nécessaire d'adapter l'interligne.
+
+\def\adjustbaseline{%
+  \count@=\fontsize
+  \ifnum\fontsize<6%
+    \advance\count@\@ne
+  \else
+    \advance\count@\tw@
+  \fi
+  \normalbaselineskip\p@
+  \multiply\normalbaselineskip\count@
+  \count@=\fontsize
+  \normallineskiplimit\z@
+  \normallineskip\p@
+  \normalbaselines
+}
+
+\addhook\adjustbaseline\to\fontsizehook
+
+
+%%% End of file `pfss.nw'

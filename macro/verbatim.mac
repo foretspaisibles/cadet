@@ -1,0 +1,246 @@
+%%% verbatim.mac -- Composition verbatim
+
+% Author: Michael Grünewald
+% Date: Fri Feb 24 13:14:09 GMT 2006
+% Copyright: (C) 2006, 2013 Michael Grünewald
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+
+
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+% La bibliothèque `verbatim' fournit des services pour traiter
+% certaines portions de fichiers en inhibant totalement le traitement
+% ordinaire de TeX, en le remplaçant par un traitement
+% personnalisé. Ce type de traitement est souvent utilisé pour
+% présenter des portions de programmes ou de fichiers système, où les
+% caractères spéciaux de TeX `#' `_' et d'autres peuvent apparaître
+% très souvent.
+
+% Les commandes principales de cette bibliothèque sont `verbatim'
+% et `verbatimfile'. Elles traitent un ensemble de ligne de la façon
+% suivante:
+%
+%   soit l la ligne à traiter suivante
+%
+%     on augmente verbatimlineno de un
+%     on appelle verbatimline avec l comme argument
+%
+%   on recommence.
+%
+% La condition d'arrêt pour `verbatimstop' est la lecture d'une ligne
+% contenant seulemt la séquence `\end<verbatimname>' (où <verbatimname>
+% est remplacé par le texte de remplacement de la séquence
+% `verbatiname'), où la fin du fichier.
+%
+% Avant le commencement du traitement, la séquence `verbatimstart' est
+% appelée. Á la fin du traitement, la séquence `verbatimstop' est
+% évaluée.
+%
+% Les commandes `verbatimline' et `verbatimname' peuvent être
+% redéfinies pour obtenir des traitements spéciaux. Des exemples
+% d'application sont proposés dans la bibliothèque.
+%
+% Une variante du traitement verbatim existe pour le mode
+% paragraphe. Cette variante utilise le caractère `|' comme
+% délimiteur. Cette variante doit être activée avec
+% `enableverbatimtext' pour être active, elle peut être désactivée
+% temporairement avec `disableverbatimtext' puis réactivée `avec
+% `enableverbatimtext'. Lorsque ce mode de traitement est activé, les
+% séquences délimitées par la barre `|' sont traitéees avec
+% `verbatimtext'.
+
+%%% 1. Réalisation du noyau du traitement verbatim
+
+% verbatim@c
+%
+% Caractères dont le code de catégorie est modifié dans le mode
+% verbatim.
+
+\def\verbatim@c{%
+  \\{\#}\\{\%}\\{\~}\\{\\}\\{\}}%
+  \\{\{}\\{\&}\\{\$}\\{\_}\\{\^}%
+  \\{\|}\\{\^^M}%
+}
+
+
+\newcount\verbatimlineno
+
+\def\verbatim{%
+  \verbatimlineno\z@
+  \let\\\setcatcodeother
+  \verbatim@c
+  \obeyspaces
+  \disableconventionpunc
+  \edef\verbatim@e{\bytebackslash end\verbatimname}%
+  \verbatimstart
+  \obeylines
+  \verbatim@L
+}
+
+\begingroup
+\obeylines
+\gdef\verbatim@L#1^^M{%
+   \def\verbatim@l{#1}%
+   \ifx\verbatim@e\verbatim@l%
+     \let\verbatim@N\verbatim@E%
+   \else%
+     \ifnum\verbatimlineno=\z@%
+       \let\verbatim@N\verbatim@I%
+     \else%
+       \let\verbatim@N\verbatim@C%
+     \fi%
+   \fi%
+   \verbatim@N{#1}%
+}%
+\endgroup
+
+\def\verbatim@E#1{\verbatimstop}
+
+\def\verbatim@C#1{\verbatimline{#1}\verbatim@I{}}
+
+\def\verbatim@I#1{%
+  \advance\verbatimlineno\@ne
+  \verbatim@L
+}
+
+\newread\verbatimread
+
+\def\verbatiminput#1{%
+  \immediate\openin\verbatimread=#1 %
+  \verbatimlineno\z@
+  \let\\\setcatcodeother
+  \verbatim@c
+  \obeyspaces
+  \catcode`\^^M=9\relax
+  \disableconventionpunc
+  \verbatimstart
+  \verbatim@O
+}
+
+\def\verbatim@O{%
+  \ifeof\verbatimread
+     \let\verbatim@N\verbatim@P
+  \else
+    \immediate\read\verbatimread to \verbatim@l
+    \advance\verbatimlineno\@ne
+    \toksloadcsexpansion\verbatim@l\to\rtA
+    \edef\verbatim@N{\noexpand\verbatimline{\the\rtA}\noexpand\verbatim@O}%
+  \fi
+  \verbatim@N
+}
+
+\def\verbatim@P{\verbatimstop}
+
+
+%
+% Mode verbatim en `ligne'
+%
+
+\gdef\verbatim@T{%
+  \begingroup
+  \let\\\setcatcodeother
+  \verbatim@c
+  \obeyspaces
+  \disableconventionpunc
+  \verbatimtextstart
+  \verbatim@U
+}
+
+\begingroup
+\setcatcodeother\|
+\gdef\verbatim@U#1|{\verbatimtextstop\endgroup\verbatimtext{#1}}
+\endgroup
+
+\begingroup
+\setcatcodeactive\|
+\gdef\enableverbatimtext{\let|\verbatim@T\setcatcodeactive\|}
+\gdef\disableverbatimtext{\setcatcodeother\|}
+\endgroup
+
+\disableverbatimtext
+
+%%% 2. Exemples d'utilisation
+
+% setverbatimfont
+% verbatimfont
+% verbatimsize
+%
+% Commandes utilisées pour sélectionner une fonte propre à rendre le
+% texte en `verbatim'.
+%
+% La commande `verbatimsize' sélectionne la taille utilisée pour les
+% affichages réalisés en mode verbatim.
+
+\def\setverbatimfont{\setnormalfont\let\fontfamily\ttfontfamily}
+\def\verbatimfont{\setverbatimfont\fontswitch}
+\let\verbatimsize=\normalsize
+
+% verbatimtag
+%
+% Cette commande est utilisée dans la composition de `verbatimline',
+% son texte de remplacement peut par exemple produire une
+% étiquette. Par exemple
+%
+%   \def\verbatimtag{\llap{\the\verbatimlineno\enspace}}
+%
+% produit une numérotation de chaque ligne.
+
+\let\verbatimtag\relax
+
+% verbatimline
+%
+% On prépare une ligne de matériel. Pour cela on crée une boîte
+% horizontale de taille `hsize' à laquelle on ajoute, à gauche et à
+% droite, les blancs `rightskip' et `leftskip'. On y place ensuite le
+% contenu proprement dit, dans la fonte `verbatimfont' avec la taille
+% `verbatimsize'.
+
+\def\verbatimline#1{\hbox to\hsize{\hskip\leftskip
+  \verbatimtag
+  \setverbatimfont\verbatimsize #1\hss
+  \hskip\rightskip}}
+
+% beginverbatim...endverbatim
+%
+% Pour réaliser du texte `verbatim'.
+
+\def\beginverbatim{%
+  \begindisplay
+  \let\verbatimsize\smallsize
+  \def\verbatimname{verbatim}%
+  \let\verbatimtag\relax
+  \let\verbatimstart\relax
+  \def\verbatimstop{\enddisplay}%
+  \verbatim
+}
+
+% verbatimtext
+%
+% Pour préparer le texte en mode verbatimtext (entre barres
+% verticales).
+
+\def\verbatimtext#1{{\verbatimfont #1}}
+
+\let\verbatimtextstart\relax
+\let\verbatimtextstop\relax
+
+%%% 3. Inscription administrative de la bibliothèque
+
+\def\libraryname{verbatim}
+\def\libraryversion{1.0}
+
+%%% End of file `verbatim.mac'

@@ -1,0 +1,177 @@
+%%% fontcmm.nw -- PFSS Computer Modern Math -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Dim 25 mar 2007 22:10:24 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier fontcmm.nw}
+<<*>>=
+
+% Ce module contient les définitions nécessaires pour utiliser les
+% fontes mathématiques Computer Modern avec le PFSS. Cette utilisation
+% est un sujet technique et les définitions suivantes sont fortement
+% liées à des fontes particulières.
+
+%
+% Computer Math Roman
+%
+
+\def\setmathrm{%
+  \setfontpage{OT1}%
+  \setfontfamily{cmm}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontshape{r}%
+}
+
+\setmathfamattributes\mathrm\setmathrm
+\addmathfam\mathrm
+
+\setmathrm
+
+\setfontadjustsize{13}{\@M}{\@m}{cmr12}
+
+\setfontsize{12}\fontbind{cmr12}
+\setfontsize{11}\fontbind{cmr12 at 11pt}
+\setfontsize{10}\fontbind{cmr10}
+\setfontsize{9}\fontbind{cmr9}
+\setfontsize{8}\fontbind{cmr8}
+\setfontsize{7}\fontbind{cmr7}
+\setfontsize{6}\fontbind{cmr6}
+\setfontsize{5}\fontbind{cmr5}
+
+%
+% Computer Math Italic
+%
+
+\def\setmathit{%
+  \setfontpage{OML}%
+  \setfontfamily{cmm}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontshape{i}%
+}
+
+\setmathfamattributes\mathit\setmathit
+\addmathfam\mathit
+
+\setmathit
+
+\setfontadjustsize{11}{\@M}{\@m}{cmmi10}
+\setfontsize{10}\fontbind{cmmi10}
+\setfontsize{9}\fontbind{cmmi9}
+\setfontsize{8}\fontbind{cmmi8}
+\setfontsize{7}\fontbind{cmmi7}
+\setfontsize{6}\fontbind{cmmi6}
+\setfontsize{5}\fontbind{cmmi5}
+
+%
+% Computer Math Symbols
+%
+
+\def\setmathsy{%
+  \setfontpage{OMS}%
+  \setfontfamily{cmm}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontshape{i}%
+}
+
+\setmathfamattributes\mathsy\setmathsy
+\addmathfam\mathsy
+
+\setmathsy
+
+\setfontadjustsize{11}{\@M}{\@m}{cmsy10}
+\setfontsize{10}\fontbind{cmsy10}
+\setfontsize{9}\fontbind{cmsy9}
+\setfontsize{8}\fontbind{cmsy8}
+\setfontsize{7}\fontbind{cmsy7}
+\setfontsize{6}\fontbind{cmsy6}
+\setfontsize{5}\fontbind{cmsy5}
+
+
+%
+% Computer Math Extension
+%
+
+\def\setmathex{%
+  \setfontpage{OMX}%
+  \setfontfamily{cmm}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontshape{i}%
+}
+
+\setmathfamattributes\mathex\setmathex
+\addmathfam\mathex
+
+\setmathex
+
+\setfontsize{10}\fontbind{cmex10}
+\setfontadjustsize{5}{\@M}{\@m}{cmex10}
+
+%
+% Caractères romains gras et mode mathématique
+%
+
+% Cette section procède à l'enregistrement des fontes `cmbx' pour être
+% utilisées avec la famille `7' dans le mode mathématique.
+%
+% Des caractères gras existent pour les symboles (cmsy) et les
+% variables (cmit), les fichiers correspondant sont
+%
+%   cmmib10 cmbsy10
+%
+% Ces fichiers peuvent être utilisés dans des classes de documents,
+% mais aucune disposition spéciale n'est prise pour les utiliser ici.
+
+\newfam\mathbf
+
+\def\setmathbf{%
+  \setfontpage{OT1}%
+  \setfontfamily{cmm}%
+  \setfontshape{r}%
+  \setfontweight{b}%
+  \setfontwidth{x}%
+}
+
+\setmathfamattributes\mathbf\setmathbf
+\addmathfam\mathbf
+
+\setmathbf
+
+\setfontadjustsize{13}{\@M}{\@m}{cmbx12}
+
+\setfontsize{12}\fontbind{cmbx12}
+\setfontsize{11}\fontbind{cmbx12 at 11pt}
+\setfontsize{10}\fontbind{cmbx10}
+\setfontsize{9}\fontbind{cmbx9}
+\setfontsize{8}\fontbind{cmbx8}
+\setfontsize{7}\fontbind{cmbx7}
+\setfontsize{6}\fontbind{cmbx6}
+\setfontsize{5}\fontbind{cmbx5}
+
+\addhook\fam\mathbf\to\bfhook
+
+\input fontcmmt
+
+%%% End of file `fontcmm.nw'

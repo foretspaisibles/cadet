@@ -1,0 +1,79 @@
+%%% drvxdvi.nw -- Pilote pour la sortie XDVI -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 24 mar 2007 12:02:40 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier drvxdvi.nw}
+<<*>>=
+
+\setdriver{xdvi}
+
+%
+% Paper Size
+%
+
+\def\xdvishipoutpapersize{%
+  \global\let\xdvishipoutpapersize\relax
+  \begingroup
+  \rdA=\paperwidth
+  \rdB=\paperheight
+  \divide\rdA\@m
+  \multiply\rdA\mag
+  \divide\rdB\@m
+  \multiply\rdB\mag
+  %
+  %  \special{papersize=\the\paperwidth,\the\paperheight}%
+  %  This does not work adequately with papersize, so this jerk
+  %
+  \special{papersize=\the\rdA,\the\rdB}%
+  \endgroup
+}
+
+\addhook{%
+  \addhook\xdvishipoutpapersize\to\selectlayouthook
+}\to\formatdumphook
+
+%
+% Images
+%
+
+\newdimen\imageheight
+\newdimen\imagewidth
+
+\imagewidth\z@
+\imageheight\z@
+
+\input epsf
+
+\def\boxloadimage#1\to#2{%
+  \ifdim\imagewidth>0pt\epsfxsize=\imagewidth\fi
+  \ifdim\imageheight>0pt\epsfysize=\imageheight\fi
+  \setbox#2=\hbox{\epsfbox{#1.eps}}%
+  \imagewidth\z@
+  \imageheight\z@
+}
+
+\def\image#1{{\boxloadimage{#1}\to\rbA\box\rbA}}
+
+\def\figure#1{$$\image{#1}$$}
+
+%%% End of file `drvxdvi.nw'

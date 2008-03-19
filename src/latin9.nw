@@ -1,0 +1,394 @@
+%%% latin9.nw -- Définitions de base pour l'entrée Latin9 -*- LaTeX -*-
+
+% Author: Michael Grünewald
+% Date: Tue Feb 21 22:34:46 GMT 2006
+% Copyright: (C) 2006, 2013 Michael Grünewald
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier latin9.nw}
+<<*>>=
+
+%%% UCCODE & LCCODE
+
+% Lorsqu'un caractère actif est passé en argument à l'une des
+% commandes uppercase ou lowercase de TeX, son code est également
+% modifié en accord avec les tables des codes UPPERCASE et
+% LOWERCASE. Par conséquent la mise à jour des valeurs apparaissant
+% dans ces tables relève de la compétence du fichier définissant les
+% conventions d'entrée.
+%
+% Lorsqu'INITEX démarre, les tables `lccode' et `uccode' sont
+% essentiellement garnies de zéros, ce qui signifie pour le caractère
+% concerné qu'aucune conversion n'est souhaitée. On définit ici les
+% valeurs des tables `uccode' et `lccode' adéquates à l'entrée codée
+% en `latin9'.
+%
+% Il est nénamoins utile de définir les `uccode' et `lccode' pour les
+% lettres minuscules: en effet la définition de `letter' utilisée par
+% les procédures de coupure de mots demande que le `lccode' d4une
+% lettre soit non-nul.
+
+\lccode`^^a6=`^^a8 \uccode`^^a8=`^^a6
+\lccode`^^b4=`^^b8 \uccode`^^b8=`^^b4
+\lccode`^^bc=`^^bd \uccode`^^bd=`^^bc
+\lccode`^^be=`^^ff \uccode`^^ff=`^^be
+\lccode`^^c0=`^^e0 \uccode`^^e0=`^^c0
+\lccode`^^c1=`^^e1 \uccode`^^e1=`^^c1
+\lccode`^^c2=`^^e2 \uccode`^^e2=`^^c2
+\lccode`^^c3=`^^e3 \uccode`^^e3=`^^c3
+\lccode`^^c4=`^^e4 \uccode`^^e4=`^^c4
+\lccode`^^c5=`^^e5 \uccode`^^e5=`^^c5
+\lccode`^^c6=`^^e6 \uccode`^^e6=`^^c6
+\lccode`^^c7=`^^e7 \uccode`^^e7=`^^c7
+\lccode`^^c8=`^^e8 \uccode`^^e8=`^^c8
+\lccode`^^c9=`^^e9 \uccode`^^e9=`^^c9
+\lccode`^^ca=`^^ea \uccode`^^ea=`^^ca
+\lccode`^^cb=`^^eb \uccode`^^eb=`^^cb
+\lccode`^^cc=`^^ec \uccode`^^ec=`^^cc
+\lccode`^^cd=`^^ed \uccode`^^ed=`^^cd
+\lccode`^^ce=`^^ee \uccode`^^ee=`^^ce
+\lccode`^^cf=`^^ef \uccode`^^ef=`^^cf
+\lccode`^^d0=`^^f0 \uccode`^^f0=`^^d0
+\lccode`^^d1=`^^f1 \uccode`^^f1=`^^d1
+\lccode`^^d2=`^^f2 \uccode`^^f2=`^^d2
+\lccode`^^d3=`^^f3 \uccode`^^f3=`^^d3
+\lccode`^^d4=`^^f4 \uccode`^^f4=`^^d4
+\lccode`^^d5=`^^f5 \uccode`^^f5=`^^d5
+\lccode`^^d6=`^^f6 \uccode`^^f6=`^^d6
+\lccode`^^d8=`^^f8 \uccode`^^f8=`^^d8
+\lccode`^^d9=`^^f9 \uccode`^^f9=`^^d9
+\lccode`^^da=`^^fa \uccode`^^fa=`^^da
+\lccode`^^db=`^^fb \uccode`^^fb=`^^db
+\lccode`^^dc=`^^fc \uccode`^^fc=`^^dc
+\lccode`^^dd=`^^fd \uccode`^^fd=`^^dd
+\lccode`^^de=`^^fe \uccode`^^fe=`^^de
+
+%
+% Table de lccodes pour les caractères minuscules
+%
+
+\lccode`^^a8=`^^a8
+\lccode`^^b8=`^^b8
+\lccode`^^bd=`^^bd
+\lccode`^^ff=`^^ff
+\lccode`^^e0=`^^e0
+\lccode`^^e1=`^^e1
+\lccode`^^e2=`^^e2
+\lccode`^^e3=`^^e3
+\lccode`^^e4=`^^e4
+\lccode`^^e5=`^^e5
+\lccode`^^e6=`^^e6
+\lccode`^^e7=`^^e7
+\lccode`^^e8=`^^e8
+\lccode`^^e9=`^^e9
+\lccode`^^ea=`^^ea
+\lccode`^^eb=`^^eb
+\lccode`^^ec=`^^ec
+\lccode`^^ed=`^^ed
+\lccode`^^ee=`^^ee
+\lccode`^^ef=`^^ef
+\lccode`^^f0=`^^f0
+\lccode`^^f1=`^^f1
+\lccode`^^f2=`^^f2
+\lccode`^^f3=`^^f3
+\lccode`^^f4=`^^f4
+\lccode`^^f5=`^^f5
+\lccode`^^f6=`^^f6
+\lccode`^^f8=`^^f8
+\lccode`^^f9=`^^f9
+\lccode`^^fa=`^^fa
+\lccode`^^fb=`^^fb
+\lccode`^^fc=`^^fc
+\lccode`^^fd=`^^fd
+\lccode`^^fe=`^^fe
+
+%%% MKACTIVE
+
+%
+% Rend actif les caractères du jeu Latin9
+%
+
+% Les caractères dont le bit de poids fort est un sont des caractères
+% actifs, selon la fonte utilisée, la position du glyphe à utiliser
+% pour produire le caractère dépend de la fonte en cours
+% d'utilisation.
+
+\let\\\setcatcodeactive
+
+\\\^^80\\\^^81\\\^^82\\\^^83\\\^^84\\\^^85\\\^^86\\\^^87
+\\\^^88\\\^^89\\\^^8a\\\^^8b\\\^^8c\\\^^8d\\\^^8e\\\^^8f
+\\\^^90\\\^^91\\\^^92\\\^^93\\\^^94\\\^^95\\\^^96\\\^^97
+\\\^^98\\\^^99\\\^^9a\\\^^9b\\\^^9c\\\^^9d\\\^^9e\\\^^9f
+\\\^^a0\\\^^a1\\\^^a2\\\^^a3\\\^^a4\\\^^a5\\\^^a6\\\^^a7
+\\\^^a8\\\^^a9\\\^^aa\\\^^ab\\\^^ac\\\^^ad\\\^^ae\\\^^af
+\\\^^b0\\\^^b1\\\^^b2\\\^^b3\\\^^b4\\\^^b5\\\^^b6\\\^^b7
+\\\^^b8\\\^^b9\\\^^ba\\\^^bb\\\^^bc\\\^^bd\\\^^be\\\^^bf
+\\\^^c0\\\^^c1\\\^^c2\\\^^c3\\\^^c4\\\^^c5\\\^^c6\\\^^c7
+\\\^^c8\\\^^c9\\\^^ca\\\^^cb\\\^^cc\\\^^cd\\\^^ce\\\^^cf
+\\\^^d0\\\^^d1\\\^^d2\\\^^d3\\\^^d4\\\^^d5\\\^^d6\\\^^d7
+\\\^^d8\\\^^d9\\\^^da\\\^^db\\\^^dc\\\^^dd\\\^^de\\\^^df
+\\\^^e0\\\^^e1\\\^^e2\\\^^e3\\\^^e4\\\^^e5\\\^^e6\\\^^e7
+\\\^^e8\\\^^e9\\\^^ea\\\^^eb\\\^^ec\\\^^ed\\\^^ee\\\^^ef
+\\\^^f0\\\^^f1\\\^^f2\\\^^f3\\\^^f4\\\^^f5\\\^^f6\\\^^f7
+\\\^^f8\\\^^f9\\\^^fa\\\^^fb\\\^^fc\\\^^fd\\\^^fe\\\^^ff
+
+\\\!\\\?\\\:\\\;
+
+\let\\=\undefined
+
+
+%%% SAISIE INERTE
+
+% La procédure `disableinputencoding' désactive tous les caractères de
+% la saisie.
+
+\begingroup
+
+\let\\\setcatcodeother
+
+\\\!\\\?\\\:\\\;
+\\\^^80\\\^^81\\\^^82\\\^^83\\\^^84\\\^^85\\\^^86\\\^^87
+\\\^^88\\\^^89\\\^^8a\\\^^8b\\\^^8c\\\^^8d\\\^^8e\\\^^8f
+\\\^^90\\\^^91\\\^^92\\\^^93\\\^^94\\\^^95\\\^^96\\\^^97
+\\\^^98\\\^^99\\\^^9a\\\^^9b\\\^^9c\\\^^9d\\\^^9e\\\^^9f
+\\\^^a0\\\^^a1\\\^^a2\\\^^a3\\\^^a4\\\^^a5\\\^^a6\\\^^a7
+\\\^^a8\\\^^a9\\\^^aa\\\^^ab\\\^^ac\\\^^ad\\\^^ae\\\^^af
+\\\^^b0\\\^^b1\\\^^b2\\\^^b3\\\^^b4\\\^^b5\\\^^b6\\\^^b7
+\\\^^b8\\\^^b9\\\^^ba\\\^^bb\\\^^bc\\\^^bd\\\^^be\\\^^bf
+\\\^^c0\\\^^c1\\\^^c2\\\^^c3\\\^^c4\\\^^c5\\\^^c6\\\^^c7
+\\\^^c8\\\^^c9\\\^^ca\\\^^cb\\\^^cc\\\^^cd\\\^^ce\\\^^cf
+\\\^^d0\\\^^d1\\\^^d2\\\^^d3\\\^^d4\\\^^d5\\\^^d6\\\^^d7
+\\\^^d8\\\^^d9\\\^^da\\\^^db\\\^^dc\\\^^dd\\\^^de\\\^^df
+\\\^^e0\\\^^e1\\\^^e2\\\^^e3\\\^^e4\\\^^e5\\\^^e6\\\^^e7
+\\\^^e8\\\^^e9\\\^^ea\\\^^eb\\\^^ec\\\^^ed\\\^^ee\\\^^ef
+\\\^^f0\\\^^f1\\\^^f2\\\^^f3\\\^^f4\\\^^f5\\\^^f6\\\^^f7
+\\\^^f8\\\^^f9\\\^^fa\\\^^fb\\\^^fc\\\^^fd\\\^^fe\\\^^ff
+
+
+\def\rmA{%
+\\!\\?\\:\\;%
+\\^^80\\^^81\\^^82\\^^83\\^^84\\^^85\\^^86\\^^87%
+\\^^88\\^^89\\^^8a\\^^8b\\^^8c\\^^8d\\^^8e\\^^8f%
+\\^^90\\^^91\\^^92\\^^93\\^^94\\^^95\\^^96\\^^97%
+\\^^98\\^^99\\^^9a\\^^9b\\^^9c\\^^9d\\^^9e\\^^9f%
+\\^^a0\\^^a1\\^^a2\\^^a3\\^^a4\\^^a5\\^^a6\\^^a7%
+\\^^a8\\^^a9\\^^aa\\^^ab\\^^ac\\^^ad\\^^ae\\^^af%
+\\^^b0\\^^b1\\^^b2\\^^b3\\^^b4\\^^b5\\^^b6\\^^b7%
+\\^^b8\\^^b9\\^^ba\\^^bb\\^^bc\\^^bd\\^^be\\^^bf%
+\\^^c0\\^^c1\\^^c2\\^^c3\\^^c4\\^^c5\\^^c6\\^^c7%
+\\^^c8\\^^c9\\^^ca\\^^cb\\^^cc\\^^cd\\^^ce\\^^cf%
+\\^^d0\\^^d1\\^^d2\\^^d3\\^^d4\\^^d5\\^^d6\\^^d7%
+\\^^d8\\^^d9\\^^da\\^^db\\^^dc\\^^dd\\^^de\\^^df%
+\\^^e0\\^^e1\\^^e2\\^^e3\\^^e4\\^^e5\\^^e6\\^^e7%
+\\^^e8\\^^e9\\^^ea\\^^eb\\^^ec\\^^ed\\^^ee\\^^ef%
+\\^^f0\\^^f1\\^^f2\\^^f3\\^^f4\\^^f5\\^^f6\\^^f7%
+\\^^f8\\^^f9\\^^fa\\^^fb\\^^fc\\^^fd\\^^fe\\^^ff%
+}
+
+\let\\\setcatcodeactive
+\\\!\\\?\\\:\\\;
+\\\^^80\\\^^81\\\^^82\\\^^83\\\^^84\\\^^85\\\^^86\\\^^87
+\\\^^88\\\^^89\\\^^8a\\\^^8b\\\^^8c\\\^^8d\\\^^8e\\\^^8f
+\\\^^90\\\^^91\\\^^92\\\^^93\\\^^94\\\^^95\\\^^96\\\^^97
+\\\^^98\\\^^99\\\^^9a\\\^^9b\\\^^9c\\\^^9d\\\^^9e\\\^^9f
+\\\^^a0\\\^^a1\\\^^a2\\\^^a3\\\^^a4\\\^^a5\\\^^a6\\\^^a7
+\\\^^a8\\\^^a9\\\^^aa\\\^^ab\\\^^ac\\\^^ad\\\^^ae\\\^^af
+\\\^^b0\\\^^b1\\\^^b2\\\^^b3\\\^^b4\\\^^b5\\\^^b6\\\^^b7
+\\\^^b8\\\^^b9\\\^^ba\\\^^bb\\\^^bc\\\^^bd\\\^^be\\\^^bf
+\\\^^c0\\\^^c1\\\^^c2\\\^^c3\\\^^c4\\\^^c5\\\^^c6\\\^^c7
+\\\^^c8\\\^^c9\\\^^ca\\\^^cb\\\^^cc\\\^^cd\\\^^ce\\\^^cf
+\\\^^d0\\\^^d1\\\^^d2\\\^^d3\\\^^d4\\\^^d5\\\^^d6\\\^^d7
+\\\^^d8\\\^^d9\\\^^da\\\^^db\\\^^dc\\\^^dd\\\^^de\\\^^df
+\\\^^e0\\\^^e1\\\^^e2\\\^^e3\\\^^e4\\\^^e5\\\^^e6\\\^^e7
+\\\^^e8\\\^^e9\\\^^ea\\\^^eb\\\^^ec\\\^^ed\\\^^ee\\\^^ef
+\\\^^f0\\\^^f1\\\^^f2\\\^^f3\\\^^f4\\\^^f5\\\^^f6\\\^^f7
+\\\^^f8\\\^^f9\\\^^fa\\\^^fb\\\^^fc\\\^^fd\\\^^fe\\\^^ff
+
+\def\rmB{%
+\\!\\?\\:\\;%
+\\^^80\\^^81\\^^82\\^^83\\^^84\\^^85\\^^86\\^^87%
+\\^^88\\^^89\\^^8a\\^^8b\\^^8c\\^^8d\\^^8e\\^^8f%
+\\^^90\\^^91\\^^92\\^^93\\^^94\\^^95\\^^96\\^^97%
+\\^^98\\^^99\\^^9a\\^^9b\\^^9c\\^^9d\\^^9e\\^^9f%
+\\^^a0\\^^a1\\^^a2\\^^a3\\^^a4\\^^a5\\^^a6\\^^a7%
+\\^^a8\\^^a9\\^^aa\\^^ab\\^^ac\\^^ad\\^^ae\\^^af%
+\\^^b0\\^^b1\\^^b2\\^^b3\\^^b4\\^^b5\\^^b6\\^^b7%
+\\^^b8\\^^b9\\^^ba\\^^bb\\^^bc\\^^bd\\^^be\\^^bf%
+\\^^c0\\^^c1\\^^c2\\^^c3\\^^c4\\^^c5\\^^c6\\^^c7%
+\\^^c8\\^^c9\\^^ca\\^^cb\\^^cc\\^^cd\\^^ce\\^^cf%
+\\^^d0\\^^d1\\^^d2\\^^d3\\^^d4\\^^d5\\^^d6\\^^d7%
+\\^^d8\\^^d9\\^^da\\^^db\\^^dc\\^^dd\\^^de\\^^df%
+\\^^e0\\^^e1\\^^e2\\^^e3\\^^e4\\^^e5\\^^e6\\^^e7%
+\\^^e8\\^^e9\\^^ea\\^^eb\\^^ec\\^^ed\\^^ee\\^^ef%
+\\^^f0\\^^f1\\^^f2\\^^f3\\^^f4\\^^f5\\^^f6\\^^f7%
+\\^^f8\\^^f9\\^^fa\\^^fb\\^^fc\\^^fd\\^^fe\\^^ff%
+}
+
+\rtC{}
+
+\def\next{%
+  \listlop\rmA\to\rmD\toksloadcsexpansion\rmD\to\rtA
+  \listlop\rmB\to\rmD\toksloadcsexpansion\rmD\to\rtB
+  \edef\rmC{\def\the\rtB{\the\rtA}}%
+  \toksloadcsexpansion\rmC\to\rtA
+  \tokscat\rtC=\rtC&\rtA
+  \ifx\empty\rmA
+    \let\next\relax
+  \fi
+  \next
+}
+
+\next
+\global\edef\disableinputencoding{\the\rtC}
+\endgroup
+
+
+
+%%% LIAISON DES CARACTÈRES SPÉCIAUX
+
+
+%%% SYMBOLES SPÉCIAUX
+
+\def ^^a2{\undefined}% XXX ¢
+\def ^^a3{\undefined}
+\def ^^a4{\undefined}
+\def ^^a5{\undefined}% XXX ¥
+\def ^^a7{\undefined}
+\def ^^b6{\undefined}% ¶
+\def ^^a9{\undefined}
+\def ^^ae{\undefined}
+
+% XXX Pour les entrées suivantes, il faut remplacer les \tswhatever
+%      par quelques chose d'approprié.
+\def ^^aa{\undefined}% ª
+\def ^^ac{\undefined}% logical not
+\def ^^ad{\undefined}% ­
+\def ^^af{\undefined}% ¯
+\def ^^b0{\superscript{}{o}}% XXX °
+\def ^^b1{\undefined}% plusminus
+\def ^^b2{\undefined}% power two
+\def ^^b3{\undefined}% power three
+\def ^^b5{\undefined}% greek mu
+\def ^^b7{\undefined}% centered dot
+\def ^^b9{\unedfined}% power one
+\def ^^ba{\undefined}% XXX º
+\def ^^d7{\undefined}% times
+\def ^^f7{\undefined}% division
+
+%%% LIGATURES
+
+\def ^^df{\textesszet}% esszet
+\def ^^bc{\textOE}
+\def ^^bd{\textoe}
+\def ^^c6{\textAE}
+\def ^^e6{\textae}
+\def ^^d8{\textOslash}
+\def ^^f8{\textoslash}
+
+%%% PONCTUATION
+
+% Ces signes de ponctuation sont redirigés vers des définitions donnés
+% dans le module `input.tex'. Les caractères de ponctuation pris en
+% charge par les macros \pnwhatever et figurant dans le code ASCII,
+% i.e. :;?! doivent être pris en charge par le module `input.tex'.
+
+\def ^^a1{\puncexclamdown}
+\def ^^bf{\puncquestiondown}
+\def ^^ab{\puncguillemetleft}
+\def ^^bb{\puncguillemetright}
+\def !{\puncexclam}
+\def ?{\puncquestion}
+\def :{\punccolon}
+\def ;{\puncsemicolon}
+
+
+\def ^^a6{\textScaron}%         ¦	!Scaron
+\def ^^a8{\textscaron}%         ¨	!scaron
+\def ^^b4{\textZcaron}%         ´	!Zcaron
+\def ^^b8{\textzcaron}%         ¸	!zcaron
+\def ^^bc{\textOE}%             ¼	!ligOE
+\def ^^bd{\textoe}%             ½	!ligoe
+\def ^^be{\textYdieresis}%      ¾	!Ydieresis
+\def ^^c0{\textAgrave}%         À	Agrave
+\def ^^c1{\textAacute}%         Á	Aacute
+\def ^^c2{\textAcircumflex}%    Â	Acircumflex
+\def ^^c3{\textAtilde}%         Ã	Atilde
+\def ^^c4{\textAdieresis}%      Ä	Adieresis
+\def ^^c5{\textAring}%          Å	Aring
+\def ^^c6{\textAE}%             Æ	ligAE
+\def ^^c7{\textCcedilla}%	Ç	Ccedilla
+\def ^^c8{\textEgrave}%         È	Egrave
+\def ^^c9{\textEacute}%         É	Eacute
+\def ^^ca{\textEcircumflex}%    Ê	Ecircumflex
+\def ^^cb{\textEdieresis}%      Ë	Edieresis
+\def ^^cc{\textIgrave}%         Ì	Igrave
+\def ^^cd{\textIacute}%         Í	Iacute
+\def ^^ce{\textIcircumflex}%    Î	Icircumflex
+\def ^^cf{\textIdieresis}%      Ï	Idieresis
+\def ^^d0{\textEth}%            Ð	Eth
+\def ^^d1{\textNtilde}%         Ñ	Ntilde
+\def ^^d2{\textOgrave}%         Ò	Ograve
+\def ^^d3{\textOacute}%         Ó	Oacute
+\def ^^d4{\textOcircumflex}%    Ô	Ocircumflex
+\def ^^d5{\textOtilde}%         Õ	Otilde
+\def ^^d6{\textOdieresis}%      Ö	Odieresis
+\def ^^d8{\textOslash}%         Ø	Oslash
+\def ^^d9{\textUgrave}%         Ù	Ugrave
+\def ^^da{\textUacute}%         Ú	Uacute
+\def ^^db{\textUcircumflex}%    Û	Ucircumflex
+\def ^^dc{\textUdieresis}%      Ü	Udieresis
+\def ^^dd{\textYacute}%         Ý	Yacute
+\def ^^de{\textThorn}%          Þ	Thorn
+%\def ^^df{\textEssZet}%	SS	!EssZet
+\def ^^df{\textesszet}%         ß	esszet
+\def ^^e0{\textagrave}%         à	agrave
+\def ^^e1{\textaacute}%         á	aacute
+\def ^^e2{\textacircumflex}%    â	acircumflex
+\def ^^e3{\textatilde}%         ã	atilde
+\def ^^e4{\textadieresis}%      ä	adieresis
+\def ^^e5{\textaring}%          å	aring
+\def ^^e6{\textae}%             æ	ligae
+\def ^^e7{\textccedilla}%	ç	ccedilla
+\def ^^e8{\textegrave}%         è	egrave
+\def ^^e9{\texteacute}%         é	eacute
+\def ^^ea{\textecircumflex}%    ê	ecircumflex
+\def ^^eb{\textedieresis}%      ë	edieresis
+\def ^^ec{\textigrave}%         ì	igrave
+\def ^^ed{\textiacute}%         í	iacute
+\def ^^ee{\texticircumflex}%    î	icircumflex
+\def ^^ef{\textidieresis}%      ï	idieresis
+\def ^^f0{\texteth}%            ð	eth
+\def ^^f1{\textntilde}%         ñ	ntilde
+\def ^^f2{\textograve}%         ò	ograve
+\def ^^f3{\textoacute}%         ó	oacute
+\def ^^f4{\textocircumflex}%    ô	ocircumflex
+\def ^^f5{\textotilde}%         õ	otilde
+\def ^^f6{\textodieresis}%      ö	odieresis
+\def ^^f8{\textoslash}%         ø	oslash
+\def ^^f9{\textugrave}%         ù	ugrave
+\def ^^fa{\textuacute}%         ú	uacute
+\def ^^fb{\textucircumflex}%    û	ucircumflex
+\def ^^fc{\textudieresis}%      ü	udieresis
+\def ^^fd{\textyacute}%         ý	yacute
+\def ^^fe{\textthorn}%          þ	thorn
+\def ^^ff{\textydieresis}%      ÿ	!ydieresis
+
+%%% End of file `latin9.nw'

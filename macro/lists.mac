@@ -1,0 +1,268 @@
+%%% lists.mac -- Listes à la mdoc
+
+% Author: Michael Grünewald
+% Date: Fri Feb 24 13:14:09 GMT 2006
+% Copyright: (C) 2006, 2013 Michael Grünewald
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\newdimen\labelindent
+\newdimen\labelwidth
+\newdimen\labelspace
+
+
+
+%
+% Listes
+%  à la mdoc
+%
+
+% SeeAlso: groff_mdoc(7)
+
+\newcount\itemcount
+\newcount\itemitemcount
+
+\let\item@orig=\item
+\let\itemitem@orig=\itemitem
+
+\def\item@bullet{\item@orig{\tsbullet}}
+\def\itemitem@bullet{\itemitem@orig{\tsbullet}}
+
+\def\item@dash{\item@orig{-}}
+\def\itemitem@dash{\itemitem@orig{-}}
+
+%
+% Locale
+%
+
+\def\selectitemtag#1{%
+  \csname selectitemtag@#1\endcsname
+  \let\item@list=\item@locale
+  \let\itemitem@list=\itemitem@locale
+}
+
+\def\selectitemtag@fr{%
+  \let\item@locale=\item@dash
+  \let\itemitem@locale=\itemitem@dash
+}
+
+\def\selectitemtag@en{%
+  \let\item@locale=\item@bullet
+  \let\itemitem@locale=\itemitem@bullet
+}
+
+\let\selectitemtag@de=\selectitemtag@fr
+\let\selectitemtag@den=\selectitemtag@de
+\let\selectitemtag@det=\selectitemtag@de
+
+\addlocale\selectitemtag
+\selectitemtag\currentlocale
+
+%
+% Autres présentations
+%
+
+\def\item@enum{%
+  \itemitemcount=0
+  \advance\itemcount by 1
+  \item@orig{\the\itemcount.}%
+}
+\def\itemitem@enum{%
+  \advance\itemitemcount by 1
+  \itemitem@orig{\the\itemitemcount.}%
+}
+
+\def\item@alpha{%
+  \itemitemcount=0
+  \advance\itemcount by 1
+  \rnA=\itemcount
+  \advance\rnA by 96
+  \item@orig{\char\the\rnA.}%
+}
+\def\itemitem@alpha{%
+  \advance\itemitemcount by 1
+  \rnA=\itemitemcount
+  \advance\rnA by 96
+  \itemitem@orig{\char\the\rnA.}%
+}
+
+\def\item@Alpha{%
+  \itemitemcount=0
+  \advance\itemcount by 1
+  \rnA=\itemcount
+  \advance\rnA by 64
+  \item@orig{\char\the\rnA.}%
+}
+\def\itemitem@Alpha{%
+  \advance\itemitemcount by 1
+  \rnA=\itemitemcount
+  \advance\rnA by 64
+  \itemitem@orig{\char\the\rnA.}%
+}
+
+\def\item@roman{%
+  \itemitemcount=0
+  \advance\itemcount by 1
+  \item@orig{\romannumeral\the\itemcount.}%
+}
+\def\itemitem@roman{%
+  \advance\itemitemcount by 1
+  \itemitem@orig{\romannumeral\the\itemitemcount.}%
+}
+
+\def\item@Roman{%
+  \itemitemcount=0
+  \advance\itemcount by 1
+  \item@orig{%
+    \expandafter\uppercase
+    \expandafter{\romannumeral\the\itemcount}.}%
+}
+\def\itemitem@Roman{%
+  \advance\itemitemcount by 1
+  \itemitem@orig{%
+    \expandafter\uppercase
+    \expandafter{\romannumeral\the\itemitemcount}.}%
+}
+
+\def\list@spacebox#1{\setbox#1=\hbox{\hskip\listtagwidth\enspace}}
+
+\newdimen\listtagwidth
+\listtagwidth=10mm
+\def\list@tagskip{%
+  \list@spacebox\rbA
+  \advance\itemindent by \wd\rbA
+  \relax
+}
+
+\def\item@tag#1{%
+  \par
+  \ifdim\lastskip=\z@\smallskip\fi
+  \setbox\rbA=\hbox{#1}%
+  \list@spacebox\rbB
+  \noindent
+  \hangindent\itemindent
+  \hskip\itemindent
+  \hskip-\wd\rbB\relax
+  \ifdim\wd\rbA>\listtagwidth
+    {#1}\hfill\break
+  \else
+    \hbox to\listtagwidth{#1\hfil}\enspace
+  \fi
+  \ignorespaces
+}
+
+\def\item@hang#1{%
+  \par
+  \ifdim\lastskip=\z@\smallskip\fi
+  \setbox\rbA=\hbox{#1}%
+  \list@spacebox\rbB
+  \noindent
+  \hangindent\itemindent
+  \hskip\itemindent
+  \hskip-\wd\rbB\relax
+  \ifdim\wd\rbA>\listtagwidth
+    {#1}\enspace
+  \else
+    \hbox to\listtagwidth{#1\hfil}\enspace
+  \fi
+  \ignorespaces
+}
+
+\def\item@ohang#1{%
+  \par
+  \ifdim\lastskip=\z@\smallskip\fi
+  \noindent
+  \hangindent\itemindent
+  \hskip\itemindent{#1}\hfill\break
+  \ignorespaces
+}
+
+\def\item@inset#1{%
+  \par
+  \ifdim\lastskip=\z@\smallskip\fi
+  \noindent
+  \hangindent\itemindent
+  \hskip\itemindent{#1}\enspace\ignorespaces
+}
+
+
+\def\item@switch#1{%
+  \begingroup
+  \def\item@select@A##1##2{%
+    \aftergroup\let\aftergroup\item\aftergroup##1%
+    \aftergroup\let\aftergroup\itemitem\aftergroup##2%
+    \let\item@select=\item@select@B
+  }%
+  \def\item@select@B##1##2{%
+    \aftergroup\let\aftergroup\itemitem\aftergroup##2%
+  }%
+  \let\item@select=\item@select@A
+  \def\locale{\item@select\item@locale\itemitem@locale}%
+  \def\dash{\item@select\item@dash\itemitem@dash}%
+  \def\enum{\item@select\item@enum\itemitem@enum}%
+  \def\bullet{\item@select\item@bullet\itemitem@bullet}%
+  \def\alpha{\item@select\item@alpha\itemitem@alpha}%
+  \def\Alpha{\item@select\item@Alpha\itemitem@Alpha}%
+  \def\roman{\item@select\item@roman\itemitem@roman}%
+  \def\Roman{\item@select\item@Roman\itemitem@Roman}%
+  \def\tag{\item@select\item@tag\itemitem@locale\aftergroup\list@tagskip}%
+  \def\hang{\item@select\item@hang\itemitem@locale\aftergroup\list@tagskip}%
+  \def\ohang{\item@select\item@ohang\itemitem@locale}%
+  \def\inset{\item@select\item@inset\itemitem@locale}%
+ #1\endgroup
+}
+
+\def\selectlist#1{%
+  \begingroup
+  \item@switch{#1}%
+  \global\let\item@list=\item
+  \global\let\itemitem@list=\itemitem
+  \endgroup
+}
+
+% \beginlist optional_tag1 optional_tag2
+% \item item1
+% \item item2 ...
+% \itemitem itemitem2
+% ...
+% \endlist
+
+\def\beginlist#1\item{%
+  \penalty 5000
+  \medskip
+  \begingroup
+  \itemcount=0
+  \itemitemcount=0
+  \let\item=\item@list
+  \let\itemitem=\itemitem@list
+  \item@switch{#1}%
+  \item
+}
+
+\def\endlist{%
+  \par
+  \endgroup
+  \medskip
+  \noindent
+  \ignorespaces
+  %\ignorewhitespace% XXX is not robust
+}
+
+%%% End of file `lists.mac'

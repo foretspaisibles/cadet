@@ -1,0 +1,384 @@
+%%% math.tex -- Préparation du texte du mode mathématique
+
+% Author: Michael Grünewald
+% Date: Mon Oct  9 15:51:05 CEST 2006
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\class bhridpaper
+\enablehverbatim
+
+\title Préparation du texte du mode mathématique
+\author Michael \nm{Grünewald}
+
+Nous décrivons les services que rend BHRID~\TeX\ dans la préparation du
+texte du mode mathématique, soit \qu{les formules}.
+
+
+\section Ensembles de nombres
+
+Les ensembles de nombre usuels peuvent être obtenus à partir des
+abréviations suivantes, en mode mathématique:
+\begincslist
+\item\N l'ensemble~$\N$ des entiers naturels;
+\item\Z l'ensemble~$\Z$ des entiers relatifs;
+\item\Q l'ensemble~$\Q$ des nombres reationnels;
+\item\R l'ensemble~$\R$ des nombres réels;
+\item\C l'ensemble~$\C$ des nombres complexes.
+\endcslist
+Les ensembles de nombres sont préparés avec la séléction de famille de
+fontes~|\scalarsetfont|, qui peut être modifiée. Par exemple
+\begincode
+\let\scalarsetfont=\sf
+L'ensemble~$\Z$ des entiers relatifs est le symmétrisé du demi-groupe
+des entiers-naturels~$\N$.
+\endcode
+donne le résultat suivant
+\begindisplay
+\let\scalarsetfont=\sf
+\noindent
+L'ensemble~$\Z$ des entiers relatifs est le symmétrisé du demi-groupe
+des entiers-naturels~$\N$.
+\enddisplay
+Les ensembles de nombres peuvent figurer dans dans les indices et dans
+les exposants, on écrit par exemple~|$\Q^\N$| pour obtenir~$\Q^ \N$.
+
+
+\formalpar Sur les nombres complexes
+
+On écrit la partie réelle et la partie imaginaire des nombres complexes
+au moyen de
+\begincslist
+\item\Re la partie réelle~$\Re z = x$ de~$z$;
+\item\Im la partie imaginaire~$\Im z = x$ de~$z$;
+\endcslist
+et~$z = \Re z + i\Im z$ s'écrit~|$z = \Re z + i\Im z$|.
+
+\formalpar Autres ensembles de scalaires
+
+Il est très facile d'ajouter de nouveaux ensembles de scalaires. Par
+exemple pour les nombres décimaux on écrit dans le manuscrit
+\begincode
+\def\D{{\mathscalarsetfont D}}
+\endcode
+et une définition ressemblant à la précédente permettent de créer des
+abréviations pour les quaternions d'\nm{Hamilton}~$\scalarsetfont H$
+et les octaves de~\nm{Cayley}~$\scalarsetfont O$.
+
+Ces définitions ne font pas partie du jeu naturel des définitions de
+BHRID~\TeX\ parceque~|\D| peut être utilisé en géométrie différentielle
+pour práprer les dérivations, et~|\O| est réservé pour désigner le
+groupe orthogonal d'un espace quadratique.
+
+
+\formalpar Corps de nombres
+
+La façon de décrire les corps de nombres dans le manuscrit est un cas
+particulier de celle utilisée pour les sous-anneaux engendrés par une
+partie finie. Par exemple si~$k$ est un sous-anneau de~$l$ et si~$x$
+et~$y$ sont des éléments de~$l$, le sous-anneau~$k[x,y]$ de~$l$
+engendré par~$k$,~$x$ et~$y$ est saisi~|$k[x,y]$|; si~$\cal X$ est une
+partie de~$l$, le sous-anneau~$k[{\cal X}]$ de~$l$ engendré par~$k$
+et~$\cal X$ est saisi~|$k[{\cal X}]$|. Ceci s'applique en particulier
+aux anneaux de polynômes et aux corps de nombres, ainsi~$\Q[i,\sqrt2]$
+est saisi~|$\Q[i,\sqrt2]$|.
+
+
+\section Géométrie
+
+Des abréviations exitent poue les groupes classiques
+
+
+Les groupes classiques et les espaces géométriques usuels sont
+préparés avec la famille de fontes sélectionnée par~|\usualsetfont|,
+que l'on peut modifier selon le même procédé que~|\scalarsetfont|.
+
+
+\formalpar Groupes classiques
+
+Les groupes classiques peuvent être obtenus à partir des abréviations
+suivantes:
+\begincslist
+\item\GL groupe linéaire général d'un espaces vectoriel;
+\item\SL groupe spécial linéaire d'un espace vectoriel;
+\item\O groupe orthogonal d'un espace quadratique;
+\item\SO groupe spécial orthogonal d'un espace quadratique;
+\item\GO groupe des similitudes d'un espace quadratique;
+\item\Sp groupe symplectique d'un espace symplectique;
+\item\GA groupe affine d'un espace affine;
+\item\PGL groupe des homographies d'un espace projectif;
+\item\PSL groupe des homographies d'un espace projectif;
+\item\PSO groupe des homographies d'un espace projectif stabilisant
+une quadrique de référence;
+\endcslist
+On écrit par exemple~|\GL_n|, |\GL_n\C|, |\GL(n,\C)| ou~|\GL(E)|, pour obtenir
+respectivement~$\GL_n$, $\GL_n\C$, $\GL(n,\C)$ ou~$\GL(E)$.
+
+\formalpar Espaces géométriques
+
+Les espaces géométriques usuels peuvent quant à eux être obtenus à
+partir des abréviations suivantes:
+\begincslist
+\item \A espace affine, on écrit par exemple~|\A^n|, ou~|\A^n_k| pour
+      l'espace affine de dimension~$n$ sur le corps~$k$, ce qui
+      donne~$\A^n$, ou~$\A^n_k$;
+\item \P espace projectif, on saisit~|\P^n|, |\P^n_k| ou~|\P(k^{n+1})|
+      pour l'espace projectif de dimension~$n$ sur le corps~$k$, ce
+      qui donne~$\P^n$, $\P^n_k$ ou~$\P(k^{n+1})$, on peut aussi
+      écrire~|\P E| pour obtenir l'espace projectif~$\P E$ associé à
+      l'espace vectoriel~$E$;
+\item \S sphère, la saisie~|\S^n| donne~$\S^n$ désignant la sphère de
+      dimension~$n$;
+\item \G grassmanniennes, on écrit~|\G_n E| pour obtenir la
+      grasmannienne~$\G_n E$ des~$n$-plans contenus dans~$E$, en ce
+      qui concerne les sous-espaces linéaires des espaces projectifs,
+      on peut écrire~$\G_n{\P E} = \G_{n+1} E$;
+\endcslist
+Remarquons finalement que~|\S| et~|\P| ont un autre sens dans le mode
+texte, où ces séquences produisent les symboles~`\S' et~`\P.'
+
+
+\formalpar Autres espaces géométriques
+
+On ajoute facilement de nouvelles abréviations pour représenter des
+espaces géométriques ne figurant pas dans les listes précédentes, par
+exemple si on souhaite saisir~|\T^n| pour le tore de dimension~$n$ on
+peut ajouter la définition~|\def\T{\usualsetfont T}| dans le
+manuscrit.
+
+\formalpar Géométrie algébrique
+
+\begincslist
+\item \var la variété~$\var({\ef a})$ lieu des zéros de l'idéal~$\ef a$
+      est saisie~|\var({\ef a})|;
+\item \idl l'idéal~$\idl(X)$ des fonctions nulles sur~$X$ est
+      saisi~|\idl(X)|;
+\item \rad le radical~$\rad({\ef a})$ de l'idéal~$\ef a$ est
+      saisi~|\rad({\ef a})|;
+\item \Reg l'espace~$\Reg_X U$ des fonctions régulières sur
+      l'ouvert~$U$ de la variété~$X$ est saisi~|\Reg_X U|, on peut
+      obtenir les localisations~$\Reg_{x\,X}U$ et~$\Reg_x U$
+      par~|\Reg_{x\,X}U| et~|\Reg_x U|.
+\endcslist
+
+
+\section Rubrique à brac
+
+\formalpar Morphismes
+
+Ces séquences utilisent la famille de fontes sélectionnée
+par~|\categoricfont| pour préparer le matériel qu'elles ajoutent au
+document, à l'exception de~|\circ|.
+\begincslist
+\item \circ pour la composition~$g\circ f$ de~$f$ et de~$g$ on
+      écrit~|g \circ f|;
+\item \homo pour les homomorphsimes de structure on
+      obtient~$\homo(A,B)$ ou~$\homo_{k-{\rm alg}}(A,B)$
+      avec~|\homo(A,B)| ou~|\homo_{k-{\rm alg}}(A,B)|;
+\item \endo pour les endomorphsimes de structure on
+      obtient~$\endo(A,B)$ avec~|\endo(A,B)|;
+\item \isom pour les isomorphsimes de structure on
+      obtient~$\isom(A,B)$ avec~|\isom(A,B)|;
+\item \auto pour les automorphsimes de structure on
+      obtient~$\auto(A,B)$ avec~|\auto(A,B)|.
+\item \ker noyau d'un morphsime, on obtient~$\ker f$ avec~|\ker f|;
+\item \im image d'un morphisme, on obtient~$\im f$ ave~|\im f|, à ne
+      pas confondre avec~|\Im| pour la partie imaginiare des nombres
+      complexes.
+\endcslist
+
+
+\formalpar Algèbre linéaire
+
+Ces séquences utilisent la famille de fontes sélectionnée
+par~|\tensorsetfont| pour préparer le matériel qu'elles ajoutent au
+document.
+
+\begincslist
+\item \trace trace d'une application linéaire, on obtient~$\trace f$
+      avec~|\trace f|;
+\item \Mat espace de matrices, on écrit par exemple~|\Mat_n k|
+      ou~|\Mat_{b_2\,b_1}f|, pour
+      obtenir $\Mat_n k$ ou~$\Mat_{b_2\,b_1}f$ (notation supposée pour
+      la matrice de l'application linéaire~$f$ de la base~$b_1$ vers
+      la base~$b_2$);
+\item \Ten espace de tenseurs ou algèbre tensorielle, on écrit par
+      exemple~|\Ten E|, |\Ten^p E|, |\Ten_q E| ou~|\Ten^p_q E| pour
+      obtenir respectivement l'algèbre tensorielle~$\Ten E$ engendrée
+      par les vecteurs de~$E$, l'espace~$\Ten^p E$ des tenseurs~$p$ fois
+      covariants --- ou espaces de formes $p$-linéaires --- sur~$E$,
+      l'espace des~$\Ten_q E$ des des tenseurs~$q$ fois contravariants
+      --- ou $q$-vecteurs --- sur~$E$, et l'espace~$\Ten^p_q E$ des
+      tenseurs $p$~fois covariants et~$q$ fois contravariants;
+\item \Sym l'espace~$\Sym^p E$ des $p$-covecteurs symétriques
+      sur~$E$ est saisi~|\Sym^p E|, on l'utilise autrement de la même
+      façon que~|\Ten|;
+\item \Alt l'espace~$\Alt^p E$ des $p$-covecteurs antisymétriques
+      sur~$E$ est saisi~|\Alt^p E|, on l'utilise autrement de la même
+      façon que~|\Ten|.
+\endcslist
+
+
+\formalpar Ensembles
+
+Les séquences~|\card| et~|\pr| utilisent la famille de fontes
+sélectionnée par~|\categoricfont| pour préparer le matériel qu'elles
+ajoutent au document.
+\begincslist
+\item \Pset pour~\em{power set}, l'ensemble des parties~$\Pset E$
+      de~$E$ est saisi~|\Pset E|, on peut écrire~$\Pset_n E$ pour
+      l'ensemble des parties de~$E$ dont le cardinal est~$n$;
+\item \card on peut saisir~|\card E| pour obtenir~$\card E$ désignant
+      le cardinal de l'ensemble~$E$;
+\item \pr la projection~$\pr_J : \prod_{i\in I} E_i \to \prod_{j\in J}
+      E_j$ pour~$J\subset I$ est
+      saisie~|\pr_J : \prod_{i\in I} E_i \to \prod_{j\in J} E_j|.
+\endcslist
+
+\formalpar Espaces de fonctions
+
+\begincslist
+\item \Boun l'espace~$\Boun(X,\R)$ des fonctions bornées de~$X$
+      dans~$\R$ est saisi~|\Boun(X,\R)|;
+\item \Cont l'espace~$\Cont(X,\R)$ des fonctions continues de~$X$
+      dans~$\R$ est saisi~|\Cont(X,\R)|;
+\item \Func l'espace~$\Func(A,B)$ de toutes les applications de~$A$
+      dans~$B$ est saisi~|\Func(A,B)|.
+\endcslist
+
+
+\formalpar Groupe symétrique
+
+\begincslist
+\item \Gsym le groupe symétrique~$\Gsym(E)$ ou~$\Gsym_n$ est
+      saisi~|\Gsym(E)| ou~|\Gsym_n|;
+\item \Galt le groupe alterné~$\Galt(E)$ ou~$\Galt_n$ est
+      saisi~|\Galt(E)| ou~|\Galt_n|;
+\item \sign le morphsime signature~$\sign:\Gsym(E) \to \C^*$ est
+      saisi~|\sign:\Gsym(E) \to \C^*| (ne pas confondre avec la
+      fonction signe, saisie~|\sgn|);
+\endcslist
+
+
+\formalpar Arithmétique
+
+On sait déjà comment saisir~$\N$ et~$\Z$ les ensembles de nombres
+entiers.
+\begincslist
+\item \Primes l'ensemble~$\Primes$ de tous les nombres premiers est
+      saisi~|\Primes|;
+\item \div on obtient $a \div b$, lu \qu{$a$ divise~$b$} en
+      saisissant~|a \div b|, la négation est obtenue avec~|\ndiv|
+      comme dans~$a \ndiv b$;
+\item \times on obtient~$a\times b$ avec~|a \times b|;
+\item \schooldiv on obtient~$a\schooldiv b$ avec~|a \schooldiv b|, le
+      nom de cette séquence est assez long car ce symbole est très peu
+      utilisé, on écrit normalement~$a/b$ tandis que~$a\schooldiv b$
+      ne se rencontre guère que dans les livres d'école primaire, mais
+      un manuscrit nécessitant de nombreux~|\schooldiv| peut fabriquer
+      un nom court avec un~|\let|;
+\item \pgcd on obtient~$\pgcd(a,b)$ ou~$\pgcd X$ avec~|\pgcd(a,b)|
+      ou~|\pgcd X|;
+\item \ppcm on obtient~$\ppcm(a,b)$ ou~$\ppcm X$ avec~|\ppcm(a,b)|
+      ou~|\ppcm X|;
+\endcslist
+Rappelons que dans PLAIN~\TeX\ la séquence~|\div| produit le symbole
+appelé ici~|\schooldiv|.
+
+
+\formalpar Fonctions usuelles
+
+Ces séquences utilisent la famille de fontes sélectionnée
+par~|\functionfont| pour préparer le matériel qu'elles ajoutent au
+document.
+\begincslist
+\item \sgn \em{Fonction signe}~$\sgn x$;
+\item \sin \em{Sinus}~$\sin x$;
+\item \cos \em{Cosinus}~$\cos x$;
+\item \tg \em{Tangente}~$\tg x$;
+\item \cotg \em{Cotangente}~$\cotg x$;
+\item \Arctg \em{Arc tangente}~$\Arctg x$;
+\item \Arccotg \em{Arc cotangente}~$\Arccotg x$;
+\item \Arcsin \em{Arc sinus}~$\Arcsin x$;
+\item \Arccos \em{Arc cosinus}~$\Arccos x$;
+\item \Arg \em{Argument principal des nombres complexes}~$\Arg x$;
+\item \ch \em{Cosinus hyperbolique}~$\ch x$;
+\item \sh \em{Sinus hyperbolique}~$\sh x$;
+\item \th \em{Tangente hyperbolique}~$\th x$;
+\item \coth \em{Cotangente hyperbolique}~$\coth x$;
+\item \Argch \em{Argument cosinus hyperbolique}~$\Argch x$;
+\item \Argsh \em{Argument sinus hyperbolique}~$\Argsh x$;
+\item \Argth \em{Argument tangente hyperbolique}~$\Argth x$;
+\item \Argcoth \em{Argument cotangente hyperbolique}~$\Argcoth x$;
+\endcslist
+
+
+\formalpar Derniers regrets
+
+\begincslist
+\item \dim dimension;
+\item \sup supremum;
+\item \inf infimum;
+\item \spm spectre des idéaux maximaux;
+\endcslist
+
+
+\section Macros ancillaires
+
+\formalpar Texte ordinaire en mode mathématique
+
+Pour insérer du texte ordinaire dans le mode mathématique on
+utilise~|\mbox|, comme dans l'exemple
+$$
+a + b > 0
+\qquad\mbox{et}\qquad
+a < c
+$$
+qui s'écrit
+\begincode
+$$
+a + b > 0
+\qquad\mbox{et}\qquad
+a < c
+$$
+\endcode
+dans le manuscrit.
+
+\formalpar Ensembles
+
+Il est courant dans un teexte mathématique de décrire un ensemble par
+une relation collectivisante, comme par exemple
+$$
+\Set{x\in\R \mid \sin x > 0 }
+$$
+que l'on peut saisir~|\Set{x\in\R \mid \sin x > 0}|. La
+commande~|\Set| offre pluseurs avantages par rapport à la saisie
+naïve~|\{x\in\R\mid\sin x > 0}|, les accolades ouvrantes et fermantes
+ainsi que la barre de séparation ont leur taille calculée
+automatiquement et les espacements sont meilleurs. On peut obtenir
+$$
+\Set{ {1\over p} \mid p \in \Primes}
+$$
+comme~$\Set{ {1\over p} \mid p \in \Primes}$ en
+saisissant~|\Set{{1\over p} \mid p \in \Primes}|.
+\bye
+
+
+%%% End of file `math.tex'

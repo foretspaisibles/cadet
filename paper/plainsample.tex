@@ -1,0 +1,348 @@
+%% plainsample.tex -- Exemple de document rédigé avec Bhrìd TeX
+
+% Author: Michael Grünewald
+% Date: Mer 11 avr 2007 10:55:33 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+% Ce fichier est préparé avec le format Bhrìd TeX, il montre de quelle
+% façon saisir des éléments de texte ordinaire. Ce fichier est
+% abondamment commenté.
+
+
+%%% 1. Titre du document
+
+% On commence par créer un titre au document. Ce titre est formé d'un
+% espace vertical, d'un texte centré et d'un autre espace vertical. Il
+% est important d'utiliser la commande `topglue', au lieu de `vglue',
+% `vskip' ou ses dérivés `smallskip' etc., pour insérer un espace
+% vertical au sommet d'une page, car TeX insère au sommet de la page
+% un blanc spécial, contrôlé par `topskip'. En utilisant `topglue' on
+% tient compte de ce saut spécial.
+%
+% Cf. TeXbook, p. 113--114.
+
+\magnification\magstep1
+\topglue 14mm
+\centerline{\titlefont Exemple de document}
+\vskip 14mm
+
+%%% 2. Exemples d'abréviations simples
+
+% Il est courante et utile de définir quelques abréviations pour
+% faciliter la saisie de certaines expressions. Le TeXbook est
+% plusieurs fois cité dans le texte, et une abréviation est définie
+% pour faciliter la saisie de son titre.
+%
+% Pour forcer un espace après le résultat de `\TeXbook', on écrit
+% `\TeXbook\ '.
+
+\def\TeXbook{\ti{\TeX book}}
+
+Ce document sert d'exemple pour la préparation d'un texte avec
+\brTeX. Le fichier source traité par~\TeX\ pour le produire a le
+nom~\pa{plainsample.tex}. Il est utile de consulter ce fichier en
+même temps que ce document, car le code source est abondamment
+commenté et présente de nombreux renvois précis au \TeXbook.
+
+
+%%% 3. Un exemple de paragraphe
+
+% Attention aux faux-amis: un `paragraph' anglais est un alinéa
+% français; et un paragraphe français est une succession d'un ou
+% plusieurs alinéas, éventuellement précédé d'un titre. Ce que les
+% manuels de Bhrìd TeX appelent donc du terme anglais `section' est
+% un `paragraphe' français.
+%
+% Le format Bhrìd TeX propose une procédure `section' simplette, qui
+% peut être redéfinie dans une classe de document.
+
+\section 1. \TeX nologie
+
+Le premier alinéa d'un paragraphe n'est pas précédé d'un retrait, à la
+différence des suivants. \TeX\ reconnaît la fin d'un alinéa lorsqu'il
+trouve une ligne vide dans votre manuscrit. Cette ligne vide est
+obtenue en insérant deux sauts de lignes consécutifs dans le fichier.
+
+Les alinéas suivant le premier sont précédés d'un retrait, qu'on
+appelle parfois \em{indentation}. (L'avez-vous vu?) La machine
+détermine automatiquement les meilleurs endroits pour aller à la ligne
+dans un alinéa, et coupe les mots; comme l'explique en détail
+le~\TeXbook.
+
+Des mesures spéciales ont été prises pour aider les rédacteurs à
+respecter les conventions typographiques en vigueur dans leur culture.
+À~condtion d'indiquer à l'ordinateur dans quelle langue est écrit le
+texte, les espaces autour des signes de ponctuation sont placés
+automatiquement et produisent le bons résultat, les règles de coupure
+des mots sont respectées. Voici pour le montrer un extrait
+de~\em{Wuthering heights}, de~Emily~Brontë:
+
+%%% 4. Exemples d'affichage
+
+% L'affichage est une partie de texte mise en exergue. Pour citer une
+% portion importante de texte, on utilise généralement un affichage.
+% Le code suivant montre quelques exemples de tels affichages.
+
+\begindisplay
+%
+% On modifie les paramètres de l'algorithme de coupure des lignes, afin
+% que celui-ci produise de nombreuses coupures de mots. Il s'agit de
+% montrer que les coupures obtenues respectent les règles de
+% l'orthographe anglaise. Pour reproduire ce genre de présentation, on
+% peut omettre ce commentaire et les trois lignes qui le suivent.
+%
+\selectlocale{en}{GB}% Le texte qui suit est en anglais
+\smallsize%             On veut une taille de caractère plus petite
+\pretolerance=-1
+\hyphenpenalty=-50
+\noindent
+\llap{``}%''
+In vapid listlessness I leant my head against the window, and
+continued spelling over Catherine Earnshaw, Heathcliff, Linton, till
+my eyes closed; but they had not rested five minutes when a glare of
+white letters started from the dark, as vivid as spectres---the air
+swarmed with Catherines; and rousing myself to dispel the obtrusive
+name, I discovered my candle-wick reclining on one of the antique
+volumes, and perfuming the place with an odour of roasted calf-skin.
+I snuffed it off, and, very ill at ease under the influence of cold
+and lingering nausea, sat up and spread open the injured tome on my
+knee.  It was a Testament, in lean type, and smelling dreadfully
+musty: a fly-leaf bore the inscription ``Catherine Earnshaw, her
+book,'' and a date some quarter of a century back.  I shut it, and
+took up another and another, till I had examined all.  Catherine's
+library was select, and its state of dilapidation proved it to have
+been well used, though not altogether for a legitimate purpose:
+scarcely one chapter had escaped, a pen-and-ink commentary---at least
+the appearance of one---covering every morsel of blank that the
+printer had left.  Some were detached sentences; other parts took the
+form of a regular diary, scrawled in an unformed, childish hand.  At
+the top of an extra page (quite a treasure, probably, when first
+lighted on) I was greatly amused to behold an excellent caricature of
+my friend Joseph,---rudely, yet powerfully sketched. An immediate
+interest kindled within me for the unknown Catherine, and I began
+forthwith to decipher her faded hieroglyphics.''
+\enddisplay
+Vous pouvez y voir que les espaces autour de certains signes de
+ponctuation, comme le \em{deux-points} ou le \em{point-virgule}, sont
+différents des espaces entourant les mêmes symboles dans un texte en
+français.
+
+Un affichage tel que le précédent ne termine pas nécessairement
+l'alinéa, c'est une bonne chose car on utilise souvent ce type de
+documentation pour citer un texte au cours d'une discussion. Pour
+terminer l'alinéa après un affichage, il suffit de laisser une ligne
+vide dans le manuscrit.
+
+% Une partie importante de la suite est du texte en anglais. C'est un
+% extrait de l'article de Alan D. Sokal.
+
+\selectlocale{en}{GB}
+
+\section 2. Manifold Theory: (W)holes and boundaries
+
+Luce Irigaray, in her famous article ``Is the Subject of Science
+Sexed?'', pointed out~that:
+\begindisplay
+\def\french{\selectlocale{fr}{FR}}% Abréviation commode
+\smallsize
+\noindent
+the mathematical sciences, in the theorey of wholes
+{\french[théorie des ensembles]}, concern themselves with
+closed and open spaces\dots\ They concern themselves very little with
+the question of partially open, with wholes that are not clearly
+delineated {\french[ensembles flous]}, with any analysis of
+the problem of borders~{\french[bords]}\dots
+\enddisplay
+In~1982, when Iragaray's essay first appeared, this was an incisive
+criticism: differential topology has traditionnaly privileged the
+study of what are known technically as ``manifolds without
+boundary''. However, in the past decade, under the impetus of the
+feminist critique, some mathematicians have given renewed attention to
+the theory of ``manifolds with
+boundary'' [Fr.~\em{\selectlocale{fr}{FR}variétés à bord}\/]. Perhaps not
+coincidentally, it is precisely these manifolds that arise in the new
+physics of conformal field theory, superstring theory and quantum
+gravity.
+\smallskip
+\rightline{Alan D. Sokal, \emphasis Transgressing the Boundaries:}
+\rightline{\emphasis Towards a Transformative Hermeneutics of Quantum Gravity}
+
+% À la fin de notre texte en anglais, on sélectionne de nouveau des
+% paramètres régionaux correspondant à la langue dans laquelle est
+% écrit le document.
+
+\selectlocale{fr}{FR}
+
+%%% 5. Exemples de listes
+
+\section Exemples de listes
+
+\beginitemization
+\item ceci est le premier terme d'une liste;
+\item ceci est le second terme d'une liste, ce second terme est long
+  est permet d'observer comment est préparé un terme s'étendant sur
+  plusieurs lignes;
+\item ce troisième terme est de longueur intermédiaire.
+\enditemization
+
+\beginenumeration
+\item 1 ceci est le premier terme d'une liste;
+\item 2 ceci est le second terme d'une liste, ce second terme est long
+  est permet d'observer comment est préparé un terme s'étendant sur
+  plusieurs lignes;
+\beginitemization
+\item ceci est le premier terme d'une liste;
+\item ceci est le second terme d'une liste, ce second terme est long
+  est permet d'observer comment est préparé un terme s'étendant sur
+  plusieurs lignes;
+\enditemization
+\item 3 ce troisième terme est de longueur intermédiaire.
+\endenumeration
+
+Les termes de cet exemple de liste sont:
+\begindescription
+\item Le premier
+  Ceci est le premier terme d'une liste;
+\item Le deuxième
+  Ceci est le second terme d'une liste, ce second terme est long est
+  permet d'observer comment est préparé un terme s'étendant sur
+  plusieurs lignes;
+\item Le troisième
+  Ce troisième terme est de longueur intermédiaire.
+\enddescription
+
+\begindescription
+\item rm
+  bascule vers la fonte définie par~\fn{setnormalfont} et sélectionne
+  la famille~\va{rmfontfamily} (caractères romains), on attend que
+  cette fonte soit celle utilisée pour le texte ordinaire du document;
+
+\item tt
+  bascule vers la fonte définie par~\fn{setnormalfont} et sélectionne
+  la famille~\va{ttfontfamily} \em{(typewriter type)\/};
+
+\item sf
+  bascule vers la fonte définie par~\fn{setnormalfont} et sélectionne
+  la famille~\va{sffontfamily} (caractères sans serifs).
+
+\enddescription
+
+\section 3. Encore de la \TeX nologie
+
+%%% X. Affichages mathématiques
+
+\section 4. Affichages mathématiques
+
+Réalisons quelques uns des \em{challenges} que propose le \ti{\TeX
+book}.
+$$
+{\bf S}^{-1}{\bf T}{\bf S}
+ = {\bf dg}(\omega_1,\dots,\omega_n)
+ = {\bf\Lambda}
+$$
+
+$$
+{\rm Pr}(\, m = n \mid m + n = 3\,)
+$$
+
+$$
+\sin 18^\circ = {1\over 4}(\sqrt 5 - 1)
+$$
+
+$$
+k = 1,38 \times 10^{-16} {\rm erg}/{^\circ}K
+$$
+
+$$
+\bar\Phi \subset NL_1^* /N = {\bar L}_1^* \subset
+\cdots \subset NL_n^*/N = {\bar L}_n^*
+$$
+
+$$
+I(\lambda) = \int\!\!\!\int_D g(x,y)e^{i\lambda h(x,y)} \,dx\,dy
+$$
+
+$$
+\int_0^1 \cdots \int_0^1 f(x_1,\dots,x_n)\,dx_1\dots dx_n
+$$
+
+$$
+x_{2m} \equiv \cases{
+  Q(X_m^2 - P_2 W_m^2) -2S^2 & ($m$ odd)\cr
+  P_2^2(X_m^2 - P_2 W_m^2) -2S^2 & ($m$ even)\cr
+}\quad(\mod N)
+$$
+
+$$
+(1+x_1z + x_1^2 z^2 + \cdots)\dots(1+x_nz + x_n^2z^2+\cdots)
+ = {1\over (1-x_1z) \dots(1-x_nz)}
+$$
+
+%%% X. Un exemple
+
+% On reproduit ici un court extrait du livre de Joe Harris, Algebraic
+%  Geometry.
+%
+% Cet extrait figure p. 38.
+
+\section X. Un exemple de texte mathématique
+
+% Après une commande section, le premier élement de texte débute un
+% paragraphe. Il et donc incorrect de saisir
+%
+%   \section X. Un exemple de texte mathématique
+%
+%   \selectlocale{en}{US}
+%
+%   Next, suppose we have ...
+%
+% Cette saisie crée en effet un paragraphe vide, puisqu'après
+% `selectlocale' la double ligne blanche renvoie TeX au mode vertical.
+\selectlocale{en}{US}%
+Next, suppose we have a subvariety~$X$ of~$Y\times\P^2$ and would like
+to make the same statement. We can do this by choosing a
+point~$p\in\P^2$ and first mapping~$Y\times(\P^2\setminus\set{p})$
+to~$Y\times\P^1$, then projecting from~$Y\times\P^1$ to~$Y$. This
+works except where~$X$ meets the locus~$Y\times\set{p}$, i.e., if we
+let~$V\subset Y$ be the closed subset~$\set{q\in Y\mid (q,p)\in X}$ it
+shows that the image~$\bar X = \pi_1(X)\subset Y$ intersects the open
+set~$U = Y \setminus V$ in a closed subset of~$U$. But since~$\bar X$
+contains~$V$, it follows that~$\bar X$ is closed in~$Y$. In general,
+this argument establishes the following theorem.
+
+\proclaim Theorem {3.12}. Let~$Y$ be any variety
+and~$\pi:Y\times\P^n\to Y$ the projection on the first factor. Then
+the image~$\pi(X)$ of any closed subset~$X\subset Y \times\P^n$ is a
+closed subset of~$Y$.
+
+As an immediate consequence of this, we may combine it with
+Exercise~2.24 to deduce the following fundamental theorem.
+
+\proclaim Theorem {3.13}. If~$X\subset\P^n$ is any projective variety
+and~$\phi:X\to\P^m$ any regular map then the image of~$\phi$ is a
+projective subvariety of~$\P^m$.
+
+\selectlocale{fr}{FR}
+
+\vfill
+\bye
+
+%%% End of file `plainsample.tex'

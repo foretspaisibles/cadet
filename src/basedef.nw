@@ -1,0 +1,1302 @@
+%%% basedef.tex -- Définitions de base -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 17 mar 2007 19:00:14 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Définitions de base XXX}
+
+{\em XXX La documentation de ce module doit être considérablement
+  révisée et réarrangée, notamment la partie sur les espaces et le
+  petit bazar de commande, qui ne devrait pas exister. De plus, il
+  faut réecrire les procédures pour la production de tableaux et les
+  procédures pour la production de listes.\bigbreak}
+
+Ce fichier définit de nombreuses procédures de base correspondant
+grosso-modo à la partie visible de PLAIN TeX. Une grande partie
+d'entre elles est d'ailleur adaptée du fichier `plain.tex' de Donald
+Knuth. Ces procédures se réaprtissent selon les groupes suivants:
+\begin{enumerate}
+\item Un petit bazar de commandes;
+\item Manipulation des espaces horizontaux et verticaux, des pénalités;
+\item Manipulation des paramètres de l'alinéa;
+\item Préparation de boîtes spéciales;
+\item Préparation de tableaux;
+\item Préparations spéciales pour le paragraphe et la structure.
+\end{enumerate}
+Le petit bazar de commandes est assez réduit, il s'agit de définition
+`pervasives' bien utiles mais n'ayant pas leur place dans le
+noyau. Les facilités concernant la manipulation des espaces et des
+pénalités consiste en le jeu des commandes `*skip/*break' les
+commandes `offinterlineskip' etc. Les facilités de manipulation des
+paramètres de l'alinéa sont un petit ensemble de commandes de haut
+niveau affectant la préparation de l'alinéa --- notons que l'anglais
+`paragraph' est un faux ami, il se traduit en français par `alinéa',
+alors qu'un paragraphe est une succession d'un ou plusieurs
+alinéas. La section sur la préparation des boîtes spéciales définit
+notamment les commandes `centerline' etc. La section sur les tableaux
+définit des facilités pour la préparation des tableaux. Enfin les
+commandes spéciales pour le paragraphe et la structure permettent la
+préparation des listes, des affichages, des sections et des
+théorèmes. Les procédures de cette dernière section doivent être
+redéfinies par toutes les classes de document. On y touve également
+des fonctions pour le marquage symbolique du texte, de façon
+semblable à celle proposée par la bibliothèque `mdoc' (de troff).
+
+<<*>>=
+<<Un petit bazar de commandes>>
+<<Manipulation des espaces et des pénalités>>
+<<Manipulation des paramètres de l'alinéa>>
+<<Préparation de boîtes spéciales>>
+<<Préparation de tableaux>>
+<<Préparations spéciales>>
+
+@ \subsection{Un petit bazar de commandes}
+
+Ce petit bazar est très restreint, il contient cependant quelques
+commandes \emph{pervasives} qui n'ont pas leur place ailleurs.
+
+@ \paracommand{\cs{nomathsurround}}
+Ajuste à zéro l'espace autour d'une formule mathématique dans le mode
+paragraphe. Ceci est utilisé pour certaines préparations tirant
+avantage du mode mathématique de~\TeX.
+
+Le nom de la commande est calqué sur~\fn{nointerlineskip}.
+<<Un petit bazar de commandes>>=
+\def\nomathsurround{\mathsurround\z@}
+
+@ \paracommand{\cs{underbar}\fa{h\_stuff}}
+Réalise une boîte horizontale soulignée dont le contenu est
+\fa{h\_stuff}. C'est en général une bien mauvaise idée de souligner du
+texte, qu'il vaut mieux mettre en italiques. Il est cependant de
+reares situations dans lesquelles on souhaite souligner quelque chose,
+on peut s'en remettre à la commande \fn{underbar} ou en écrire une
+variante spécialement adaptée à la situation.
+
+<<Un petit bazar de commandes>>=
+\def\underbar#1{$
+  \nomathsurround
+  \setbox\z@\hbox{#1}
+  \dp\z@\z@
+  \underline{\box\z@}
+$}
+
+@ \paracommand{\cs{strut}}
+Le \fn{strut} est un calibre à insérer pour garantir une hauteur et
+une profondeur minimales à une liste horizontale.
+
+<<Un petit bazar de commandes>>=
+\newbox\strutbox
+\setbox\strutbox=\hbox{\vrule height8.5pt depth3.5pt width\z@}
+\def\strut{\relax\ifmmode\copy\strutbox\else\unhcopy\strutbox\fi}
+
+@ \paracommand{\cs{leavevmode}}
+Quitte le mode vertical, c'est à dire commence un nouvel alinéa à
+moins que l'on ne soit déjà dans un alinéa.
+
+<<Un petit bazar de commandes>>=
+\def\leavevmode{\unhbox\voidb@x}
+
+
+@ \paracommand{\cs{obeylines} et \cs{obeyspaces}}
+Ces commandes rendent actifs les caractères de fin de ligne et les
+espaces (respectivement). On peut définir le sens de la fin de ligne
+avec \fn{setobeylines}, comme dans
+\begin{example}
+\setobeylines\par
+\end{example}
+qui fait se comporter les caractères de fin de ligne comme la commande
+\fn{par}. Idem avec \fn{setobeyspaces} pour \fn{obeyspaces}.
+
+La forme [[\let^^M\obeylines@t]] est préférée à la forme
+[[\def^^M{\obeylines@t}]] car cela permet de traiter réellement le
+retour de ligne comme un token~[[\obeylines@t]]. À cause de cela la
+définition de \fn{setobeylines} n'est pas très jolie et contient deux
+affectations apparemment redondantes.
+
+<<Un petit bazar de commandes>>=
+\begingroup
+\setcatcodeactive\^^M%
+\gdef\obeylines{\setcatcodeactive\^^M\global\let^^M\obeylines@t}%
+\gdef\setobeylines#1{\let\obeylines@t#1\let^^M#1}%
+\endgroup
+
+\begingroup
+\setcatcodeactive\^^`%
+\gdef\obeyspaces{\setcatcodeactive\^^`\global\let^^`\obeyspaces@t}%\
+\gdef\setobeyspaces#1{\let\obeyspaces@t#1\let^^`#1}%
+\endgroup
+
+\setobeylines\endgraf
+\setobeyspaces\space
+
+@ La liaison globale est utile car les tokens [[^^M]] peuvent rester
+en attente jusqu'à la routine \fn{output}. Il faut donc faire en sorte
+que [[^^M]](13) ait un sens à ce moment là.
+
+@ \paracommand{\cs{magnification}}
+La commande \fn{magnification} manipule le registre \va{mag}, qui contrôle
+le facteur d'agrandissement à appliquer au document. Elle permet de
+charger dans ce facteur une valeur prédéfinie au moyen de la
+commande compagnon \fn{magstep}.
+
+Si le facteur d'agrandissement est modifié, les dimensions affectant
+la procédure de sortie des pages --- la procédure \fn{output} ---
+doivent certainement être recalculées, par exemple pour correspondre
+aux dimensions du papier. À cette fin, on définit un \emph{hook}
+nommé~\va{magnificationhook} qui est déclenché après la modification
+du registre~\va{mag}.
+
+La commande \fn{unmagnify} permet après la modification du
+registre~\va{mag} de rétablir la valeur du registre passé en
+paramètre, comme-ci sa valeur avait été affectée par une
+dimension~\emph{true} après modification de~\va{mag}.
+
+Remarque importante: la valeur du registre \va{mag} ne doit pas être
+modifiée après qu'une page ait été éjectée, ni après qu'une dimension
+marquée [[true]] ait été lue.
+
+<<Un petit bazar de commandes>>=
+\newhook\magnificationhook
+\def\magstephalf{1095 }
+\def\magstep#1{\ifcase#1 \@m\or 1200\or 1440\or 1728\or 2074\or 2488\fi\relax}
+\def\magnification{\afterassignment\m@g\count@}
+\def\m@g{\mag\count@\runhook\magnificationhook}
+\def\unmagnify#1{%
+  \divide#1\mag
+  \multiply#1\@m
+}
+
+
+@ \paracommand{\cs{loggingall} et \cs{tracingall}}
+Les commandes \fn{loggingall} et \fn{tracingall} sont des aides au
+diagnostic des problèmes rencontrés lors de l'utilisation de \TeX. Ces
+commandes ajoutent au fichier journal d'éxécution (fichier~\emph{log})
+un très grand nombre d'informations complexes sur le comportement
+intime de \TeX.
+
+<<Un petit bazar de commandes>>=
+\def\loggingall{%
+  \tracingcommands\tw@
+  \tracingstats\tw@
+  \tracingpages\@ne
+  \tracingoutput\@ne
+  \tracinglostchars\@ne
+  \tracingmacros\tw@
+  \tracingpfss\tw@
+  \tracingparagraphs\@ne
+  \tracingrestores\@ne
+  \showboxbreadth\maxdimen
+  \showboxdepth\maxdimen\errorstopmode
+}
+
+\def\tracingall{\tracingonline\@ne\loggingall}
+
+@ \paracommand{\cs{showhyphens}\va{text}}
+Affiche sur le terminal, et dans le journal d'éxécution, les point de
+coupure possibles pour le~\va{text}.
+
+<<Un petit bazar de commandes>>=
+\def\showhyphens#1{%
+  \setbox0\vbox{%
+    \parfillskip\z@skip
+    \hsize\maxdimen
+    \systemfont
+    \pretolerance\m@ne
+    \tolerance\m@ne
+    \hbadness0\showboxdepth0\ #1%
+  }%
+}
+
+@ \paracommand{\cs{dospecials}}
+La procédure \fn{dospecials} peut être utilisée pour effectuer quelque
+chose sur tous les caractères ayant un \emph{catcode} spécial dans Bhrìd
+\TeX\ (à l'exception de l'ascii NULL, de TAB, de FORMFEED, LINEFEED,
+RETURN et DELETE). Pour effectuer un traitement su chacun de ces
+caractères, on définit la procédure~\fn{do}.
+
+Cette procédure contient traite plus de caractères que celle de
+\emph{plain}~\TeX, car les signes de ponctuation sont actifs dans Bhrìd
+\TeX, et certaines bibliothèques ne pensent pas à ajuster leurs code de
+catégorie. C'est notamment le cas de `epsf' qui n'ajuste pas le code
+de catégorie du deux-points sur~12 avant de traiter son fichier
+d'entrée.
+
+Remarque: cette procédure est définie dans \emph{plain} \TeX, sa présence
+ augmente la compatibilité de Bhrìd \TeX et de \emph{plain} \TeX. Sans ce
+ désir de compatibilité, elle porterait un nom différent et serait
+ programmée autrement, avec des listes et la commande~[[\\]].
+
+<<Un petit bazar de commandes>>=
+\def\dospecials{%
+  \do\ \do\\\do\{\do\}\do\$\do\&%
+  \do\#\do\^\do\^^K\do\_\do\^^A\do\%\do\~%
+  \do\:\do\;\do\?\do\!%
+  \do\«\do\»\do\¡\do\¿%
+}
+
+
+@ \subsection{Manipulation des espaces et des pénalités}
+Les commandes suivantes produisent des espaces horizontaux, verticaux,
+qui autorisent ou interdisent la coupure d'une ligne ou d'une page.
+
+@ \paracommand{\cs{enskip}, \cs{quad} et \cs{qquad}}
+Les commandes \fn{enskip}, \fn{quad} et \fn{qquad} sont des espaces
+sécables horizontaux de taille fixe, proportionnelle à la taille
+nominale de la fonte.
+
+<<Manipulation des espaces et des pénalités>>=
+\def\enskip{\hskip.5em\relax}
+\def\quad{\hskip 1em\relax}
+\def\qquad{\hskip 2em\relax}
+
+
+@ \paracommand{\cs{enspace}, \cs{thinspace} et \cs{negthinspace}}
+Les commandes \fn{enspace}, \fn{thinspace} et \fn{negthinspace}
+produisent des espaces horizontaux insécables. Ces commandes sont en
+fait des~\fn{kern} et peuvent produire un espace vertical, mais leur
+intérêt est certainement limité à la préparation du paragraphe.
+
+<<Manipulation des espaces et des pénalités>>=
+\def\enspace{\kern.5em }
+\def\thinspace{\kern.16667em }
+\def\negthinspace{\kern-.16667em }
+
+
+@ \paracommand{\cs{\textit{any}skip}, \cs{\textit{any}break}
+                 et \cs{removelastskip}}
+Les commandes \fn{smallskip}, \fn{medskip} et \fn{bigskip} produisent
+des espaces verticaux susceptibles d'être un point de saut de page.
+Les variantes \fn{smallbreak} etc. indiquent des points intéressants
+pour sauter une page.
+
+<<Manipulation des espaces et des pénalités>>=
+\def\smallskip{\vskip\smallskipamount}
+\def\medskip{\vskip\medskipamount}
+\def\bigskip{\vskip\bigskipamount}
+
+\def\removelastskip{%
+  \ifdim\lastskip=\z@\else\vskip-\lastskip\fi
+}
+
+\def\smallbreak{\par\ifdim\lastskip<\smallskipamount
+  \removelastskip\penalty-50\smallskip\fi}
+\def\medbreak{\par\ifdim\lastskip<\medskipamount
+  \removelastskip\penalty-100\medskip\fi}
+\def\bigbreak{\par\ifdim\lastskip<\bigskipamount
+  \removelastskip\penalty-200\bigskip\fi}
+
+@ \paracommand{\cs{nointerlineskip} et \cs{offinterlineskip}}
+Dans la construction d'une liste verticale, \TeX insère une
+\emph{glue} entre les boîtes verticales qu'il empile. La commande
+\fn{nointerlineskip} saisie entre deux boîtes inhibe l'insertion de la
+\emph{glue} entre ces deux boîtes tandis que \fn{offinterlineskip}
+inhibe l'insertion de la \emph{glue} jusqu'à la fin du groupe.
+
+Cf. \TeX book p.78--81 pour une discussion complète sur la \emph{glue}
+interligne.
+
+<<Manipulation des espaces et des pénalités>>=
+\def\nointerlineskip{\prevdepth-1000\p@}
+
+\def\offinterlineskip{%
+  \baselineskip-1000\p@
+  \lineskip\z@
+  \lineskiplimit\maxdimen
+}
+
+
+@ \paracommand{\cs{normalbaselines}}
+La commande \fn{normalbaselines} est utilisée pour rétablir les
+valeurs \emph{normales} des trois registres décrivant la \emph{glue}
+interligne.
+
+<<Manipulation des espaces et des pénalités>>=
+\def\normalbaselines{%
+  \lineskip\normallineskip
+  \baselineskip\normalbaselineskip
+  \lineskiplimit\normallineskiplimit
+}
+
+
+@ \paracommand{\cs{hskip}, \cs{vskip}, \cs{hglue}, \cs{vglue} et \cs{topglue}}
+Les commandes \fn{hskip} et \fn{vskip} insèrent des espaces qui sont des
+point de coupure potentiels. Les commandes \fn{hglue} et \fn{vglue}
+produisent des \emph{glues} insécables.
+
+La version spécialisée \fn{topglue} est à utiliser au sommet des pages,
+par exemple au début d'un chapitre. Elle tient compte du paramètre
+\va{topskip}. Cf. TeXbook p.113.
+
+<<Manipulation des espaces et des pénalités>>=
+\def\vglue{\afterassignment\vglue@M\skip@=}
+
+\def\vglue@M{%
+  \par
+  \dimen@\prevdepth
+  \hrule height\z@
+  \nobreak
+  \vskip\skip@
+  \prevdepth\dimen@
+}
+
+\def\hglue{\afterassignment\hglue@M\skip@=}
+
+\def\hglue@M{%
+  \leavevmode
+  \count@\spacefactor
+  \vrule width\z@
+  \nobreak\hskip\skip@
+  \spacefactor\count@
+}
+
+\def\topglue{\nointerlineskip\vglue-\topskip\vglue}
+
+
+@ \paracommand{\cs{break}, \cs{nobreak} et \cs{allowbreak}}
+Les commandes \fn{break}, \fn{nobreak} et \fn{allowbreak} posent des
+points de coupure potentiels. La commande \fn{allowbreak} n'est pas
+incitative, mais marque cependant une position où une ligne ou une
+page peut être coupée.
+
+On peut utiliser \fn{allowbreak} pour indiquer à \TeX\ un point de
+coupure acceptable dans une formule mathématique. Bien que \TeX\ %
+essaie de ne pas couper les formules mathématiques, il y est parfois
+contraint et il faut l'aider à trouver un endroit approprié.
+
+Pour les règles précises sur la préparation des paragraphes:
+ cf. \TeX book, chapitre 14.
+
+<<Manipulation des espaces et des pénalités>>=
+\def\break{\penalty-\@M}
+\def\nobreak{\penalty \@M}
+\def\allowbreak{\penalty \z@}
+
+@ \paragraph{Coupure des pages}
+Les commandes suivantes terminent un paragraphe et donnent une
+indication sur l'opportunité d'une coupure de page à cet endroit.
+
+@ \paracommand{\cs{goodbreak}, \cs{filbreak}, \cs{eject},
+  \cs{supereject} et \cs{bye}}
+La commande \fn{goodbreak} incite une coupure de page. La commande
+\fn{filbreak} incite une coupure qui termine la page par un blanc.
+La commande \fn{eject} cause un appel immédiat à la routine
+\fn{output}. La commande \fn{superject} insère une pénalité spéciale
+qui est un code de communication avec la procédure \fn{output}.
+
+<<Manipulation des espaces et des pénalités>>=
+\def\goodbreak{\par\penalty-500 }
+\def\filbreak{\par\vfil\penalty-200\vfilneg}
+\def\eject{\par\break}
+\def\supereject{\par\penalty-\@MM}
+
+\outer\def\bye{\par\vfill\supereject\end}
+
+
+@ \subsection{Manipulation des paramètres de l'alinéa}
+
+La préparation des alinéas représente la majeure partie du
+travail de \TeX\ lorsqu'il traite un document. Cette activité est
+régie par de très nombreux paramètres. Certains paramètres
+commandent la largeur de l'espace à réserver au début de l'alinéa,
+certains paramètre commandent la \emph{glue} à insérer au début et à la
+fin de chaque ligne, d'autres encore contrôlent les pénalités à
+appliquer aux ligne se terminant au milieu d'un mot, etc. Les
+nombreux paramètres influençant l'algorithme de découpe des alinéas
+sont décrits dans le \TeX book au chapitre~14.
+
+@ \paracommand{\cs{thisparagraph}}
+Il est souvent utile de modifier temporairement les paramètres du
+paragraphe. On introduit pour cela la commande \fn{thisparagraph} qui
+ouvre un groupe se terminant avec le paragraphe en cours. On écrit
+par exemple
+\begin{example}
+\thisparagraph\raggedright
+\thisparagraph\parindent=0pt ...
+\end{example}
+Cette commande ne doit pas être utilisée avec les commandes qui
+utilisent~\fn{par} de façon exotique.
+
+<<Manipulation des paramètres de l'alinéa>>=
+\def\thisparagraph{\begingroup\let\par\thisparagraph@E}
+\def\thisparagraph@E{\tex@par\endgroup}
+
+
+
+@ \paragraph{Paramètres du paragraphe}
+Ces paramètres et leurs valeurs sont discutés dans le chapitre~14 du
+\TeX book, How TeX Breaks Paragraphs into Lines, pp.96--98.
+
+
+@ \paracommand{\cs{pretolerance}}
+Seuil de laideur pour les lignes. S'il existe un découpage du
+paragraphe qui donne des lignes dont la laideur est chaque fois
+inférieure à \va{pretolerance}, \TeX\ n'a pas besoin d'essayer la
+césure des mots du paragraphe. La recherche d'un découpage du
+paragraphe respectant cette contrainte de laideur est la première
+passe de l'algorithme de découpe des paragraphes.
+
+\begin{tabular}{rl}
+\textit{Valeur}&\textit{Commentaire}\\
+100 & plain TeX (texte en anglais)\\
+500 & R.~Séroul (texte en français)\\
+-1 & ignorer la première passe\\
+10000 & la première passe réussit toujours\\
+\end{tabular}
+
+
+\paracommand{\cs{tolerance}}
+Seuil de laideur pour la deuxième passe de l'algorithme de découpe
+des paragraphes.
+
+\begin{tabular}{rl}
+\textit{Valeur}&\textit{Commentaire}\\
+200& plain TeX (texte en anglais)\\
+1000& R.Séroul (texte en français)\\
+\end{tabular}
+
+
+\paracommand{\cs{hyphenpenalty}}
+Pénalité pour une coupure de ligne dans un mot.
+
+\begin{tabular}{rl}
+\textit{Valeur}&\textit{Commentaire}\\
+50& plain TeX\\
+\end{tabular}
+
+
+\paracommand{exhyphenpenalty}
+Pénalité pour une coupure de ligne dans un mot, dans le cas ou le
+pre-text de l'objet discretionary associé est vide. Pour les césures
+usuelles, le [[\-]] signifie [[\discretionary{-}{}{}]] et le
+\emph{pre-break} n'est pas vide, mais après chaque caractère [[-]] est
+automatiquement inséré un [[\discretionary{}{}{}]] où le
+\emph{pre-break} est vide. Le \emph{pre-break} peut également se
+trouver vide lorsque les [[\discretionary]] sont insérés
+explicitement.
+
+\begin{tabular}{rl}
+\textit{Valeur}&\textit{Commentaire}\\
+50& plain TeX\\
+\end{tabular}
+
+
+\paracommand{\cs{doublehyphendemerits}}
+Pénalité pour les césures sur des lignes consécutives.
+
+\begin{tabular}{rl}
+\textit{Valeur}&\textit{Commentaire}\\
+10000& plain TeX\\
+\end{tabular}
+
+
+\paracommand{\cs{finalhyphendemerits}}
+Pénalité pour une césure sur l'avant-dernière ligne d'un
+paragraphe.
+
+\begin{tabular}{rl}
+\textit{Valeur}&\textit{Commentaire}\\
+5000& plain TeX\\
+\end{tabular}
+
+
+\paracommand{\cs{adjdemerits}}
+Pénalité appliquée lorsque des lignes de catégories distantes se
+suivent. (catégories: tight, loose, very loose, descent.)
+
+\begin{tabular}{rl}
+\textit{Valeur}&\textit{Commentaire}\\
+10000& plain TeX\\
+\end{tabular}
+
+
+
+\paracommand{\cs{hangindent} et \cs{hangafter}}
+
+Les registres \va{hangindent} et \va{hangafter} sont un cas particulier de
+\va{parshape} (\TeX book p.~101--102), le registre \va{hangindent} contient une
+dimension (pas un ressort), et \va{hangafter} un nombre. Lorsque
+\va{hangafter} est un nombre positif~$n$, l'indentation \va{hangindent} est
+appliquée aux lignes~$n+1$, $n+2$, \dots\ du paragraphe (la première ligne
+porte le numéro un); lorsque \va{hangafter} est un nombre~$-n$ strictement
+négatif, l'indentation a lieu sur les lignes~1, 2, \dots,~$n$.
+
+Ces modifications n'affectent que le paragraphe en cours.
+
+
+
+
+@ \paracommand{\cs{paragraphtricky}, \cs{paragraphhard} et \cs{paragraphnasty}}
+Les paramètres régissant la préparation des paragraphes nécessitent
+parfois d'être relaxés, pour éviter un débordement de boîte. Les
+macros \fn{paragraphtricky}, \fn{paragraphhard}, et \fn{paragraphnasty}
+et les groupes peuvent être utilisés pour marquer les paragraphes
+difficiles à préparer (pour~\TeX). Comme dans
+\begin{example}
+\begingroup\paragraphtricky
+Alors que le soleil ...
+\par\endgroup
+\end{example}
+Les bibliothèques de paramètres régionaux peuvent remplacer ces
+macros.
+
+<<Manipulation des paramètres de l'alinéa>>=
+\def\thisparagraphtricky{\thisparagraph\paragraphtricky}
+\def\thisparagraphhard{\thisparagraph\paragraphhard}
+\def\thisparagraphnasty{\thisparagraph\paragraphnasty}
+
+\def\paragraphtricky{%
+  \multiply\pretolerance by 2
+  \multiply\tolerance by 2
+}
+
+\def\paragraphhard{%
+  \multiply\pretolerance by 2
+  \multiply\tolerance by 2
+  \hyphenpenalty=0
+  \exhyphenpenalty=0
+  \spaceskip=.333333em plus .166667em minus .133333em
+  \xspaceskip=.333333em plus 1.166667em minus .133333em
+}
+
+\def\paragraphnasty{%
+  %
+  % Saute la première passe et essaie directement de préparer le
+  %  paragraphe en coupant les mots, réduit les pénalités de coupure
+  %  des mots
+  %
+  \pretolerance=-1
+  \multiply\tolerance by 4
+  \doublehyphendemerits=1000
+  \finalhyphendemerits=500
+  \hyphenpenalty=0
+  \exhyphenpenalty=0
+  %
+  % Les lignes de classes différentes et contigües
+  %  sont moins pénalisées
+  %
+  \adjdemerits=1000
+  %
+  % Ajustement des espaces
+  %  elles sont plus flexibles et étirables
+  %
+  \spaceskip=.333333em plus 1.166667em minus .133333em
+  \xspaceskip=.333333em plus 2.166667em minus .133333em
+}
+
+
+@ \paracommand{\cs{selectparagraphparameters}\fa{locale}\fa{variant}}
+Certains paramètres de l'algorithme de découpe des alinéas doivent
+être adaptés à la langue dans laquelle le texte est saisi. Par
+exemple, pour un texte écrit dans une langue dont les phrases sont
+formées de mots très courts, l'espace séparant les mots n'a pas besoin
+d'être très élastique: leur grand nombre compense leur rigidité. Pour
+une langue dont les phrases sont formées de mots souvent longs, une
+plus grande élasticité des blancs est souhaitée. De même les pénalités
+à appliquer à la coupure des mots peut être différente dans chacun des
+cas.
+
+Ces paramètres correspondent à une utilisation générale, pour préparer
+un texte sur une grande feuille. Des classes de documents spécifiques
+redéfinissent ces valeurs si besoin.
+
+La procédure \fn{selectparagraphparameters} est inscrite auprès de
+\fn{addlocaleadjustment}, on utilise donc cette procédure le plus
+souvent de façon indirecte, par le biais d'un appel à
+\fn{selectlocale}.
+
+<<Manipulation des paramètres de l'alinéa>>=
+\let\locale@paragraphparameters@kobaia\empty
+
+\def\locale@paragraphparameters@fr{%
+  \parindent=10pt
+  \pretolerance=500
+  \tolerance=1000
+}%
+
+\def\locale@paragraphparameters@en{%
+  \parindent=20pt
+  \pretolerance=100
+  \tolerance=200
+}
+
+\let\locale@paragraphparameters@de=\locale@paragraphparameters@en
+
+\def\selectparagraphparameters{\cslocale{paragraphparameters}}
+
+\addlocaleadjustment\selectparagraphparameters
+
+
+@ \paracommand{\cs{narrower}}
+Cette procédure augmente les marges latérales du paragraphe en cours
+de composition et des suivants. L'augmentation est contrôlée par les
+registres \va{displayleftmargin} et~\va{displayrightmargin}. Pour
+limiter l'effet de~\fn{narrower} au paragraphe courant on peut
+utiliser la forme~[[\thisparagraph\narrower]] ou enfermer le
+paragraphe dans un groupe.
+
+<<Manipulation des paramètres de l'alinéa>>=
+\def\narrower{%
+  \advance\leftskip\displayleftmargin
+  \advance\rightskip\displayrightmargin
+}
+
+
+@ \paracommand{\cs{raggedright} et \cs{ttraggedright}}
+
+La procédure~\fn{raggedright} commande une composition du paragraphe
+en cours et des suivants en drapeau, les lignes sont alignées à gauche
+mais pas à droite. La variante~\fn{ttraggedright} fait la même chose
+mais sélectionne aussi une fonte à chasse fixe au moyen de la
+commande~\fn{tt}, elle sélectionne des paramètres de composition du
+paragraphe adapté au cas d'une police à chasse fixe.
+
+XXX Remarque: est-il judicieux d'appeler [[tt]] ici alors qu'on est
+     très loin de disposer d'un schéma de sélection des fontes?
+
+<<Manipulation des paramètres de l'alinéa>>=
+\def\raggedright{%
+  \rightskip\z@ plus2em
+  \spaceskip.3333em
+  \xspaceskip.5em
+  \relax
+}
+
+\def\ttraggedright{%
+  \tt
+  \rightskip\z@ plus2em
+  \relax
+}
+
+
+
+@ \subsection{Préparation de boîtes spéciales}
+
+@ \paracommand{\cs{line}, \cs{leftline}, \cs{rightline} et \cs{centerline}}
+Ces commandes permettent la production d'une boîte horizontale de la
+largeur de la page, le texte étant respectivement justifié, aligné à
+gauche, à droite ou centré.
+
+<<Préparation de boîtes spéciales>>=
+\def\line{\hbox to\hsize}
+\def\leftline#1{\line{#1\hss}}
+\def\rightline#1{\line{\hss#1}}
+\def\centerline#1{\line{\hss#1\hss}}
+
+
+@ \paracommand{\cs{llap} et \cs{rlap}}
+Ces deux commandes produisent une boîte horizontale de largeur nulle
+dont le contenu est rejeté respectivement sur la gauche ou sur la
+droite.
+
+<<Préparation de boîtes spéciales>>=
+\def\llap#1{\hbox to\z@{\hss#1}}
+\def\rlap#1{\hbox to\z@{#1\hss}}
+
+
+@ \paracommand{\cs{\textit{any}fill}}
+Les procédures \fn{hrulefill}, \fn{dotfill}, \fn{rightarrowfill},
+\fn{leftarrowfill}, \fn{downbracefill} et \fn{upbracefill} créent des
+points de conduites et des formes apparentées, selon ce qui est
+suggéré par leur nom.
+
+<<Préparation de boîtes spéciales>>=
+\def\hrulefill{\leaders\hrule\hfill}
+
+\def\dotfill{\cleaders\hbox{$\nomathsurround \mkern1.5mu.\mkern1.5mu$}\hfill}
+
+\def\rightarrowfill{$\nomathsurround\smash-\mkern-7mu%
+  \cleaders\hbox{$\mkern-2mu\smash-\mkern-2mu$}\hfill
+  \mkern-7mu\mathord\rightarrow$}
+
+\def\leftarrowfill{$\nomathsurround\mathord\leftarrow\mkern-7mu%
+  \cleaders\hbox{$\mkern-2mu\smash-\mkern-2mu$}\hfill
+  \mkern-7mu\smash-$}
+
+\def\downbracefill{$\nomathsurround \setbox\z@\hbox{$\braceld$}%
+  \braceld\leaders\vrule height\ht\z@ depth\z@\hfill\braceru
+  \bracelu\leaders\vrule height\ht\z@ depth\z@\hfill\bracerd$}
+
+\def\upbracefill{$\nomathsurround \setbox\z@\hbox{$\braceld$}%
+  \bracelu\leaders\vrule height\ht\z@ depth\z@\hfill\bracerd
+  \braceld\leaders\vrule height\ht\z@ depth\z@\hfill\braceru$}
+
+
+@ \paragraph{Boîtes et cadres}
+On définit des procédures pour créer des boîtes, un peu comme les
+commandes \fn{parbox}, \fn{makebox} et \fn{framebox} de~\LaTeX.
+
+Les effets des affectations aux registres \va{wd}, \va{ht} et \va{dp}
+d'une boîte, largrement utilisés ci-dessous, sont expliqués dans
+l'appendice D du \TeX book, paragraphe `6. Box maneuvers', cf. en
+particulier la page~388.
+
+@ \paracommand{%
+  \cs{boxload\textit{any}box}%
+  \fa{width}%
+  \cs{to}\fa{box\_register}%
+  \fa{token\_list}%
+  \fa{vstuff}%
+}
+Crée une boîte verticale dont la \emph{baseline} est tout en
+haut~(\fn{boxloadtbox}), au milieu~(\fn{boxloadcbox}) ou tout en
+bas~(\fn{boxloadbbox}).
+
+Le paramètre \fa{width} peut être vide ou prendre une valeur qui est une
+`right hand side' pour un registre de dimension. Dans le premier cas,
+la boîte crée dans~\fa{box\_register} est de la largeur indiquée par
+la valeur courante de~\va{hsize} dans le second cas, de la largeur
+indiquée par~\fa{width}.
+
+La boîte est remplie avec~\fa{vstuff} (matériel vertical) et après que
+la boîte résultante ait été affectée à~\fa{box\_register},
+la~\fa{token\_list} est évaluée.
+
+<<Préparation de boîtes spéciales>>=
+\newbox\boxload@b
+
+\def\boxloadtbox{\boxload@M\boxload@T}
+\def\boxloadcbox{\boxload@M\boxload@C}
+\def\boxloadbbox{\boxload@M\boxload@B}
+
+\long\def\boxload@M#1#2\to#3#4{%
+  \global\setbox\boxload@b\vbox{%
+    \beginnext
+    \teststrempty{#2}%
+    \ifstrempty
+      \let\next\empty
+    \else
+      \def\next{\hsize #2\relax}%
+    \fi
+    \endnext
+    #4%
+  }%
+  #1\setbox#3\box\boxload@b
+}
+
+\def\boxload@T{%
+  \setbox\boxload@b\vtop to \ht\boxload@b{%
+    \unvbox\boxload@b
+  }%
+}
+
+\def\boxload@C{%
+  \setbox\boxload@b\vbox to \ht\boxload@b{%
+    \rdA\ht\boxload@b
+    \advance\rdA\dp\boxload@b
+    \divide\rdA\tw@
+    \kern\rdA
+    \rdB\ht\boxload@b
+    \advance\rdB-\rdA
+    \ht\boxload@b\rdB
+    \box\boxload@b
+  }%
+}
+
+\def\boxload@C{%
+  \begingroup
+    \rdA\ht\boxload@b
+    \advance\rdA\dp\boxload@b
+    \divide\rdA\tw@
+    \rdB\ht\boxload@b
+    \advance\rdB-\rdA
+    \rdC\dp\boxload@b
+    \advance\rdC\rdA
+    \edef\next{%
+      \noexpand\ht\noexpand\boxload@b\the\rdB\relax
+      \noexpand\dp\noexpand\boxload@b\the\rdC\relax
+    }%
+  \expandafter\endgroup\next
+}
+
+\let\boxload@B\relax
+
+
+@ \paracommand{\cs{\textit{any}box}\fa{width}\fa{vstuff}}
+Les commandes~\fn{tbox}, \fn{cbox} et~\fn{bbox} appellent la procédure
+\fn{boxload*box} correspondante et placent la boîte produite dans la
+boîte en cours de composition.
+
+<<Préparation de boîtes spéciales>>=
+\def\tbox#1#{\boxload@N\boxloadtbox{#1}}
+\def\cbox#1#{\boxload@N\boxloadcbox{#1}}
+\def\bbox#1#{\boxload@N\boxloadbbox{#1}}
+
+\long\def\boxload@N#1#2#3{#1#2\to\boxload@b{#3}\box\boxload@b}
+
+
+@ \paracommand{\cs{boxloadframe}\fa{source}\cs{to}\fa{target}}
+Crée une copie de \fa{source} dans \fa{target} en ajoutant une
+bordure, en accord avec la description donnée par les paramètres des
+\emph{frame}.
+
+<<Préparation de boîtes spéciales>>=
+\newdimen\framemargintop
+\newdimen\framemarginleft
+\newdimen\framemarginright
+\newdimen\framemarginbottom
+
+\newdimen\framethicknesstop
+\newdimen\framethicknessleft
+\newdimen\framethicknessright
+\newdimen\framethicknessbottom
+
+\framemargintop=3pt
+\framemarginleft=3pt
+\framemarginright=3pt
+\framemarginbottom=3pt
+
+\framethicknesstop=.4pt
+\framethicknessleft=.4pt
+\framethicknessright=.4pt
+\framethicknessbottom=.4pt
+
+\newbox\boxload@f
+
+\def\boxloadframe#1\to#2{%
+  \setbox\boxload@f\vbox{%
+     \hrule height\framethicknesstop
+     \hbox{%
+       \vrule width\framethicknessleft
+       \kern\framemarginleft
+       \vbox{\kern\framemargintop\copy#1\kern\framemarginbottom}%
+       \kern\framemarginright
+       \vrule width\framethicknessright
+     }%
+     \hrule height\framethicknessbottom
+     \kern-\framethicknessbottom
+     \kern-\framemarginbottom
+  }%
+  \begingroup
+    \rdA\ht#1%
+    \advance\rdA\framemargintop
+    \advance\rdA\framethicknesstop
+    \rdB\dp#1%
+    \advance\rdB\framemarginbottom
+    \advance\rdB\framethicknessbottom
+    \edef\next{%
+      \noexpand\ht\noexpand\boxload@f\the\rdA\relax
+      \noexpand\dp\noexpand\boxload@f\the\rdB\relax
+    }%
+  \expandafter\endgroup\next
+  \setbox#2\box\boxload@f
+}
+
+
+@ \paracommand{%
+  \cs{boxload\textit{any}frame}%
+  \fa{width}%
+  \cs{to}\fa{box\_register}%
+  \fa{token\_list}%
+  \fa{vstuff}%
+}
+On définit les commandes spécialisés \fn{boxloadtframe} etc. qui
+chargent une boîte avec un cadre dans un registre de boîte.
+
+<<Préparation de boîtes spéciales>>=
+\def\boxloadtframe{\boxload@O\boxloadtbox}
+\def\boxloadcframe{\boxload@O\boxloadcbox}
+\def\boxloadbframe{\boxload@O\boxloadbbox}
+
+\long\def\boxload@O#1#2\to#3#4{%
+  #1{#2}\to\boxload@b{#4}\boxloadframe\boxload@b\to{#3}%
+}
+
+
+@ \paracommand{\cs{f\textit{any}box}\va{vstuff}}
+Variantes des commandes~\fn{anybox} ajoutant un cadre autour de la
+boîte.
+
+<<Préparation de boîtes spéciales>>=
+\def\ftbox#1#{\boxload@P\boxloadtframe{#1}}
+\def\fcbox#1#{\boxload@P\boxloadcframe{#1}}
+\def\fbbox#1#{\boxload@P\boxloadbframe{#1}}
+
+\long\def\boxload@P#1#2#3{#1{#2}\to\boxload@b{#3}\box\boxload@b}
+
+
+@ \subsection{Préparation de tableaux XXX}
+
+Ces commandes permettant la réalisation de tableaux basiques sont
+décrites au début du chapitre~22 du \TeX book.
+
+<<Préparation de tableaux>>=
+\def\hidewidth{\hskip\hideskip} % for alignment entries that can stick out
+\def\ialign{\everycr{}\tabskip\z@skip\halign} % initialized \halign
+\newcount\mscount
+\def\multispan#1{\omit \mscount#1\relax
+  \loop\ifnum\mscount>\@ne \sp@n\repeat}
+\def\sp@n{\span\omit\advance\mscount\m@ne}
+
+\newif\ifus@ \newif\if@cr
+\newbox\tabs \newbox\tabsyet \newbox\tabsdone
+
+\def\cleartabs{\global\setbox\tabsyet\null \setbox\tabs\null}
+\def\settabs{\setbox\tabs\null \futurelet\next\sett@b}
+\let\+=\relax % in case this file is being read in twice
+\def\sett@b{\ifx\next\+\def\nxt{\afterassignment\s@tt@b\let\nxt}%
+  \else\let\nxt\s@tcols\fi \let\next\relax \nxt}
+\def\s@tt@b{\let\nxt\relax \us@false\m@ketabbox}
+\def\tabalign{\us@true\m@ketabbox} % non-\outer version of \+
+\outer\def\+{\tabalign}
+\def\s@tcols#1\columns{\rcA#1\rdA\hsize
+  \loop\ifnum\rcA>\z@ \@nother \repeat}
+\def\@nother{\rdB\rdA \divide\rdB\rcA
+  \setbox\tabs\hbox{\hbox to\rdB{}\unhbox\tabs}%
+  \advance\rdA-\rdB \advance\rcA\m@ne}
+
+\def\m@ketabbox{\begingroup
+  \global\setbox\tabsyet\copy\tabs
+  \global\setbox\tabsdone\null
+  \def\cr{\@crtrue\crcr\egroup\egroup
+    \ifus@\unvbox\z@\lastbox\fi\endgroup
+    \setbox\tabs\hbox{\unhbox\tabsyet\unhbox\tabsdone}}%
+  \setbox\z@\vbox\bgroup\@crfalse
+    \ialign\bgroup&\t@bbox##\t@bb@x\crcr}
+
+\def\t@bbox{\setbox\z@\hbox\bgroup}
+\def\t@bb@x{\if@cr\egroup % now \box\z@ holds the column
+  \else\hss\egroup \global\setbox\tabsyet\hbox{\unhbox\tabsyet
+      \global\setbox\@ne\lastbox}% now \box\@ne holds its size
+    \ifvoid\@ne\global\setbox\@ne\hbox to\wd\z@{}%
+    \else\setbox\z@\hbox to\wd\@ne{\unhbox\z@}\fi
+    \global\setbox\tabsdone\hbox{\box\@ne\unhbox\tabsdone}\fi
+  \box\z@}
+
+
+@ \subsection{Préparations spéciales pour le paragraphe et la
+  structure}
+
+On définit des procédures réalisant des préparations spéciales pour le
+paragraphe et pour la structure du document. Pour le domaine de la
+structure, on ne propose que deux procédures \fn{section} et
+\fn{proclaim} qui commencent une section et un théorème,
+respectivement. Ce choix est réduit au strict minimum, et les classes
+de document doivent redéfinir ces procédures. Afin de présenter une
+interface similaire à celle de \emph{plain} \TeX\
+pour présenter les énumérations, on insère les définitions de
+\fn{hang}, \fn{hangindent}, etc. Ces procédures ne devraient cependant
+pas être utilisées par les scripteurs qui leur préféreront les
+\emph{listes à la mdoc}.
+
+@ \paracommand{\cs{itemindent}}
+Dans \emph{plain} \TeX\ le retrait utilisé par \fn{item} a la même
+taille que le retrait de paragraphe, ce qui est parfois un peu court.
+Il vaut mieux utiliser des grandeurs indépendantes.
+
+<<Préparations spéciales>>=
+\newdimen\itemindent
+\itemindent=20pt
+
+@ \paracommand{\cs{hang}, \cs{textindent} et \cs{item}}
+
+<<Préparations spéciales>>=
+\def\hang{\hangindent\itemindent}
+
+\def\textindent#1{\noindent\hskip\itemindent\llap{#1\enspace}\ignorespaces}
+
+\def\item{\par\hang\textindent}
+
+\def\itemitem{%
+  \par\noindent
+  \hskip\itemindent
+  \hangindent2\itemindent \textindent
+}
+
+@ \paragraph{Affichages}
+Un affichage est une partie de texte mise en exergue. Cette mise en
+exergue se fait ordinairement par une augmentation temporaire de la
+marge.
+
+Les commandes `begin/end display' permettent de placer un extrait de
+texte en exergue. Les commandes `begin/end widedisplay' dont la même
+chose sans en appeler à `narrower'. Ces procédures devraient être
+utilisées par toutes les procédures effectuant des affichages afin
+de normaliser les espacements entourant ces affichages.
+
+<<Préparations spéciales>>=
+\newdimen\displayleftmargin
+\newdimen\displayrightmargin
+
+\def\begindisplayskip{\medskip}
+\def\enddisplayskip{\medbreak}
+
+\displayleftmargin=20pt
+\displayrightmargin=20pt
+
+\def\beginwidedisplay{%
+  \par
+  \begingroup
+  \begindisplayskip
+}
+
+\def\endwidedisplay{%
+  \par
+  \endgroup
+  \enddisplayskip
+  \noindent\ignorespaces
+}
+
+\def\begindisplay{%
+  \beginwidedisplay
+  \narrower
+}
+
+\let\enddisplay\endwidedisplay
+
+@ begin/end lines
+
+Délimite un affichage dans lequel les fin des lignes marquent la fin
+des alinéas et le retrait d'alinéa est nul.
+
+<<Préparations spéciales>>=
+\def\beginlines{\begindisplay\parindent\z@\obeylines}
+\let\endlines\enddisplay
+
+
+@ \paragraph{Marquage du texte}
+
+%% Mise en relief `symbolique'
+%
+% groff_man(7):
+%
+%    Symbolics
+%      The symbolic emphasis macro is generally a boldface macro in either the
+%      symbolic sense or the traditional English usage.
+%
+%            Usage: .Sy <symbol> ...
+%
+%                     .Sy Important Notice  Important Notice
+%
+%      The default width is 6n.
+%
+
+% symbolicfont
+%
+% Ajuste les paramètres pour choisir une fonte adéquate à la mise en
+% relief symbolique.
+
+<<Préparations spéciales>>=
+\def\setsymbolicfont{\setnormalfont\setfontweight{b}}
+\def\symbolicfont{\setsymbolicfont\selectfont}
+
+% symbolic
+%
+% Préparer le texte avec `symbolicfont'.
+
+<<Préparations spéciales>>=
+\let\symbolic\symbolicfont
+\def\sy#1{{\symbolic #1}}
+
+% li#1
+%
+% Marquer un passage à prendre littéralement, i.e. qui doit être
+% saisi comme on le lit.
+%
+%  Exemple: special characters, key hit, variable constants.
+
+<<Préparations spéciales>>=
+\def\setliteralfont{\setnormalfont\let\fontfamily\ttfontfamily}
+\def\literalfont{\setliteralfont\selectfont}
+
+\def\literal{\literalfont\disableconventionpunc}
+
+\def\li#1{{\literal #1}}
+
+% pa#1
+%
+% Préparer un `path' de l'arborescence des fichiers.
+
+<<Préparations spéciales>>=
+\begingroup
+\setcatcodeactive\/
+\setcatcodeactive\_
+\gdef\pa@I{%
+  \begingroup%
+  \disableconventionpunc
+  \setcatcodeactive\/%
+  \setcatcodeactive\_%
+  \setcatcodeletter\$%
+  \setcatcodeletter\~%
+  \let/=\pa@S%
+  \let_=\_%
+}
+\endgroup
+
+\def\pa@S{\futurelet\pa@T\pa@B}
+
+\def\pa@B{\pa@D\ifx\pa@S\pa@T\kern-.2em\fi\relax}
+
+\def\pa@D{\discretionary{/-}{/}{/}}
+\def\pa@A#1#2{#1\futurelet\pa@T\pa@C#2\endgroup}
+\def\pa@C{\ifx\pa@T\pa@S\def\next{/\ignore}\else\let\next\relax\fi\next}
+
+% La commande `pa@C' empêche la coupure de mot sur le premier
+% caractère du chemin lorsque celui-ci est un `/'.
+
+\def\pa{\pa@I\pa@A\sl}		% Path
+\def\xr{\pa@I\pa@A\sl}		% Xref
+
+% br entre `braces'
+% bk entre `brackets'
+\def\br#1{{\edef\next{\the\font}$\nomathsurround\{\hbox{\next#1}\}$}}
+\def\bk#1{\textbracketleft#1\textbracketright}
+
+% dv#1
+%
+% Defined variables or constants (C library manual).
+%
+% Exemple: MAXHOSTNAMELEN, MAXCONS.
+
+<<Préparations spéciales>>=
+\def\dv#1{{\sl#1}}
+
+
+% ev#1
+%
+% Environment variables (Unix manual).
+%
+% Example: PATH, DISPLAY, PRINTER.
+
+<<Préparations spéciales>>=
+\def\ev#1{{\sl#1}}
+
+% va#1
+%
+% Peut être utilisé chaque fois qu'il est fait référence à une
+% variable.
+
+<<Préparations spéciales>>=
+\def\va#1{{\it#1}}
+
+% vt#1
+%
+% Peut être utilisé chaque fois qu'il est fait référence à un type de
+% variable.
+%
+% Exemple: FILE *, int.
+
+<<Préparations spéciales>>=
+\let\vt\va
+
+% fn#1
+%
+% Peut-être utilisé pour préparer le nom des fonction et des
+% procédures.
+
+<<Préparations spéciales>>=
+\let\fn\va
+
+% ti#1
+% Pour le titre d'un livre, d'une ½uvre.
+
+<<Préparations spéciales>>=
+\def\ti#1{{\sl#1}}
+
+
+% em#1
+%
+% Emphasis.
+%
+% La définition de `em' donnée ne fournit pas le résultat escompté
+% dans la saisie
+%
+%   {\em A {\em B {\em C}}}
+%
+% Lorsque `A' est en caractères penchés, le `C' est en italiques, alors
+% que les caractères penchés seraient sans doute mieux.
+%
+% Faut-il cependant encourager les auteurs à écrire ce genre de choses?
+
+<<Préparations spéciales>>=
+\def\emphasis{%
+  \testfontshape r\iffontshape\setfontshape i\else\setfontshape r\fi
+  \selectfont
+}
+
+\def\em#1{{\emphasis #1}}
+
+% disablemarkup
+%
+% Inhiber les commandes de markup définies dans ces sections. C'est
+% utile pour écrire un bout de texte dans un fichier, ou pour préparer
+% les signets dans un fichier PDF, etc.
+
+<<Préparations spéciales>>=
+\def\markup@L{%
+  \\{\em}\\{\sy}\\{\ti}%
+  \\{\li}\\{\pa}\\{\xr}%
+  \\{\ev}\\{\dv}\\{\vt}%
+  \\{\va}\\{\fn}%
+}
+\def\markup@A#1{#1}
+\def\markup@D#1{\let#1=\markup@A}
+\def\disablemarkup{\let\\=\markup@D\markup@L\def~{ }}
+
+
+@ \paragraph{Exemples de noms pour les fontes}
+Dans cette section on crée des exemples de noms symboliques pour les
+fontes. Ces exemples on des noms suffisamment généraux pour
+apparaître dans pratiquement toutes les classes de documents, qui
+peuvent donner un remplacement à ces définitions.
+
+<<Préparations spéciales>>=
+\def\settitlefont{%
+  \setnormalfont
+  \setfontweight{b}\setfontwidth{x}\setlargesize
+}
+
+\def\titlefont{\settitlefont\selectfont}
+
+\def\setsectionfont{%
+  \setnormalfont
+  \setfontweight{b}\setfontwidth{x}\setnormalsize
+}
+
+\def\sectionfont{\setsectionfont\selectfont}
+
+@ \paragraph{Exemples de procédures pour le domaine de la structure}
+
+<<Préparations spéciales>>=
+\outer\def\section#1\par{%
+  \removelastskip
+  \vskip\z@ plus.2\vsize
+  \penalty-250
+  \vskip\z@ plus-.2\vsize
+  \bigskip
+  \vskip\parskip
+  \vskip\baselineskip
+  \leftline{\sectionfont#1}\nobreak
+  \medskip
+  \noindent
+  \ignoreblanks
+}
+
+\outer\def\proclaim #1. #2\par{%
+  \medbreak
+  \noindent{\symbolicfont#1.\enspace}{\sl#2\par}%
+  \ifdim\lastskip<\medskipamount
+    \removelastskip\penalty55\medskip
+  \fi
+}
+
+@
+%%% End of file `basedef.tex'

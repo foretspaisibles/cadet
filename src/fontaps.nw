@@ -1,0 +1,194 @@
+%%% fontaps.nw -- PFSS Adobe Postscript Fonts -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Ven  9 mar 2007 17:23:04 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier fontaps.nw}
+<<*>>=
+
+% Ce fichier contient les déclarations nécessaires à l'utilisation des
+% fontes `Adobe PostScript' pour la préparation des textes'. La
+% première partie des déclarations concernce le PFSS et la seconde
+% partie interface ces déclarations avec les conventions d'entrée.
+
+
+%%% 1. INSCRIPTION AUPRÈS DU PFSS
+
+\begingroup
+
+\def\aps@star{*}
+
+\def\apsmbrio#1#2#3#4#5{%
+  \def\aps@m{#1}%
+  \def\aps@b{#2}%
+  \def\aps@r{#3}%
+  \def\aps@i{#4}%
+  \def\aps@o{#5}%
+  \ifx\aps@star\aps@r\def\aps@r{}\fi
+}
+
+
+\def\aps@A#1#2#3{%
+  \setfontweight{#1}%
+  \setfontshape{#2}%
+  \setfontsize{10}%
+  \setfontpage{CT1}%
+  \fontbind{#38t}%
+  \setfontadjustsize{\@ne}{\@M}{\@m}{#38t}%
+  \setfontpage{CS1}%
+  \fontbind{#38c}%
+  \setfontadjustsize{\@ne}{\@M}{\@m}{#38c}%
+}
+
+\def\aps@B#1#2{%
+  \edef\aps@C{%
+    \noexpand\aps@A{#1}{#2}%
+    {\aps@a\csname aps@#1\endcsname\csname aps@#2\endcsname}%
+  }\aps@C
+}
+
+\def\aps@l{\\{mr}\\{mi}\\{mo}\\{br}\\{bi}\\{bo}}
+
+\def\apsdeclare#1#2{%
+  \setfontfamily{#1}%
+  \setfontwidth{m}%
+  \apsmbrio#2%
+  \def\aps@a{#1}%
+  \def\\##1{\aps@B ##1}%
+  \aps@l
+}
+
+%
+% Adobe Times
+%
+
+\apsdeclare{ptm}{rb*io}
+
+%
+% Adobe Palatino
+%
+
+\apsdeclare{ppl}{rb*io}
+
+%
+% Adobe Helvetica
+%
+
+\apsdeclare{phv}{rb*oo}
+
+%
+% Adobe Courier
+%
+
+\apsdeclare{pcr}{rb*oo}
+
+%
+% Adobe Avant-Garde
+%
+
+\apsdeclare{pag}{kd*oo}
+
+%
+% Adobe Bookman
+%
+
+\apsdeclare{pbk}{ld*io}
+
+\endgroup
+
+%%% 2. ENREGISTREMENT AUPRÈS DE PFSSADJ
+
+% Les fontes avec petites majuscules ne sont pas très plaisantes. Dans
+% ce fichier on définit une fonction dégradant les requêtes pour
+% transformer les demandes de petites capitales en demande de
+% caractères ordinaires.
+
+% Liste des familles de fontes figurant dans ce fichier et ne pouvant
+% satisfaire une demande grandes majuscules.
+\def\aps@l{\\{ptm}\\{ppl}\\{phv}\\{pcr}\\{pag}\\{pbk}}
+
+\def\ifapsfontfamily{%
+  \begingroup
+  \let\next\@false
+  \def\\##1{\def\rmA{##1}\ifx\rmA\fontfamily\let\\\ignore\let\next\@true\fi}%
+  \aps@l
+  \expandafter\endgroup\next
+}
+
+\def\apsfontadjustment{%
+  \ifapsfontfamily
+    \begingroup
+    \edef\next{\tex@lowercase{\def\noexpand\rmA{\fontshape}}}%
+    \next
+    \ifx\rmA\fontshape
+      \let\next\empty
+    \else
+      \edef\next{\noexpand\setfontshape{\rmA}\noexpand\fontadjustmentdone}%
+    \fi
+    \expandafter\endgroup\next
+  \fi
+}
+
+\fontadjustment\apsfontadjustment
+
+%%% 3. LA SUITE
+
+\def\selecttextfont#1{\csname selecttextfont@#1\endcsname}
+
+\csdef{selecttextfont@Adobe Times}{%
+  \def\rmfontfamily{ptm}%
+  \def\ttfontfamily{pcr}%
+  \def\ssfontfamily{phv}%
+}
+
+\csdef{selecttextfont@Adobe Palatino}{%
+  \def\rmfontfamily{ppl}%
+  \def\ttfontfamily{pcr}%
+  \def\ssfontfamily{phv}%
+}
+
+\csdef{selecttextfont@Adobe Avant Garde}{%
+  \def\rmfontfamily{pag}%
+  \def\ttfontfamily{pcr}%
+  \def\ssfontfamily{pag}%
+}
+
+\csdef{selecttextfont@Adobe Bookman}{%
+  \def\rmfontfamily{pbk}%
+  \def\ttfontfamily{pcr}%
+  \def\ssfontfamily{phv}%
+}
+
+
+\def\setnormalfont{%
+  \selectconventiontext{cork}%
+  \selectconventioncomp{cork}%
+  \let\fontfamily=\rmfontfamily
+  \setfontpage{CT1}%
+  \setfontweight{m}%
+  \setfontwidth{m}
+  \setfontshape{r}%
+}
+
+\selecttextfont{Adobe Palatino}
+
+%%% End of file `fontaps.nw'

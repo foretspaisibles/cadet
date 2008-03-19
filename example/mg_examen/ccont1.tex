@@ -1,0 +1,109 @@
+%%% ccont1.tex -- Un exemple d'examen
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+
+\class mg_examen
+\input um2_examen
+
+\module         FLMA 303
+\year           2007
+
+\begindirectives
+Chacune de vos réponses doit être soigneuesement justifiée.
+L'utilisation des calculatrices et la consultation de tout document
+sont interdits. Durée de la composition: 1h30.
+\enddirectives
+
+\exercise Un théorème d'existence de racine %
+             pour les fonctions polynomiales de degré impair
+
+\question
+Énoncez le théorème des valeurs intermédiaires.
+
+
+\question Un cas particulier
+
+\item{a)}
+Rappelez le comportement de la fonction~$m$ de~$\R$ dans~$\R$ définie
+par~$m(x) = x^5$, lorsque~$x\to-\infty$ et
+lorsque~$x\to+\infty$. \em{(Rappelez l'existence, et le cas échéant la
+valeur, d'une limite finie ou infinie.)}
+
+\item{b)}
+Étudiez le comportement de la fonction~$p$ de~$\R$ dans~$\R$ définie
+par
+$$
+p(x) = 1 - 3x^2 + x^4 + x^5
+,
+$$
+lorsque~$x\to-\infty$ et lorsque~$x\to+\infty$.
+
+\item{c)}
+Quelle est l'image de~$\R$ par l'application~$p$? Cette image
+contient-elle~$0$?
+
+
+\question Le cas général
+
+On considère un nombre entier positif~$k$, des nombres réels~$a_0$,
+$a_1$, \dots,~$a_{2k}$ et un nombre réel strictement
+positif~$a_{2k+1}$. On forme alors la fonction
+$$
+f(x) = a_0 + a_1 x + \cdots + a_{2k+1} x^{2k+1}
+$$
+définie sur~$\R$, à valeurs dans~$\R$.
+
+\item{a)}
+Étudiez le comportement de la fonction~$f$ lorsque~$x\to-\infty$ et
+lorsque~$x\to+\infty$.
+
+\item{b)}
+Quelle est l'image de~$\R$ par l'application~$f$? Cette image
+contient-elle~$0$?
+
+
+\exercise Exemples
+
+\question
+Donnez un exemple de fonction continue~$f\colon\left]0,1\right[\to\R$ bornée mais
+n'atteignant pas ses bornes.
+
+\question
+Donnez un exemple de fonction non continue~$g\colon\R\to\R$ et
+d'intervalle~$I\subset\R$ dont l'image par~$g$ n'est pas un
+intervalle de~$\R$.
+
+\question
+Donnez un exemple de fonction continue~$h\colon\R\to\R$ et
+d'intervalle~$J\subset\R$ dont l'image par~$h$ n'est pas
+un~\em{segment}.
+
+
+\exercise Rectangle d'aire maximale inscrit dans une ellipse
+
+On considère deux nombre réels strictement positifs~$a > b > 0$, et
+l'ellipse~$\cal E$ de grand rayon~$a$ et de petit rayon~$b$. À~tout
+nombre~$\theta$ dans~$[0,\pi/2]$, on associe les points de~$\cal E$
+suivants:
+$A = (a\cos\theta, b\sin\theta)$,
+$B = (-a\cos\theta, b\sin\theta)$,
+$C = (-a\cos\theta, -b\sin\theta)$
+et~$D = (a\cos\theta, -b\sin\theta)$.
+Cette situation est représentée sur la figure ci-dessous:
+\figure{figure.1}
+
+\question
+Exprimez la surface~$s(\theta)$ du rectangle~$ABCD$ en fonction des
+constantes~$a$, $b$ et de la variable~$\theta$.
+
+\question
+Montrez que la fonction~$s$ a un maximum sur le segment~$[0,\pi/2]$.
+
+\question
+Dressez le tableau des variations de~$s$ et trouvez une
+valeur~$\theta_m\in[0,\pi/2]$ en laquelle~$s$ atteint son maximum.
+
+\bye
+
+%%% End of file `ccont1.tex'

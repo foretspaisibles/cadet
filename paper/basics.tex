@@ -1,0 +1,131 @@
+%%% basics.tex -- Basic control sequences
+
+% Author: Michael Grünewald
+% Date: Mar  4 sep 2007 08:41:52 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+\magnification\magstep2
+\class bhridpaper
+\title Commandes de bases pour \brTeX
+
+\def\begincstable{\halign\bgroup\hfil##\hfil\quad&&\hfil##\hfil\quad\cr}
+\let\endcstable\egroup
+\def\tline#1&#2\cr{%
+  \par\noindent
+  \hangindent 20ex
+  \hangafter=1
+  \relax
+  \hbox to 20 ex {\verbatimfont#1\relax\hfil}{#2}%
+}
+\def\intermezzo{\medskip\hrule\medskip}
+\parindent=0pt
+
+Cette note regroupe les principales conventions de saisie de
+\brTeX. La convention illustrée ici est celle du codage de fichier ISO8859-15.
+
+\section 1. Texte du paragraphe
+
+
+Signes de ponctuation.
+\begincstable
+|``|& |''|&{\verbatimfont -{}-}&{\verbatimfont -{-}-}&
+{\verbatimfont?{}`} ou |¿|&{\verbatimfont!{}`} ou |¡|&|\$|&|\#|&|\&|&|\%|&|\_|\cr
+``&''&--&---&¿&¡&\$&\#&\&&\%&\_\cr
+\endcstable
+\intermezzo
+Caractères spéciaux.
+\begincstable
+|\ae| ou |æ|&|\AE| ou |Æ|&|\oe| ou |½|&|\OE| ou |¼|\cr
+æ&Æ&½&¼\cr
+|\aa| ou |å|&|\AA| ou |Å|&|\ss| ou |ß|&|\o| ou |ø|&|\O| ou |Ø|\cr
+å&Å&ß&ø&Ø\cr
+\endcstable
+\intermezzo
+Caractères accentués.
+\begincstable
+|à|&|\`a|&|é|&|\'e|&|ô|&|\^o|&|ü|&|\"u|&|ñ|&|\=y|&|\~n|\cr
+à&\`a&é&\'e&ô&\^o&ü&\"u&ñ&\=y&\~n\cr
+|\.p|&|\u\i|&|\v s|&|\H\j|&|\t\i u|&|\b k|&|ç|&|\c c|&|\d h|&|\l|&|\L|\cr
+\.p&\u\i&\v s&\H\j&\t\i u&\b k&ç&\c c&\d h&\l&\L\cr
+\endcstable
+\intermezzo
+Symboles divers.
+\begincstable
+|\dag|&|\ddag|&|\S|&|\P|&|$\bullet$|\cr
+\dag&\ddag&\S&\P&$\bullet$\cr
+|\centigrade|&|\numero|\cr
+\centigrade&\numero\cr
+|\copyright|&|\copyleft|&|\trademark|&|\published|&|\registered|\cr
+\copyright&\copyleft&\trademark&\published&\registered\cr
+|\percent|&|\perthousand|&|\permyriad|&|\dots|\cr
+\percent&\perthousand&\permyriad&\dots\cr
+|\euro|&|\cent|&|\yen|&|\florin|&|\won|\cr
+\euro&\cent&\yen&\florin&\won\cr
+|\naira|&|\guarani|&|\peso|&|\lira|&|\sterling|&|\$|\cr
+\naira&\guarani&\peso&\lira&\sterling&\$\cr
+\endcstable
+\intermezzo
+\begincstable
+|\superscript{1}{er}|&|\frac1/2|&|\frac{31}/{25}|\cr
+\superscript{1}{er}&\frac1/2&\frac{31}/{25}\cr
+\endcstable
+\intermezzo
+\begincstable
+|\TeX|&|\brTeX|&|\LaTeX|&|\AmSTeX|&|\AmSLaTeX|\cr
+\TeX&\brTeX&\LaTeX&\AmSTeX&\AmSLaTeX\cr
+\endcstable
+\intermezzo
+Contrôle des coupures de ligne et des césures:
+|\break|\quad|\nobreak|\quad|\allowbreak|\quad|\hbox{insécable}|\quad
+|in\-di\-ca\-ti\-ons|\quad|virgule\slash breakpoint|
+\intermezzo
+\noindent
+\tbox{\divide\hsize by 2\advance\hsize by -2ex
+\raggedright
+Espace horizontaux sécables:
+\tline\string\ &espace normal entre deux mots\cr
+\tline\string\enskip&cette\enskip quantité\cr
+\tline\string\quad&cette\quad quantité\cr
+\tline\string\qquad&cette\qquad quantité\cr
+\tline\string\hskip&dimension arbitraire\cr
+}%
+\hskip 4ex\relax
+\tbox{\divide\hsize by 2\advance\hsize by -2ex
+\raggedright
+Espaces horizontaux insécables:
+\tline\~\space&espace normal entre deux mots\cr
+\tline\string\enspace&cette\enspace quantité\cr
+\tline\string\thinspace&cette\thinspace quantité\cr
+\tline\string\negthinspace&cette\negthinspace quantité\cr
+\tline\string\kern&dimension arbitraire\cr
+}%
+\intermezzo
+Ressorts verticaux:%
+\def\demonstrate#1{%
+  \qquad{\verbatimfont\string#1}%
+  \enspace{\bbox{\hsize=5mm\relax\hskip\hsize\hrule#1\hrule}}%
+}%
+\demonstrate\smallskip
+\demonstrate\medskip
+\demonstrate\bigskip
+\par
+
+
+\bye

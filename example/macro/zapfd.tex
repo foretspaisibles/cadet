@@ -1,0 +1,56 @@
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+\macro zapfd
+
+\newdimen\zdboxwidth
+\zdboxwidth=\hsize
+\divide\zdboxwidth by 8
+\advance\zdboxwidth-\framethicknessright
+\advance\zdboxwidth-\framethicknessleft
+\advance\zdboxwidth-\framemarginleft
+\advance\zdboxwidth-\framemarginright
+
+
+\def\makezdchar#1{%
+  \ftbox \the\zdboxwidth {%
+    \parindent 0pt
+    \toksloadoctal#1\to\rtA
+    {\setfontsize{5}\it'\the\rtA}%
+    \hfil
+    {\setfontsize{32}\zdchar#1%
+    %
+    % Un `strut' ad-hoc
+    %
+    \vrule height 28pt depth 5pt width 0em%
+    }%
+    \hfil
+  }%
+}
+
+\offinterlineskip
+\noindent
+\rcA=0
+\loop
+  \makezdchar\rcA
+  \penalty0 %
+\ifnum\rcA<255\relax
+  \advance\rcA by 1\relax
+\repeat
+
+\bye

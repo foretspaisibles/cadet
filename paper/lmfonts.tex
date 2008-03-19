@@ -1,0 +1,180 @@
+%%% lmfonts.tex -- Fontes Latin Modern
+
+% Author: Michael Grünewald
+% Date: Mer 11 avr 2007 00:18:04 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\class bhridpaper
+\title Fontes Latin Modern
+
+Ce document présente la façon dont sont utilisées les fontes \em{Latin
+Modern} dans \brTeX. L'article \em{An exploration of the Latin Modern
+fonts}, par~Will Robertson~[1] peut être consulté pour une
+présentation de ces fontes.
+\begindescription
+\item{1. Un échantillon de fontes}
+Ce paragraphe montre toutes les formes et toutes les familles de
+caractères disponibles dans les fontes Latin Modern.
+\item{2. PFSS torture test}
+Ce paragraphe montre le résultat de toutes les requêtes PFSS.
+\enddescription
+\item{[1]} Robertson, Will: \em{An exploration of the Latin Modern
+fonts}, TPJ 2006 No 01, 2006--02--21.
+
+\def\pangramme{«Dès Noël où un zéphyr haï me vêt de glaçons würm\-iens
+je dîne d'exquis rôtis de b½uf au kir à l'aÿ d'âge mûr \&~cætera!»}
+
+
+\section 1. Un échantillon de fontes
+
+\def\setsamplesize{\setfontsize{12}}
+\def\sample#1 #2#3#4{%
+  \begingroup
+  \setfontfamily{#1}%
+  \setfontshape{#2}%
+  \setfontweight{#3}%
+  \setfontwidth{#4}%
+  \readline\to\rtA\then
+    \twelvepoint
+    \edef\rmA{\fontname}%
+    \testfontfamily{lmtt}\iffontfamily\raggedright\fi
+    \testfontfamily{lmvtt}\iffontfamily\raggedright\fi
+    \noindent\pangramme\par
+    \nobreak
+    \centerline{\setnormalfont\sevenpoint
+      \the\rtA\space (\rmA)}%
+    \endgroup
+    \bigskip
+  \done
+}
+
+\begindisplay
+\sample lm rmm LMRoman10-Regular
+\sample lm omm LMRoman10-Oblique
+\sample lm imm LMRoman10-Italic
+\sample lm rbx LMRoman10-Bold
+\sample lm obx LMRoman10-BoldOblique
+\sample lm ibx LMRoman10-BoldItalic
+\sample lm rbm LMRoman10-Demi
+\sample lm obm LMRoman10-DemiOblique
+\sample lm Rmm LMRoman10-CapsRegular
+\sample lm Omm LMRoman10-CapsOblique
+\sample lmd rmm LMRoman10-Dunhill
+\sample lmd omm LMRoman10-DunhillOblique
+\sample lmtt rmm LMTypewriter10-Regular
+\sample lmtt imm LMTypewriter10-Italic
+\sample lmtt omm LMTypewriter10-Oblique
+\sample lmtt Rmm LMTypewriter10-CapsRegular
+\sample lmtt Omm LMTypewriter10-CapsOblique
+\sample lmtt rbm LMTypewriter10-Dark
+\sample lmtt obm LMTypewriter10-DarkOblique
+\sample lmtt rlm LMTypewriter10-Light
+\sample lmtt olm LMTypewriter10-LightOblique
+\sample lmtt rlc LMTypewriter10-LightCondensed
+\sample lmtt olc LMTypewriter10-LightCondensedOblique
+\sample lmss rmm LMSans10-Regular
+\sample lmss omm LMSans10-Oblique
+\sample lmss rbm LMSans10-Bold
+\sample lmss obm LMSans10-BoldOblique
+\sample lmss rbc LMSans10-DemiCondensed
+\sample lmss obc LMSans10-DemiCondensedOblique
+\sample lmss rmx LMSansQuotation8-Regular
+\sample lmss omx LMSansQuotation8-Oblique
+\sample lmss rbx LMSansQuotation8-Bold
+\sample lmss obx LMSansQuotation8-BoldOblique
+\sample lmvtt rmm LMTypewriterVarWd10-Regular
+\sample lmvtt rbm LMTypewriterVarWd10-Dark
+\sample lmvtt rlm LMTypewriterVarWd10-Light
+\sample lmvtt omm LMTypewriterVarWd10-Oblique
+\sample lmvtt obm LMTypewriterVarWd10-DarkOblique
+\sample lmvtt olm LMTypewriterVarWd10-LightOblique
+\enddisplay
+
+\section 2. PFSS torture test
+
+Dans ce paragraphe, on affiche les résultats de toutes les requêtes
+PFSS. Chaque élément de réponse est formé des arguments de la requête,
+des paramètres modifiés et d'un échantillon de la fonte obtenue.
+\bigskip
+
+\enableprivatenames
+\def\pfsssample{%
+  \medskip
+  \begingroup
+  \fontswitch
+  \toksloadcsfontname\rtA
+  \toksloadfontswitch\to\rtB
+  \hskip 10pt\vtop{\hsize=120pt\parindent\z@
+    \systemfont
+    \expandafter\string\the\rtA
+    \hfil\break
+    \expandafter\string\the\rtB
+  }%
+  \hskip 10pt\relax
+  \vtop{%
+    \advance\hsize by -150pt
+    \parindent=\z@
+    \raggedright
+    \pangramme\par
+  }%
+  \hskip 10pt
+  \par
+  \medskip
+  \endgroup
+}
+
+\def\pfsssample@family{\\{lm}\\{lmd}\\{lmss}\\{lmtt}\\{lmvtt}}
+\def\pfsssample@shape{\\{r}\\{o}\\{i}\\{R}\\{O}\\{I}}
+\def\pfsssample@weight{\\{m}\\{b}\\{l}\\{d}}
+\def\pfsssample@width{\\{m}\\{c}\\{x}}
+
+\def\pfsssample@L#1#2#3{%
+  \toksloadcsname pfssloop@#1\to\rtA
+  \expandafter\ifx\the\rtA\empty
+    \let\rmN\relax
+  \else
+    \toksloadcsname font#1\to\rtB
+    \edef\rmN{\noexpand\listlop\the\rtA\noexpand\to\the\rtB}%
+    \rmN
+    \toksloadcsname pfssloop@#2\to\rtA
+    \toksloadcsname pfsssample@#2\to\rtB
+    \edef\rmN{\let\the\rtA\the\rtB}%
+    \rmN
+    \def\rmN{#3\pfsssample@L{#1}{#2}{#3}}%
+  \fi
+  \rmN
+}
+
+\def\pfssloop@A{\pfsssample@L{family}{shape}\pfssloop@B}
+\def\pfssloop@B{\pfsssample@L{shape}{weight}\pfssloop@C}
+\def\pfssloop@C{\pfsssample@L{weight}{width}\pfssloop@D}
+\def\pfssloop@D{\pfsssample@L{width}{none}\pfssloop@E}
+\def\pfssloop@E{\pfsssample}
+\def\pfssloop{\let\pfssloop@family=\pfsssample@family\pfssloop@A}
+
+\begingroup
+\pfssloop
+\endgroup
+
+
+\bye
+
+%%% End of file `pfssintro.tex'

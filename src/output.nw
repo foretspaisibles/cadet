@@ -1,0 +1,230 @@
+%%% output.nw -- Output routine -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 17 mar 2007 19:00:14 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Output routine XXX}
+
+On récupère la procédure \fn{output} de~\emph{plain}~\TeX. Les modèles
+de documents nécessitant une procédure plus complexe doivent définir
+leur propre procédure.
+
+
+<<*>>=
+%
+% A propos de hoffset et voffset
+%
+
+% Les coordonnées `hoffset' `voffset' référencent le point supérieur
+% gauche de la boîte verticale sortie par `shipout' par rapport au
+% point de coordonnées (1in,1in) (coordonnées indirectes, par rapport
+% au coin supérieur gauche de la feuille).
+
+\message{output routines,}
+
+\newdimen\dimen@
+
+\countdef\pageno=0
+\pageno=1 % first page is number 1
+
+\newtoks\headline \headline={\hfil} % headline is normally blank
+\newtoks\footline \footline={\hss\normalfont\folio\hss}
+  % footline is normally a centered page number in font \tenrm
+\newif\ifr@ggedbottom
+\def\raggedbottom{\topskip 10\p@ plus60\p@ \r@ggedbottomtrue}
+\def\normalbottom{\topskip 10\p@ \r@ggedbottomfalse} % undoes \raggedbottom
+\def\folio{\ifnum\pageno<\z@ \romannumeral-\pageno \else\number\pageno \fi}
+\def\nopagenumbers{\footline{\hfil}} % blank out the footline
+\def\advancepageno{\ifnum\pageno<\z@ \global\advance\pageno\m@ne
+  \else\global\advance\pageno\@ne \fi} % increase |pageno|
+
+\newinsert\footins
+\def\footnote#1{\let\@sf\empty % parameter #2 (the text) is read later
+  \ifhmode\edef\@sf{\spacefactor\the\spacefactor}\/\fi
+  #1\@sf\vfootnote{#1}}
+\def\vfootnote#1{\insert\footins\bgroup
+  \interlinepenalty\interfootnotelinepenalty
+  \splittopskip\ht\strutbox % top baseline for broken footnotes
+  \splitmaxdepth\dp\strutbox \floatingpenalty\@MM
+  \leftskip\z@skip \rightskip\z@skip \spaceskip\z@skip \xspaceskip\z@skip
+  \textindent{#1}\footstrut\futurelet\next\fo@t}
+\def\fo@t{\ifcat\bgroup\noexpand\next \let\next\f@@t
+  \else\let\next\f@t\fi \next}
+\def\f@@t{\bgroup\aftergroup\@foot\let\next}
+\def\f@t#1{#1\@foot}
+\def\@foot{\strut\egroup}
+\def\footstrut{\vbox to\splittopskip{}}
+\skip\footins=\bigskipamount % space added when footnote is present
+\count\footins=1000 % footnote magnification factor (1 to 1)
+\dimen\footins=8in % maximum footnotes per page
+
+\newinsert\topins
+\newif\ifp@ge \newif\if@mid
+\def\topinsert{\@midfalse\p@gefalse\@ins}
+\def\midinsert{\@midtrue\@ins}
+\def\pageinsert{\@midfalse\p@getrue\@ins}
+\skip\topins=\z@skip % no space added when a topinsert is present
+\count\topins=1000 % magnification factor (1 to 1)
+\dimen\topins=\maxdimen % no limit per page
+\def\@ins{\par\begingroup\setbox\z@\vbox\bgroup} % start a \vbox
+\def\endinsert{\egroup % finish the \vbox
+  \if@mid \dimen@\ht\z@ \advance\dimen@\dp\z@ \advance\dimen@12\p@
+    \advance\dimen@\pagetotal \advance\dimen@-\pageshrink
+    \ifdim\dimen@>\pagegoal\@midfalse\p@gefalse\fi\fi
+  \if@mid \begindisplayskip\box\z@\enddisplayskip
+  \else\insert\topins{\penalty100 % floating insertion
+    \splittopskip\z@skip
+    \splitmaxdepth\maxdimen \floatingpenalty\z@
+    \ifp@ge \dimen@\dp\z@
+    \vbox to\vsize{\unvbox\z@\kern-\dimen@}% depth is zero
+    \else \box\z@\nobreak\bigskip\fi}\fi\endgroup}
+
+\output{\plainoutput}
+
+\newbox\output@b
+
+\newhook\outputsanitizehook
+\newhook\shipoutsanitizehook
+
+\def\plainoutput{%
+  \runhook\outputsanitizehook
+  \setbox\output@b\vbox{\makeheadline\pagebody\makefootline}%
+  \runhook\shipoutsanitizehook
+  \shipout\box\output@b
+  \advancepageno
+  \ifnum\outputpenalty>-\@MM \else\dosupereject\fi
+}
+
+\def\pagebody{\vbox to\vsize{\boxmaxdepth\maxdepth \pagecontents}}
+\def\makeheadline{\vbox to\z@{\vskip-22.5\p@
+  \line{\vbox to8.5\p@{}\the\headline}\vss}\nointerlineskip}
+\def\makefootline{\baselineskip24\p@\lineskiplimit\z@\line{\the\footline}}
+\def\dosupereject{\ifnum\insertpenalties>\z@ % something is being held over
+  \line{}\kern-\topskip\nobreak\vfill\supereject\fi}
+
+\def\pagecontents{\ifvoid\topins\else\unvbox\topins\fi
+  \dimen@=\dp\@cclv \unvbox\@cclv % open up \box255
+  \ifvoid\footins\else % footnote info is present
+    \vskip\skip\footins
+    \footnoterule
+    \unvbox\footins\fi
+  \ifr@ggedbottom \kern-\dimen@ \vfil \fi}
+\def\footnoterule{\kern-3\p@
+  \hrule width 2truein \kern 2.6\p@} % the \hrule is .4pt high
+
+
+%
+% Préparation de la mise en page
+%
+
+% Le titre est un peu pompeux par rapport à ce qui est fait ici. On
+% réalise la procédure `selectlayout' qui calcule des paramètres
+% utilisés par la procédure `output'.
+
+% Synopsis:
+%
+% \magnification\magstep1
+% \setpaper{A4}
+% \setmargin{20mm}{25mm}
+% \selectlayout
+
+% selectlayouthook
+%
+% Ce `hook' peut par exemple être utilisé par les pilotes pour
+% inscrire dans le fichier de sortie des informations sur la taille du
+% papier utilisé et les informations relatives à la mise en page. Ce
+% hook n'est pas activé si la variable \va{fmtname} n'est pas défini.
+
+\newhook\selectlayouthook
+
+% selectlayout
+%
+% La commande `selectlayout' calcule les valeurs `hoffset' et
+% `voffset' appropriées à partir des quatre paramètres
+% `layoutleftmargin', etc.
+%
+% Remarque: il faut modifier la magnification avant la commande
+%  selectlayouthoot.
+
+% setmargin HMARGIN VMARGIN
+%
+% Affecte les valeurs de façon à avoir des marges gauches et droites
+% égales, ainsi que des marges hautes et basses égales: le texte
+% principal est donc centré sur la page.
+%
+% Remarque: il faut appeler `selectlayout' après `setmargin'.
+
+\newdimen\layoutmarginleft
+\newdimen\layoutmarginright
+\newdimen\layoutmargintop
+\newdimen\layoutmarginbottom
+
+\def\setmargin#1#2{%
+  \layoutmarginleft=#1\relax
+  \layoutmarginright=#1\relax
+  \layoutmargintop=#2\relax
+  \layoutmarginbottom=#2\relax
+  \unmagnify\layoutmarginleft
+  \unmagnify\layoutmarginright
+  \unmagnify\layoutmargintop
+  \unmagnify\layoutmarginbottom
+}
+
+\def\selectlayout{%
+  %
+  % On utilise un registre pour éviter l'utilisation de `true'.
+  % Après avoir utilisé `true' la manipulation du registre `mag' est
+  % interdite.
+  %
+  \rdA=1 in
+  \unmagnify\rdA
+  \hoffset\layoutmarginleft \advance\hoffset - \rdA
+  \voffset\layoutmargintop \advance\voffset - \rdA
+  \hsize\paperwidth
+  \advance\hsize-\layoutmarginleft
+  \advance\hsize-\layoutmarginright
+  \vsize\paperheight
+  \advance\vsize-\layoutmargintop
+  \advance\vsize-\layoutmarginbottom
+  \rcA=\vsize
+  \rcB=\normalbaselineskip
+  \divide\rcA by\rcB
+  \vsize=\normalbaselineskip
+  \multiply\vsize by\rcA
+  \advance\vsize by 1em
+  \advance\vsize by -\normalbaselineskip
+  \relax
+  \runhook\selectlayouthook
+}
+
+\addhook{%
+  \unmagnify\hoffset
+  \unmagnify\voffset
+  \unmagnify\hsize
+  \unmagnify\vsize
+  \unmagnify\layoutmarginleft
+  \unmagnify\layoutmarginright
+  \unmagnify\layoutmargintop
+  \unmagnify\layoutmarginbottom
+}\to\magnificationhook
+
+%%% End of file `output.nw'

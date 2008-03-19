@@ -1,0 +1,28 @@
+%%% local.mac -- Hye Emacs this is a -*- plain-tex -*- file!
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+
+\def\nm#1{#1}
+\def\lie#1{{\fk #1}}%
+\def\Ad{\mathop{\rm Ad}}%
+\def\Aut{\mathop{\rm Aut}}%
+\def\Sp{{\bf Sp}}%
+\def\Matrix#1{\left[\matrix{#1}\right]}%
+\def\Central{{\cal C}}%
+\def\Derive{{\cal D}}%
+
+\def\ltimes{\mathop{\rm PSD}}
+
+\def\application#1:#2\to#3\cr #4\mapsto#5\cr{%
+  \eqalign{\llap{$#1$:\quad}
+  #2 & \quad\longrightarrow\quad#3\cr
+  #4 & \quad\longmapsto\quad#5\cr
+  }
+}%
+
+\def\app#1:#2\arrow#3#4\cr{%
+  \llap{$#1$:\quad}#2\quad#3\quad#4
+}
+
+%%% End of file `local.mac'

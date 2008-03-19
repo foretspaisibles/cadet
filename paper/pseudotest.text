@@ -1,0 +1,252 @@
+pseudotest.text -- À propos des faux prédicats
+
+Copyright (C) 2006, 2013 Michael Grünewald
+All rights reserved.
+
+This file is part of Bhrìd TeX.
+
+Bhrìd TeX is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Bhrìd TeX is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Le langage de TeX est extensible et il est facile de l'enrichir d'un
+ensemble de commandes propores à accomplir les tâches les plus
+diverses. Les prédicats (ou tests) sont une famille importante de
+procédures d'un intérêt central pour le programmeur. Nous discutons de
+deux formes de prédicats, les vrais prédicats et les faux prédicats;
+les premiers sont très bien intégrés dans le langage de TeX, tandis
+que l'utilisation des seconds mène immanquablement à des
+désagréments. Nous donnons des indications sur l'utilisation
+systématique des vrais prédicats.
+
+  1. Présentation des prédicats
+  2. Vrais prédicats
+  3. Faux prédicats
+  4. Définition de nouveaux vrais prédicats
+  5. Passage d'un prédicat comme paramètre
+  6. Conclusion
+
+
+1. Présentation des prédicats
+
+Le langage TeX tel qu'il est décrit dans le TeXbook dispose de
+nombreux prédicats primitifs:
+
+  if ifx ifnum ifodd iftue iffalse ...
+
+Les règles d'emploi de ces prédicats ressemblent à celles adoptées
+dans les langages de programmation ordinaires. Voici un exemple
+d'emploi du prédicat primitif ifx:
+
+  \ifx\undefined\procedure
+    La séquence \string\procedure\ n'est pas définie.
+  \else
+    La séquence \string\procedure\ est définie.
+  \fi
+
+La liste de tokens
+
+  La séquence \string\procedure\ n'est pas définie.
+
+est la *branche vraie* du bloc de contrôle associé au prédicat ifx
+dans l'exemple précédent, l'autre liste des tokens est la *branche
+fausse*. Lorsque la branche fausse est vide on peut omettre le
+mot-clef else.
+
+La branche vraie comme la branche fausse peuvent à leur tour contenir
+des blocs de contrôle asocié à un prédicat primitf. Dans ce cas TeX
+associe les mots-clefs else et fi au prédicat primitif lu le plus
+récemment et dont le bloc de contrôle qu'il ouvre n'est pas déjà fermé
+par un fi. Ainsi l'expression
+
+  \ifx\a\b\ifx\a\c 1\else 2\fi\else 3\fi
+
+est lue comme le suggère la présentation suivante
+
+  \ifx\a\b
+    \ifx\a\c 1\else 2\fi
+  \else
+     3
+  \fi
+
+et non comme
+
+  \ifx\a\b
+    \ifx\a\c 1
+  \else
+    2
+  \fi
+  \else 3\fi
+
+
+2. Vrais prédicats
+
+Pour permettre que le lot de prédicats connus par TeX soit enrichi,
+les séquences de contrôle liées à un prédicat primitif sont traitées
+par TeX comme ce prédicat lui-même le serait.
+
+Après avoir évalué
+
+  \let\predicatex=\ifx
+
+on peut écrire
+
+  \ifx\a\b\predicatex\a\c 1\else 2\fi\else 3\fi
+
+à la place de l'exemple précédent. Pour faciliter la lecture des
+programmes TeX, on recommande généralement d'utiliser un identifiant
+commençant par les deux lettres if pour nommer un prédicat. L'exemple
+précédant contrevient à cette recommendation.
+
+On dit qu'une séquence de contrôle est équivalente à un prédicat
+primitif lorsque l'une des affirmations suivantes est vraie:
+  * il s'agit d'un prédicat primitif;
+  * cette séquence à été liée par un let à un prédicat équivalent à un
+    prédicat primitif.
+Pour abréger, on parle aussi de vrai prédicat.
+
+Comme les prédicats équivalents à un prédicat primitif sont traités
+de la même façon qu'un prédicat, le programme
+
+  \ifx\a\b
+    \let\answer=\iftrue
+  \else
+    \let\answer=\iffalse
+  \fi
+
+est erroné. Le else est associé par TeX au iftrue le précédant
+immédiatement et non au ifx initial comme le souhaite l'auteur du
+programme. Pour cette raison il ne faut jamais faire apparaître un
+prédicat équivalent à un prédicat primitif dans l'une ou l'autre
+branche d'une structure de contrôle conditionnelle, à moins que
+celui-ci ne fasse partie d'une structure de contrôle imbriquée. Une
+façon correcte de réécrire le programme précédent est la suivante:
+
+  \def\answertrue{\let\answer=\iftrue}
+  \def\answerfalse{\let\answer=\iffalse}
+  \ifx\a\b
+    \answertrue
+  \else
+    \answerfalse
+  \fi
+
+La commande newif définie par le format PLAIN TeX est un moyen
+commande de définir un prédicat équivalent à l'un des prédicats
+primitifs iftrue ou iffalse, en même temps que deux commandes pour
+modifier sa valeur.
+
+
+3. Faux prédicats
+
+Les faux prédicats sont des macros dont le texte de remplacement
+contient un prédicat primitif, ou parfois un faux prédicat imbriqué ce
+qui pemet parfois de les utiliser comme des prédicats primitifs
+ordinaires. Voici un exemple de faux prédicat:
+
+  \def\ifundefined{\ifx\undefined}
+
+Ce faux prédicat peut être utilisé pour réécrire une de nos premières
+illustrations de l'utilisation des prédicats de TeX, de la façon
+suivante:
+
+  \ifundefined\procedure
+    La séquence \string\procedure\ n'est pas définie.
+  \else
+    La séquence \string\procedure\ est définie.
+  \fi
+
+Ces faux prédicats sont cependant traités par TeX comme le sont les
+macros ordinaires, le programme suivant est donc erroné:
+
+  \def\predicatex{\ifx}
+  \ifx\a\b
+    \predicatex\a\c 1\else 2\fi
+  \else
+     3
+  \fi
+
+Les erreurs liées à l'utilisation des faux prédicats surgissent très
+fréquemment dans le situations ressemblant à la précédente, mais
+parfois dans des situations plus complexes où elles sont alors fort
+difficiles à débusquer. Nous recommandons de ne jamais utiliser de
+faux prédicats.
+
+
+4. Définition de nouveaux vrais prédicats
+
+On peut toujours éviter de définir des faux prédicats en les
+remplaçant par un couple de procédures test.../if... La première
+procédure lie la seconde à l'un des prédicats primitifs iftrue ou
+iffalse. On utilise alors cette dernière comme un prédicat
+primitif. Pour illustrer cette méthode simple, on montre comment
+définir la procédure ifundefined précedemment définie comme un faux
+prédicat.
+
+  \newif\ifundefined
+  \def\testundefined#1{%
+    \ifx\undefined#1%
+      \undefinedtrue
+    \else
+      \undefinedfalse
+    \fi
+  }
+
+On utilise ce prédicat comme dans l'exemple suivant:
+
+  \testundefined\procedure
+  \ifundefined
+    La séquence \string\procedure\ n'est pas définie.
+  \else
+    La séquence \string\procedure\ est définie.
+  \fi
+
+Cette méthode présente l'inconvénient d'augmenter le nombre d'appels à
+des procédures, mais a pour avantage de produire des prédicats pouvant
+être imbriquées librement les uns dans les autres pour produire des
+conditionnelles aussi complexes qu'il est nécessaire.
+
+
+5. Passage d'un prédicat comme paramètre
+
+Les faux prédicats ont cependant pour avantage qu'ils peuvent être
+facilement passés en paramètre des procédures, tandis que les vrais
+prédicats produits selon le schéma exposé en 4. doivent être passés
+comme deux paramètres, un pour la procédure test... l'autre pour la
+procédure if... examinant le résultat de l'appel à test. On peut
+cependant ramener ce nombre à un en convenant à l'avance de la
+fonction if... à examiner pour connaître le résultat du test.
+
+Considérons par exemple le programme
+
+  \newif\ifprint
+  \def\printcommand#1#2{%
+    #1#2%
+    \ifprint
+      Affichage de \string#2.
+    \fi
+  }
+  \def\testprintdefined#1{\testundefined#1\let\ifprint\ifundefined}
+  \def\printundefined{\printcommand\testprintdefined}
+
+L'appel
+
+  \printundefined\a
+
+produit une sortie lorsque a n'est pas définie.
+
+
+6. Conclusion
+
+Les méthodes de programmation du langage TeX s'inspirant de celles
+utilisées pour la programmation du langage machine mènent toujours à
+des programmes sains.

@@ -1,0 +1,490 @@
+%%% convent.nw -- Conventions de codage et d'entrée -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 10 mar 2007 22:01:02 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier convent.nw}
+<<*>>=
+
+% Ce fichier définit les conventions utilisées dans BHRID TeX pour
+% associer les caractères des fichiers source avec ceux des
+% fontes. Lorsque BHRID TeX interprète un fichier source, il détermine
+% quels caractères figurent dans le document final au moyen d'une
+% `convention' d'entrée.
+
+
+%%% 1. INTRODUCTION
+
+%
+% Définitions
+%
+
+% Les ``fontes externes'' sont les fontes chargées par la primitive
+% `font' de TeX. Elles correspondent aux fichiers TFM.
+
+% Lorsque tous les paramètres de sélection des fontes sont fixés ils
+% décrivent une certaine fonte externe, par exemple ``La page des
+% caractères CORK de la fonte de caractères Latin Modern Romain en
+% 10pt''. Si maintenant on fait varier le paramètre PAGE on peut penser
+% aux différentes fontes externes obtenues comme à une seule fonte. Le
+% paramètre page permet donc de s'affranchir de la limite au nombre de
+% caractères dans une fonte externe, à condition d'accepter que tous les
+% caractères de la fonte ne soient pas visibles simultanément. Une fonte
+% ainsi présentée est dite ``fonte paginée.''
+
+% Enfin, il peut être intéressant de redécouper l'ensemble des
+% caractères figurant dans une fonte paginée autrement que par les
+% pages. Par exemple les signes de ponctuation, les caractères
+% alphabétiques, les chiffres, les symboles spéciaux (marque de
+% paragraphe, symboles commerciaux, unités monétaires, etc.) forment des
+% ensembles cohérents de caractères mais sont parfois découpés selon
+% plusieurs pages. Par exemple, dans le format PLAIN de D.E.Knuth, de
+% nombreux symboles spéciaux figurent dans la fonte mathématique CMSY.
+% Un jeu de caractères ainsi formé est appelé un ``jeu de caractères
+% composite'' ou une ``fonte composite''.
+
+%
+% De l'entrée à la sortie
+%
+
+% On donne dans cette section une vue d'ensemble des arrangements
+% opérés par BHRID TeX pour attribuer aux séquences de contrôle en
+% entrée la signification qui cause la production du caractère
+% souhaité quelque soit la fonte active.
+
+% Notons 'INPUT' une supposée séquence de contrôle figurant dans
+% l'entrée de BHRID TeX. Il peut s'agir d'un caractère actif ou d'une
+% séquence spéciale comme 'AA' ou 'P' ou 'S' ou 'ss', etc. Selon qu'on
+% souhaite utiliser tel ou tel jeu de fontes, il faut que 'ss' renvoie
+% au caractère CTS/"A7 pour les fontes Latin Modern (page/charcode) ou
+% au caractère OMS/"78 pour les fontes Computer Modern. Un ensemble de
+% telles liaisons 'INPUT --> page/charcode' est une `convention',
+% la commande `selectconvention' permet de charger une convention. Une
+% façon de classer les conventions est leur support, l'ensemble des
+% valeurs de 'INPUT' pour lesquelles une liaison est effectuée. Par
+% exemple on peut considérer les conventions dont le domaine est celui
+% des caractères ordinaires, le domaine des symboles compagnons
+% (formes spéciales de guillemets, unités monétaires, etc.), le
+% domaine des symboles mathématiques, etc.
+
+% On appelle `selectconvention' la fonction qui permet de mettre en
+% vigueur telle ou telle convention. Pour que tout fonctionne
+% correctement, il faut parfois que l'activation de telle fonte
+% particulière (avec fontswitch) s'accompagne d'un changement de
+% convention: par exemple les fontes Computer Modern contiennent les
+% pages OT1 et OMS tandis que les fontes Latin Modern présentent CT1
+% et CTS mais pas OT1 ni OMS, il faut donc employer des conventions
+% différentes avec les premières et avec les secondes fontes.
+
+% On considère qu'il est du ressort de la commande utilisée par
+% l'utilisateur de sélectionner la convention adéquate. On pourrait
+% élaborer une autre stratégie avec des enregistrements de procédure
+% du côté de `pfss', mais ce n'est pas le choix retenu ici. Ainsi le
+% code du module `pfss' ne contient aucune référence à du code de plus
+% haut niveau.
+
+%
+% Fontes Composites
+%
+
+% On définit dans cette section des fonctions permettant l'utilisation
+% des fontes composites, c'est à dire des fonctions définissant des
+% caractères accédant à cette fonte composite.
+
+% La fonction 'fontchardef' crée une commande produisant un
+% caractère. La commande créée rétablit la page déterminée par la
+% valeur du registre 'fontchardefpage' en vigueur lors de sa
+% création.
+
+\def\fontchardefpage{}
+\def\setfontchardefpage#1{\def\fontchardefpage{#1}}
+
+\def\fontchardef#1{%
+  \begingroup
+  \def\fontchardef@A{\fontchardef@M#1}%
+  \afterassignment\fontchardef@A\rcA
+}
+
+\def\fontchardef@M#1{%
+  \edef\rmA{{%
+      \noexpand\setfontpage{\fontchardefpage}%
+      \noexpand\fontswitch
+      \noexpand\char\the\rcA
+  }}%
+  \toksloadcsexpansion\rmA\to\rtA
+  \rtB={\def#1}%
+  \edef\next{\the\rtB{\the\rtA}}%
+  \expandafter\endgroup\next
+}
+
+% fontchar SETFONT NUMBER
+%
+% Utilise la fonte sélectionnée par la procédure SETFONT pour produire
+% le caractère numéro NUMBER.
+
+\def\fontchar#1{%
+  \begingroup
+  \rtA{#1}%
+  \afterassignment\fontchar@M\rcA
+}
+
+\def\fontchar@M{%
+  \edef\next{{\the\rtA\noexpand\char\the\rcA}}%
+  \expandafter\endgroup\next
+}
+
+
+%
+% Caractères manquants
+%
+
+% Il se peut qu'avec certaines fontes, il s'avère impossible de
+% réaliser tel ou tel caractère. Lorsque figure dans le fichier source
+% un caractère manquant, l'utilisateur doit en être informé. Les
+% fonctions ci-dessous permette de réaliser cette information.
+
+% La fonction 'misschardef' est un analogue de 'fontchardef' et crée
+% une liaison produisant un signe '?'
+
+% XXX Il faut ajouter une option pour avoir un message d'erreur en
+%     cours de traitement indiquant l'absence de ce caractère. Il faut
+%     aussi ajouter un message de fin de traitement qui indique
+%     l'absence d'un ou plusieurs caractères.
+
+\def\misschardef#1{\def#1{{\systemfont?}}}
+
+
+%%% 2. CONVENTIONS
+
+% On commence par les conventions pour le texte. Ces conventions sont
+% `text' `comp' et `punc' pour `texte', `compagnon du texte' et
+% `ponctuation'. La ponctuation `a un rôle un peu bizarre parce
+% qu'elle s'appuie sur `text' pour définir ses liaisons.
+
+\input convtext
+\input convcomp
+\input convmath
+\input convpunc
+
+% On continue avec les conventions de saisie pour le mode
+% mathématique. Ces conventions s'appuient sur le module `pfssmath'
+% qui réalise les fonctions utiles les particularités administratives
+% des fontes dans le mode mathématique.
+
+%\input convmrm
+%\input convmit
+%\input convmsy
+%\input convmex
+
+
+%%% 3. CONVENTIONS DE SAISIE
+
+% On définit dans cette section les conventions de saisie ne dépendant
+% pas du codage de l'entrée. Ces conventions consistent en une famille
+% de caractères nommés, et en les commandes produisant des caractères
+% accentués, etc.
+
+%
+% Saisie des ligatures les plus ordinaires
+%
+
+\def\AA{\textAring}
+\def\aa{\textaring}
+\def\AE{\textAE}
+\def\ae{\textae}
+\def\OE{\textOE}
+\def\oe{\textoe}
+\def\SS{\textEssZet}
+\def\ss{\textesszet}
+%\def\O{\textOSlash}% cf. caractères duaux ci-dessous
+\def\o{\textoslash}
+\def\i{\textdotlessi}
+\def\j{\textdotlessj}
+\def\l{\textlslash}
+\def\L{\textLslash}
+
+%
+% Commandes de changement de casse
+%
+
+% Les primitives de TeX `uppercase' et `lowercase' utilisent les
+% tables `lccode' et `uccode' pour modifier la casse d'une liste de
+% tokens. Les séquences `AA' etc. définies ci-dessus sont ignorées par
+% les commandes `uppercase' et `lowercase'. Dans cette section on
+% définit des extensions de `uppercase' et `lowercase' qui gèrent
+% correctement ces séquences. Les primitives de TeX `uppercase' et
+% `lowercase' sont sauvegradées comme `tex@uppercase' et
+% `tex@lowercase'.
+
+% Pour déclarer une nouvelle correspondance entre symbole majuscule et
+% symbole minuscule, on fait comme suite;
+%
+%   \adduclc\AA\aa
+%
+% Pour produire le texte en minuscules, on fait
+%
+%   \lowercase{\AA nabelle}
+%
+% Notez que la conversion se fait dans un groupe, pour certaines
+% applications de `lowercase' et de `uppercase' on peut donc avoir
+% besoin d'utiliser les primitives `tex@uppercase' et `tex@lowercase'.
+
+
+\newtoks\uclc@t
+
+% Les commandes `tex@uppercase' et `tex@lowercase' sont définies
+% par le noyeau.
+%
+%  \let\tex@uppercase=\uppercase
+%  \let\tex@lowercase=\lowercase
+%
+% Ces deux lignes ne sont donc plus utiles ici.
+
+\let\uclc@l=\empty
+\def\uclc@L#1#2{\let#1#2}
+\def\uclc@U#1#2{\let#2#1}
+\def\uclc@M#1#2{%
+  \begingroup
+  \def\uclc@N{\uclc@A#1#2}%
+  \afterassignment\uclc@N\uclc@t
+}
+
+\def\uclc@A#1#2{%
+  \def\\##1{#1##1}%
+  \uclc@l
+  \edef\uclc@N{\noexpand#2{\the\uclc@t}}%
+  \uclc@N
+  \endgroup
+}
+
+\def\uppercase{\uclc@M\uclc@U\tex@uppercase}
+\def\lowercase{\uclc@M\uclc@L\tex@lowercase}
+
+\def\adduclc#1#2{\listrappend #1#2\to\uclc@l}
+
+\adduclc\AA\aa
+\adduclc\AE\ae
+\adduclc\OE\oe
+\adduclc\O\o
+\adduclc\SS\ss
+
+%
+% Saisie d'autres caractères
+%
+
+\def\${\textdollar}
+\def\%{\textpercent}
+\def\#{\textnumbersign}
+\def\&{\textampersand}
+\def\_{\leavevmode \kern.06em \vbox{\hrule width.3em}\kern.06em}
+
+\let\lquote=`           % D'après D.Knuth, certains terminaux pourraient
+\let\rquote='           %  être équipés d'une clavier d'où est absent le
+\def\lbrack{[}          %  caractère ', nécessaire à la saisie de
+\def\rbrack{]}          %  constantes octales en TeX. On utilise donc
+                        %  le `let' pour définir cette abréviation.
+
+\def\centigrade{\compcentigrade}
+\def\numero{\compnumero}
+
+
+%
+% Symboles commerciaux
+%
+
+% En plus de \& \% et \$
+
+\def\copyright{\compcopyright\thinspace}
+\def\copyleft{\compcopyleft\thinspace}
+\def\trademark{\comptrademark}
+\def\published{\comppublished\thinspace}
+\def\registered{\compregistered\thinspace}
+
+\def\percent{\thinspace\textpercent}
+\def\perthousand{\thinspace\compperthousand}
+\def\permyriad{\thinspace\comppermyriad}
+
+\def\euro{\thinspace\compeuro}
+\def\cent{\thinspace\compcent}
+\def\yen{\thinspace\compyen}
+\def\florin{\thinspace\compflorin}
+\def\won{\thinspace\compwon}
+\def\naira{\thinspace\compnaira}
+\def\guarani{\thinspace\compguarani}
+\def\peso{\thinspace\comppeso}
+\def\lira{\thinspace\complira}
+\def\sterling{\thinspace\compsterling}
+%\def\recipe{\thinspace\comprecipe}
+
+%
+% Autres symboles
+%
+
+\def\dag{\compdagger}
+\def\ddag{\compdaggerdbl}
+
+\def\slash{/\penalty\exhyphenpenalty} % a `/' that acts like a `-'
+
+\def\dots{\relax\ifmmode\ldots\else$\nomathsurround\ldots\,$\fi}
+
+%
+% TeX names
+%
+
+% Les lignes suivantes ont été recopiées dans `texnames.sty', elles
+% donnent les définitions ordinaires des logos de nombreux formats
+% pour TeX.
+
+\def\TeX{T\kern-.1667em\lower.5ex\hbox{E}\kern-.125emX}
+
+\def\brTeX{Bhrìd\penalty\@M\ \TeX}
+
+\def\texname@AmS{{\the\textfont2 A}\kern-.1667em\lower.5ex\hbox
+        {\the\textfont2 M}\kern-.125em{\the\textfont2 S}}
+
+\def\AmSTeX{\texname@AmS-\TeX}
+\def\AmSLaTeX{\texname@AmS-\LaTeX}
+
+\def\LaTeX{L\kern-.36em\raise.3ex\hbox{\sc a}\kern-.15em\TeX}%
+
+%
+% Fractions
+%
+
+% La commande `frac' est celle de l'exercice 11.6 du TeXbook, elle
+% permet de construire les fractions comme on peut souhaiter les voir
+% dans les livres de cuisine.
+
+\def\frac#1/#2{%
+  \leavevmode
+  \kern.1em
+  \raise.5ex\hbox{\the\scriptfont0 #1}%
+  \kern-.1em
+  /\kern-.15em\lower.25ex\hbox{\the\scriptfont0 #2}%
+}
+
+
+%
+% Espaces insécables
+%
+
+\setcatcodeactive\~     % tilde is active
+\def~{\penalty\@M\ }    % espace insécable
+
+%
+% Ascii form-feed
+%
+
+\setcatcodeactive\^^L   % ascii form-feed is active
+\outer\def^^L{\par}     % ascii form-feed is "\outer\par"
+
+%
+% Commandes d'accentuation
+%
+
+% Remarque: la définition de l'accent `t' tie-after ne fonctionne que
+% lorsque la fonte des symboles de TeX (famille 1) contient des
+% caractères disposés comme OMS.
+%
+% XXX il faudrait réécrire les commandes d'accents pour qu'elle
+% remplacent `\`a' par `textagrave' etc.
+
+\def\`#1{{\accent\textgrave #1}}
+\def\'#1{{\accent\textacute #1}}
+\def\^#1{{\accent\textcircumflex #1}}
+\def\"#1{{\accent\textdieresis #1}}
+\def\~#1{{\accent\texttilde #1}}
+\def\=#1{{\accent\textmacron #1}}
+\def\.#1{{\accent\textdotaccent #1}}
+\def\u#1{{\accent\textbreve #1}}
+\def\v#1{{\accent\textcaron #1}}
+\def\H#1{{\accent\texthungar #1}}
+\def\t#1{{\edef\next{\the\font}\the\textfont1\accent"7F\next#1}}
+
+%
+% The following is an exceirpt of plain.tex
+%
+
+\def\ialign{%
+  \everycr{}\tabskip\z@skip\halign
+} % initialized \halign
+
+\def\oalign#1{%
+  \leavevmode\vtop{%
+  \baselineskip\z@skip
+  \lineskip.25ex%
+  \ialign{##\crcr#1\crcr}%
+  }%
+}
+
+\def\o@lign{%
+  \lineskiplimit\z@ \oalign
+}
+
+\def\ooalign{%
+  \lineskiplimit-\maxdimen \oalign
+} % chars over each other
+{\catcode`p=12 \catcode`t=12 \gdef\\#1pt{#1}}
+\let\getf@ctor=\\
+\let\\=\undefined
+\def\sh@ft#1{\dimen@#1\kern\expandafter\getf@ctor\the\fontdimen1\font
+  \dimen@} % kern by #1 times the current slant
+\def\d#1{{\o@lign{\relax#1\crcr\hidewidth\sh@ft{-1ex}.\hidewidth}}}
+\def\b#1{{\o@lign{\relax#1\crcr\hidewidth\sh@ft{-3ex}%
+    \vbox to.2ex{\hbox{\char\textmacron}\vss}\hidewidth}}}
+\def\c#1{{\setbox\z@\hbox{#1}\ifdim\ht\z@=1ex\accent\textcedilla #1%
+  \else\ooalign{\unhbox\z@\crcr\hidewidth\char\textcedilla\hidewidth}\fi}}
+
+
+\let\^^D=\^
+\let\^^S=\u
+\let\^^_=\v
+
+%
+% Saisie des caractères duaux
+%
+
+% Les caractères duaux sont les caractères ayant un sens différent
+% dans le mode paragraphe et dans le mode mathématique. On utilise ces
+% caractères duaux pour concilier les coutumes héritées de PLAIN TeX
+% où `\O' `\P' et `\S' représentent des caractères spéciaux, alors que
+% tous les géomètres souhaitent utiliser ces mêmes commandes pour
+% saisir le groupe orthogonal, l'espace projectif et les sphères.
+
+\def\dualchardef#1#2#3{%
+  \def#1{\ifmmode\def\dualchardef@N{#2}\else\def\dualchardef@N{#3}\fi
+    \dualchardef@N
+  }%
+}
+
+\dualchardef\O{\math@O}{\textOslash}
+\dualchardef\P{\math@P}{\compparagraph}
+\dualchardef\S{\math@S}{\compsection}
+\dualchardef\bullet{\math@bullet}{\compbullet}
+
+%
+% Superscript en mode tete
+%
+
+\def\superscript#1#2{$\mbox{#1}^{\mbox{\scriptsize#2}}$}
+
+%%% End of file `convent.nw'

@@ -1,0 +1,295 @@
+%%% marvosym.mac -- Martin Vogel's symbols
+
+% Author: Michael Grünewald
+% Date: Fri Feb 24 13:14:09 GMT 2006
+% Copyright: (C) 2006, 2013 Michael Grünewald
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+%%% SYNOPSIS
+
+% Martin Vogel's symbols.
+
+% \selectmvsize#1
+%  Taille #1 comme 10pt, ou {} pour réinitialiser la taille.
+
+% \mvsymbol#1
+%  Où #1 est le nom du symbole.
+
+
+\font\marvosymfont=fmvr8x
+
+\def\selectmvsize#1{%
+  \ifstrempty{#1}%
+    \font\marvosymfont=fmvr8x
+  \else
+    \font\marvosymfont=fmvr8x at #1
+  \fi
+  \relax
+}
+
+\addhook\selectmvsize{\the\textsize pt}\to\textsizeadjustments
+
+\def\marvosym@table{%
+  %
+  % Communication
+  %
+  \\{{pickup}{101}}%
+  \\{{letter}{102}}%
+  \\{{mobilefone}{110}}%
+  \\{{telefon}{124}}%
+  \\{{fax}{164}}%
+  \\{{FAX}{165}}%
+  \\{{faxmachine}{166}}%
+  \\{{email}{153}}%
+  \\{{lightning}{105}}%
+  \\{{emailct}{172}}%
+  %
+  % Engineering
+  %
+  \\{{beam}{042}}%
+  \\{{bearing}{043}}%
+  \\{{loosebearing}{044}}%
+  \\{{fixedbearing}{045}}%
+  \\{{lefttorque}{046}}%
+  \\{{righttorque}{047}}%
+  \\{{lineload}{114}}%
+  \\{{force}{154}}%
+  \\{{octosteel}{221}}%
+  \\{{hexasteel}{222}}%
+  \\{{squaresteel}{223}}%
+  \\{{rectsteel}{224}}%
+  \\{{circsteel}{225}}%
+  \\{{flatsteel}{226}}%
+  \\{{squarepipe}{227}}%
+  \\{{rectpipe}{230}}%
+  \\{{lsteel}{231}}%
+  \\{{ttsteel}{232}}%
+  \\{{circpipe}{233}}%
+  \\{{tsteel}{234}}%
+  \\{{roundedtsteel}{235}}%
+  \\{{roundedttsteel}{236}}%
+  \\{{roundedlsteel}{237}}%
+  %
+  % Information
+  %
+  \\{{industry}{111}}%
+  \\{{coffeecup}{113}}%
+  \\{{rightscissors}{121}}%
+  \\{{kutline}{122}}%
+  \\{{leftscissors}{123}}%
+  \\{{football}{157}}%
+  \\{{bicycle}{256}}%
+  \\{{info}{151}}%
+  \\{{clocklogo}{125}}%
+  \\{{cutright}{161}}%
+  \\{{cutline}{162}}%
+  \\{{cutleft}{163}}%
+  \\{{wheelchair}{167}}%
+  \\{{gentsroom}{170}}%
+  \\{{ladiesroom}{171}}%
+  \\{{checkedbox}{126}}%
+  \\{{crossedbox}{130}}%
+  \\{{pointinghand}{132}}%
+  \\{{writinghand}{142}}%
+  %
+  % Laundry
+  %
+  \\{{washcotton}{211}}%
+  \\{{washsynthetics}{212}}%
+  \\{{washwool}{213}}%
+  \\{{handwash}{335}}%
+  \\{{dontwash}{336}}%
+  \\{{tumbler}{217}}%
+  \\{{notumbler}{220}}%
+  \\{{nochemicalcleaning}{250}}%
+  \\{{bleech}{313}}%
+  \\{{nobleech}{314}}%
+  \\{{cleaninga}{253}}%
+  \\{{cleaningp}{254}}%
+  \\{{cleaningpp}{255}}%
+  \\{{cleaningf}{276}}%
+  \\{{cleaningff}{277}}%
+  \\{{ironingi}{257}}%
+  \\{{ironingii}{260}}%
+  \\{{ironingiii}{261}}%
+  \\{{noironing}{262}}%
+  \\{{atninetyfive}{323}}%
+  \\{{shortninetyfive}{324}}%
+  \\{{atsixty}{325}}%
+  \\{{shortsixty}{326}}%
+  \\{{shortfifty}{327}}%
+  \\{{atforty}{330}}%
+  \\{{shortforty}{331}}%
+  \\{{specialforty}{332}}%
+  \\{{shortthirty}{333}}%
+  %
+  % Currency
+  %
+  \\{{euro}{104}}%
+  \\{{EUR}{104}}%
+  \\{{EURdig}{244}}%
+  \\{{EURhv}{143}}%
+  \\{{EURcr}{144}}%
+  \\{{EURtm}{145}}%
+  \\{{ecommerce}{215}}%
+  \\{{shilling}{241}}%
+  \\{{denarius}{242}}%
+  \\{{deleatur}{242}}%
+  \\{{pfund}{243}}%
+  \\{{eyesdollar}{246}}%
+  %
+  % Safety
+  %
+  \\{{stopsign}{041}}%
+  \\{{CEsign}{103}}%
+  \\{{CE}{103}}%
+  \\{{estatically}{112}}%
+  \\{{explosionsafe}{140}}%
+  \\{{laserbeam}{141}}%
+  \\{{biohazard}{150}}%
+  \\{{radioactivity}{152}}%
+  \\{{BSEfree}{156}}%
+  %
+  % Navigation
+  %
+  \\{{rewindtoindex}{264}}%
+  \\{{rewindtostart}{265}}%
+  \\{{rewind}{266}}%
+  \\{{forward}{267}}%
+  \\{{forwardtoend}{270}}%
+  \\{{forwardtoindex}{271}}%
+  \\{{moveup}{272}}%
+  \\{{movedown}{273}}%
+  \\{{totop}{274}}%
+  \\{{tobottom}{275}}%
+  %
+  % Computers
+  %
+  \\{{computermouse}{315}}%
+  \\{{serialinterface}{316}}%
+  \\{{keyboard}{317}}%
+  \\{{serialport}{320}}%
+  \\{{parallelport}{321}}%
+  \\{{printer}{322}}%
+  %
+  % Maths
+  %
+  \\{{zero}{060}}%
+  \\{{one}{061}}%
+  \\{{two}{062}}%
+  \\{{three}{063}}%
+  \\{{four}{064}}%
+  \\{{five}{065}}%
+  \\{{six}{066}}%
+  \\{{seven}{067}}%
+  \\{{eight}{070}}%
+  \\{{nine}{071}}%
+  \\{{corresponds}{075}}%
+  \\{{vectorarrowhigh}{120}}%
+  \\{{anglesign}{127}}%
+  \\{{vectorarrow}{160}}%
+  \\{{squaredot}{057}}%
+  %
+  % Biology
+  %
+  \\{{neutral}{173}}%
+  \\{{male}{174}}%
+  \\{{hermaphrodite}{175}}%
+  \\{{female}{176}}%
+  \\{{MALE}{177}}%
+  \\{{HERMAPHRODITE}{200}}%
+  \\{{FEMALE}{201}}%
+  \\{{malemale}{203}}%
+  \\{{femalefemale}{204}}%
+  \\{{femalemale}{205}}%
+  %
+  % Astronomy
+  %
+  \\{{sun}{300}}%
+  \\{{moon}{301}}%
+  \\{{mercury}{302}}%
+  \\{{venus}{303}}%
+  \\{{mars}{304}}%
+  \\{{jupiter}{305}}%
+  \\{{saturn}{306}}%
+  \\{{uranus}{307}}%
+  \\{{neptune}{310}}%
+  \\{{pluto}{311}}%
+  \\{{earth}{312}}%
+  %
+  % Astrology
+  %
+  \\{{aries}{340}}%
+  \\{{taurus}{341}}%
+  \\{{gemini}{342}}%
+  \\{{cancer}{343}}%
+  \\{{leo}{344}}%
+  \\{{virgo}{345}}%
+  \\{{libra}{346}}%
+  \\{{scorpio}{347}}%
+  \\{{sagittarius}{350}}%
+  \\{{capricorn}{351}}%
+  \\{{aquarius}{352}}%
+  \\{{pisces}{353}}%
+  %
+  % Others
+  %
+  \\{{yinyang}{131}}%
+  \\{{rightarrow}{072}}%
+  \\{{at}{100}}%
+  \\{{FHBOlogo}{106}}%
+  \\{{FHBOLOGO}{146}}%
+  \\{{FullFHBO}{216}}%
+  \\{{mundus}{155}}%
+  \\{{cross}{206}}%
+  \\{{celtcross}{207}}%
+  \\{{ankh}{210}}%
+  \\{{heart}{215}}%
+  \\{{circleda}{252}}%
+  \\{{bouquet}{245}}%
+  \\{{frowny}{247}}%
+  \\{{smiley}{251}}%
+  \\{{bat}{375}}%
+  \\{{womanface}{376}}%
+  \\{{MartinVogel}{377}}%
+}
+
+\def\mvsymbol#1{%
+  \leavevmode
+  \begingroup
+  \flagfalse
+  \def\process##1##2{%
+    \ifstreq{#1}{##1}%
+      \flagtrue
+      \hbox{\marvosymfont\char'##2}%
+    \fi
+  }%
+  \def\\##1{\process##1}%
+  \marvosym@table
+  \ifflag
+  \else
+    \message{marvosym: error: unknown character #1^^J}%
+    {\tt <mvsymbol #1>}%
+  \fi
+  \endgroup
+}
+
+%%% End of file `marvosym.mac'

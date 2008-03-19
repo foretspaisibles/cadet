@@ -1,0 +1,58 @@
+%%% amssym.mac -- AMS Symbols Interface
+
+% Author: Michael Grünewald
+% Date: Fri Feb 24 13:14:09 GMT 2006
+% Copyright: (C) 2006, 2013 Michael Grünewald
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+% Ce fichier fait interface entre Bhrìd TeX et le fichier `amssym.tex'
+% permettant d'utiliser les fontes de l'AMS dans plain TeX.
+
+\input amssym		% Crée une nouvelle famille msafam
+\let\amssymfam\msafam
+
+\def\setamssym{%
+  \setfontpage{MSA}%
+  \setfontfamily{msa}%
+  \setfontwidth{m}%
+  \setfontweight{m}%
+  \setfontshape{r}%
+}
+%\def\msachar
+%\def\msachardef
+%\def\selectmsa
+
+\begingroup
+\setamssym
+\setfontsize{5}\fontbind{msam5}
+\setfontsize{6}\fontbind{msam6}
+\setfontsize{7}\fontbind{msam7}
+\setfontsize{8}\fontbind{msam7 at 8pt}
+\setfontsize{9}\fontbind{msam9}
+\setfontsize{10}\fontbind{msam10}
+\setfontadjustsize{1}{5}{\@m}{msam5}%
+\setfontadjustsize{10}{\@M}{\@m}{msam10}%
+\endgroup
+
+\setmathfamattributes\amssymfam\setamssym
+\addmathfam\amssymfam
+
+%%% End of file `amssym.mac'

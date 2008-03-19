@@ -1,0 +1,25 @@
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+
+\title Contrôle continu
+
+\def\headerleft{%
+  \centerline{Université Montpellier II}%
+  \centerline{\sc u.f.r. des sciences}%
+}
+
+\def\headerright{%
+  \rcA=\year
+  \rcB=\year
+  \advance\rcB by 1 %
+  \centerline{Année \the\rcA--\the\rcB}%
+  \centerline{\themodule}%
+}
+
+\def\themodule{}
+
+\def\module{%
+  \readline\to\rtA\then
+    \edef\themodule{\the\rtA}%
+  \done
+}

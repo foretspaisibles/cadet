@@ -1,0 +1,59 @@
+INDEX -- Index des fichiers de BHRID TeX
+
+Copyright (C) 2006, 2013 Michael Grünewald
+
+
+Le format BHRID TeX est réparti dans un nombre toujours croissant de
+fichiers. Ce fichier aide à se repérer dans cet ensemble en regroupant
+les fichiers par thématiques.
+
+
+1. NOYAU
+
+Le noyau augmente les capacités de TeX (VIRGINTEX ou INITEX) par de
+nouvelles primitives et de nouvelles structures de données. Le noyau
+définit aussi des interfaces administratives pour la gestion des
+coutumes.
+
+kernel.tex
+basedef.tex	Définitions de bases. Procédures triviales.
+
+
+2. PLAIN FONT SELECTION SCHEME
+
+Le PFSS construit une abstraction autour des fontes utilisées par TeX
+et liées à un identifiant avec la commande `dont'. Cette abstraction
+permet de choisir une fonte selon plusieurs paramètres indépendants,
+un peu comme avec LaTeX ou le système X Windows. Ce mécanisme de
+sélection de fontes va de pair avec l'élaboration d'une convention de
+saisie.
+
+pfss.tex	Noyau du PFSS.
+pfssadj.tex	Fonction d'ajustement appelée lorsqu'une fonte manque.
+pfssmath.tex	Fonctions pour la déclaration de caractères mathématiques.
+
+convent.tex	Convention d'entrée.
+convtext.tex	Convention pour la saisie du texte du paragraphe.
+convcomp.tex	Convention pour la saisie des symboles compagnons du texte.
+convpunc.tex	Convention d'ordre supérieur pour la saisie de la ponctuation.
+convmath.tex	Convention pour la saisie dans le mode mathématique.
+
+latin9.tex	Convention pour la lecture des fichiers latin9.
+
+fontaps.tex	Déclarations pour utiliser les fontes Adobe PostScript.
+fonttx.tex      Déclarations pour utilsier TX fonts, basé sur Adobe Times.
+fontpx.tex      Déclarations pour utiliser PX fonts, basé sur Adobe Palatino.
+fontlm.tex      Déclarations pout utiliser les fontes Latin Modern.
+fontcmm.tex	Déclarations pour utiliser les fontes Computer Modern
+		 dans le mode mathématique.
+fontcmmt.tex	Déclarations pour les tables de symboles des fontes
+		 Computer Modern pour le mode mathématique, ces tables
+		 peuvent être réutilisées avec d'autrs fontes.
+
+3. FORMAT
+
+setup.tex	Les dernières choses effectuées avant le `dump'.
+bhrid_dvips.tex	Format avec le `backend' dvips.
+bhrid_pdf.tex	Format avec le `backend' pdf.
+drvdvips.tex    Pilote pour le `backend' dvips.
+drvpdf.tex	Pilote pour le `backend' pdf.

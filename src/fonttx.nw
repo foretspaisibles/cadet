@@ -1,0 +1,226 @@
+%%% fonttx.nw -- TX fonts -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Lun 26 mar 2007 08:27:48 CEST
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Fichier fonttx.nw}
+<<*>>=
+
+% Ce module réalise l'inscription de la collection de fontes TX
+% de Young Ryu auprès du système BHRID TeX. La collection de fontes TX
+% est constituée de:
+%
+%  * des fontes virtuelles pour le texte, adaptées de Adobe Times;
+%  * des fontes virtuelles pour le texte, adaptées de Adobe Helvetica;
+%  * des fontes virtuelles pour le texte, adaptées de Adobe Courier;
+%  * une fonte virtuelle pour l'alphabet du mode mathématique,
+%    adaptée de Adobe Times;
+%  * des fontes pour le mode mathématique ayant la même disposition
+%    que les fontes Computer Modern CMIT, CMSY et CMEX;
+%  * des fontes supplémentaires.
+%
+% La documentation de ce module se trouve dans le fichier
+% `txfontsdocA4.pdf' qui contient des tables pour toutes les fontes de
+% la collection. Ce document contient aussi des informations
+% techniuques sur le téléchargement partiel des fontes avec les
+% imprimantes: des problèmes ont été observés sur certaines
+% imprimantes et l'auteur recommande de ne pas utiliser le
+% téléchargement partiel des fontes.
+
+\begingroup
+
+\def\Family#1{\def\TX@f{#1}}
+\def\Define#1#2#3#4#5{%
+  \let\fontfamily\TX@f
+  \setfontshape{#1}\setfontweight{#2}\setfontwidth{#3}\setfontpage{#4}%
+  \fontbind{#5}%
+  \setfontadjustsize{\@ne}{\@M}{\@m}{#5}%
+}
+
+\def\SetFont#1{%
+  \toksloadfontshortstate\rtA
+  \global\edef#1{\the\rtA}%
+}
+
+%%% 1. FONTES POUR LE PARAGRAPHE
+
+\Family{tx}
+\Define rmm{CT1}{t1xr}
+\Define rbx{CT1}{t1xb}
+\Define imm{CT1}{t1xi}
+\Define ibx{CT1}{t1xbi}
+\Define omm{CT1}{t1xsl}
+\Define obx{CT1}{t1xbsl}
+\Define rmm{CS1}{tcxr}
+\Define rbx{CS1}{tcxb}
+\Define imm{CS1}{tcxi}
+\Define ibx{CS1}{tcxbi}
+\Define omm{CS1}{tcxsl}
+\Define obx{CS1}{tcxbsl}
+
+\Family{txss}
+\Define rmm{CT1}{t1xss}
+\Define rbx{CT1}{t1xbss}
+\Define omm{CT1}{t1xsssl}
+\Define obx{CT1}{t1xbsssl}
+\Define rmm{CS1}{tcxss}
+\Define rbx{CS1}{tcxbss}
+\Define omm{CS1}{tcxsssl}
+\Define obx{CS1}{tcxbsssl}
+
+\Family{txtt}
+\Define rmm{CT1}{t1xtt}
+\Define rbx{CT1}{t1xbtt}
+\Define smm{CT1}{t1xttsl}
+\Define sbx{CT1}{t1xbttsl}
+\Define rmm{CS1}{tcxtt}
+\Define rbx{CS1}{tcxbtt}
+\Define smm{CS1}{tcxttsl}
+\Define sbx{CS1}{tcxbttsl}
+
+%%% 2. FONTES POUR LE MODE MATHÉMATIQUE
+
+% La collection fournit plusieurs fontes pouvant jouer le même rôle,
+% les exemplaires supplémentaires pour une sorte de fonte difèrent
+% seulement par queleques caractères.
+%
+% Ces fichiers supplémentaires son pour l'instant ignorés, en voici la
+% liste: txmi1, txbmi1.
+
+\Family{tx}
+\Define rmm{OT1}{txr}\SetFont\setmathrm
+\Define rbx{OT1}{txb}
+\Define imm{OML}{txmi}\SetFont\setmathit
+\Define ibx{OML}{txbmi}
+\Define rmm{OMS}{txsy}\SetFont\setmathsy
+\Define rbx{OMS}{txbsy}
+\Define rmm{OMX}{txex}\SetFont\setmathex
+\Define rbx{OMX}{txbex}
+
+\endgroup
+
+%%% 3. ENREGISTREMENT DES ATTRIBUTS DE FONTES
+
+\setmathfamattributes\mathrm\setmathrm
+\setmathfamattributes\mathit\setmathit
+\setmathfamattributes\mathsy\setmathsy
+\setmathfamattributes\mathex\setmathex
+
+% On enregistre les fontes grasses pour le mode mathématique, ce qui
+% n'est pas tautomatique.
+
+\newfam\mathbf
+\def\setmathbf{%
+  \setfontpage{OT1}%
+  \setfontfamily{tx}%
+  \setfontshape{r}%
+  \setfontweight{b}%
+  \setfontwidth{x}%
+}
+\setmathfamattributes\mathbf\setmathbf
+\addmathfam\mathbf
+\setmathbf
+\addhook\fam\mathbf\to\bfhook
+
+%%% 4. AJUSTEMENTS
+
+% La procédure `fonttxadjustment' est appelée pour ajuster les
+% paramètres de PFSS lorsqu'une requête `fontswitch' ne peut être
+% satisfaite.
+
+\def\fonttxadjustment{%
+  \testfontfamily{tx}%
+  \iffontfamily
+    \fonttxadjustment@A
+    \\\fonttxadjustment@B
+  \fi
+  \testfontfamily{txss}%
+  \iffontfamily
+    \fonttxadjustment@A
+    \\\fonttxadjustment@B
+    \\\fonttxadjustment@C
+  \fi
+  \testfontfamily{txtt}%
+  \iffontfamily
+    \fonttxadjustment@A
+    \\\fonttxadjustment@B
+    \\\fonttxadjustment@C
+  \fi
+}
+
+\def\fonttxadjustment@A{%
+  \testfontshape R\iffontshape\setfontshape r\fontadjustmentdone\fi
+  \testfontshape I\iffontshape\setfontshape i\fontadjustmentdone\fi
+  \testfontshape O\iffontshape\setfontshape o\fontadjustmentdone\fi
+}
+
+\def\fonttxadjustment@B{%
+  \testfontweight b%
+  \iffontweight
+    \fonttxadjustment@D
+  \fi
+}
+
+\def\fonttxadjustment@D{%
+  \testfontwidth m%
+  \iffontwidth
+    \setfontwidth x%
+    \fontadjustmentdone
+  \fi
+}
+
+\def\fonttxadjustment@C{%
+  \testfontshape i\iffontshape\setfontshape o\fontadjustmentdone\fi
+}
+
+\fontadjustment\fonttxadjustment
+
+%%% 5. DERNIERS REGRETS
+
+\def\setnormalfont{%
+  \selectconventiontext{cork}%
+  \selectconventioncomp{cork}%
+  \let\fontfamily=\rmfontfamily
+  \setfontpage{CT1}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontshape{r}%
+}
+
+\def\rmfontfamily{tx}
+\def\ttfontfamily{txtt}
+\def\sffontfamily{txss}
+
+\def\setsystemfont{%
+  \let\fontfamily=\ttfontfamily
+  \setfontshape{r}%
+  \setfontweight{m}%
+  \setfontwidth{m}%
+  \setfontpage{CT1}%
+  \setfontsize{10}%
+}
+
+\def\systemfont{\setsystemfont\fontswitch}
+
+\input fontcmmt
+
+%%% End of file `fonttx.nw'
