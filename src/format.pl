@@ -21,6 +21,9 @@
 
 use Getopt::Std;
 
+
+my @extras = ( "image" );
+
 #
 # Format Specifications
 #
@@ -95,6 +98,9 @@ sub format_spec_output {
     print $channel "\n";
     print $channel "\\input bhridcore\n";
     print $channel "\\input drv$driver\n";
+    foreach my $extra (@extras) {
+	print $channel "\\input $extra\n";
+    };
     foreach my $font (@{$spec->{'Fontes_support'}}) {
 	print $channel "\\input $font\n";
     };

@@ -1,4 +1,4 @@
-### Makefile -- bhrid TeX Makefile
+### Makefile -- Bhrìd TeX Makefile
 
 # Author: Michael Grünewald <michael.lebarbier@laposte.net>
 # Date: Dim 17 déc 2006 18:16:26 CET
@@ -27,6 +27,7 @@ SRCS+= basedef.nw
 SRCS+= mdoclist.nw
 SRCS+= paper.nw
 SRCS+= output.nw
+SRCS+= image.nw
 SRCS+= pfss.nw
 SRCS+= pfssadj.nw
 SRCS+= pfssmath.nw

@@ -1,0 +1,97 @@
+%%% image.nw -- Insertion d'images fixes -*- LaTeX -*-
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 24 mar 2007 12:02:40 CET
+
+% Copyright (C) 2006, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Insertion d'images fixes}
+
+L'insertion d'images fixes demande des dispositions particulières au
+support cible du traitement~\TeX\ en cours. Cependant, à partir d'un
+petit nombre d'opérations spécifiques à la cible du traitement, on
+peut définir des opérations de plus haut niveau.
+
+Le module \emph{image} utilise une interface~\emph{kifimage} décrite
+ci-desssous.
+
+
+@\subsection{Interface avec le noyau}
+
+L'interface décrite ici porte le numéro de version~\emph{1.0}.
+
+
+@ \paracommand{\fn{boxloadimage}\fa{external\_file}\fn{to}\fa{box\_register}}
+
+Charger une image dans une boîte horizontale. On peut utiliser un nom
+sans suffixe pour le paramètre~\fa{external\_file}, auquel cas un
+suffixe dépendant du support cible du traitement est ajouté. Ce
+comportement facilite la production de documents dans plusieurs
+supports à partir du même code source.
+
+Les dimensions de la boîte obtenue sont les dimensions
+\emph{naturelles} de l'image, notion dépendant à la fois du format de
+fichier de l'image et du support cible. On peut imposer à la boîte
+résultante une hauteur ou une largeur prédéfinie, en positionnant l'un
+des registres~\va{imagewidth} ou~\va{imageheight} à une valeur non
+nulle avant d'appeler~\fn{boxloadimage}. Si un seul de ces registres
+est positionné à une valeur non nulle, l'autre dimension subit un
+ajustement de sorte que le rapport de la hauteur et de la largeur de
+la boîte résultante égale le rapport de la hauteur et de la largeur de
+l'image originale. Si les deux registres sont positionnés à une valeur
+non nulle, la boîte résultante a les dimensions indiquées et le
+rapport des dimensions de l'image orginale n'est peut-être pas
+conservé. Après un appel à \fn{boxloadimage}, les
+registres~\va{imagewidth} et~\va{imageheight} sont positionnés à zéro.
+
+La profondeur de la boîte résultante est toujours nulle.
+
+
+@ \subsection{Interface utilisateur}
+
+
+<<*>>=
+\begingroup
+\testlibraryloaded{kifimage}
+\iflibraryloaded
+\writelog{Image: kernel interface image found}%
+\else
+\writelog{Image: kernel interface image not found, exiting}%
+\aftergroup\endinput
+\fi
+\endgroup
+
+@ \paracommand{\fn{image}\fa{external\_file}}
+
+Insère une boîte horizontale représentant~\va{external\_file} dans la
+liste courante.
+
+<<*>>=
+\def\image#1{{\boxloadimage#1\to\rbA\box\rbA}}
+
+@ \paracommand{\fn{imagedisplay}\fa{external\_file}}
+
+Insère une boîte horizontale représentant~\va{external\_file} dans un
+affichage.
+<<*>>=
+\def\imagedisplay#1{$$\image{#1}$$}
+
+@
+%%% End of file `image.nw'

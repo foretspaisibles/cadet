@@ -72,8 +72,8 @@
   \imageheight\z@
 }
 
-\def\image#1{{\boxloadimage{#1}\to\rbA\box\rbA}}
-
-\def\figure#1{$$\image{#1}$$}
+\def\libraryname{kifimage}
+\def\libraryversion{1.0}
+\libraryadd
 
 %%% End of file `drvxdvi.nw'
