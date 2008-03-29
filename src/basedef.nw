@@ -1278,9 +1278,9 @@ peuvent donner un remplacement à ces définitions.
 <<Préparations spéciales>>=
 \outer\def\section#1\par{%
   \removelastskip
-  \vskip\z@ plus.2\vsize
+  \vskip\z@ plus.1\vsize
   \penalty-250
-  \vskip\z@ plus-.2\vsize
+  \vskip\z@ plus-.1\vsize
   \bigskip
   \vskip\parskip
   \vskip\baselineskip
