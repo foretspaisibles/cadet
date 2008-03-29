@@ -1000,8 +1000,8 @@ oublié,~etc.
 
 @ \paragraph{Traitement des listes} [\TeXbook, p 378]
 Le noyau de \brTeX\ implémente les listes comme suggéré dans le
-\TeXbook, p.378. L'itération sur les éléments d'une liste se fait avec
-[[\\]] par exemple
+\TeXbook, p.378. L'itération sur les éléments d'une liste se fait par
+le biais de~[[\\]]. Par exemple
 \begin{example}
 \def\cardinality#1\to#2{%
   #2=\z@
@@ -2618,6 +2618,9 @@ Lorsque \va{libraryname} n'est pas défini aucune inscription n'a
 lieu. Lorsque \va{libraryversion} n'est pas défini, la version `0.0'
 est enregistrée.
 
+Après un appel à~\fn{libraryadd}, les macros~\va{libraryname}
+et~\va{libraryversion} sont~\emph{undefined}.
+
 <<Bibliothèques>>=
 \def\libraryadd{%
   \ifx\libraryname\undefined
@@ -2629,6 +2632,8 @@ est enregistrée.
     \let\library@N\library@G
   \fi
   \library@N
+  \let\libraryname\undefined
+  \let\libraryversion\undefined
 }
 
 \def\library@G{%
@@ -2808,8 +2813,6 @@ des noms différents.
   \input #1.mac
   \ifx\libraryname\undefined\def\libraryname{#1}\fi
   \libraryadd
-  \let\libraryname\undefined
-  \let\libraryversion\undefined
   \ignorespaces
 }
 
@@ -2856,8 +2859,6 @@ variables~\va{libraryname} et~\va{libraryversion}.
   \enableprivatenames\input #1.cls\relax\disableprivatenames
   \ifx\libraryname\undefined\def\libraryname{#1}\fi
   \libraryadd
-  \let\libraryname\undefined
-  \let\libraryversion\undefined
   \let\macro@M\macro@A
   \let\class\class@E
   \ignorespaces
