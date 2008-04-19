@@ -387,8 +387,10 @@
 % Espaces insécables
 %
 
-\setcatcodeactive\~     % tilde is active
-\def~{\penalty\@M\ }    % espace insécable
+\setcatcodeactive\~             % tilde is active
+\def\hardspace{\penalty\@M\ }   % espace insécable
+\def~{\hardspace}
+
 
 %
 % Ascii form-feed
