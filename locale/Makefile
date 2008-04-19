@@ -24,7 +24,8 @@
 
 SUBDIR+= hyphenation
 SUBDIR+= punctuation
+SUBDIR+= itemmark
 
-.include "make.subdir.mk"
+.include "bps.subdir.mk"
 
 ### End of file `Makefile'

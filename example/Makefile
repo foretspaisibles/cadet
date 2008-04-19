@@ -28,6 +28,6 @@ SUBDIR+= mg_lettre
 SUBDIR+= mg_examen
 SUBDIR+= macro
 
-.include "make.subdir.mk"
+.include "bps.subdir.mk"
 
 ### End of file `Makefile'

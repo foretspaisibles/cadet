@@ -200,9 +200,9 @@ clean:
 .endif
 
 .include "bhrid.files.mk"
-.include "make.init.mk"
-.include "make.files.mk"
-.include "make.usertarget.mk"
+.include "bps.init.mk"
+.include "bps.files.mk"
+.include "bps.usertarget.mk"
 
 install: doc
 

@@ -60,7 +60,7 @@ ${file}: ${file:C/\..*$/.nw/}
 .endif
 .endfor
 
-.include "make.files.mk"
-.include "make.usertarget.mk"
+.include "bps.files.mk"
+.include "bps.usertarget.mk"
 
 ### End of file `bhrid.files.mk'

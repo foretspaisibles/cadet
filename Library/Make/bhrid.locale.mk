@@ -24,7 +24,7 @@
 
 
 TEXGROUP = LOCALE
-LOCALEDIR = ${TEXMFDIR}/tex/br/locale${APPLICATIONDIR}
+LOCALEDIR = ${TEXMFDIR}/tex/bhrid/locale${APPLICATIONDIR}
 
 .include "tex.files.mk"
 

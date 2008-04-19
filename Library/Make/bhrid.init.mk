@@ -30,8 +30,8 @@ APPLICATION?=		bhrid
 APPLICATIONDIR?=	/bhrid
 TEXMFDIR?=		${PREFIX}/share/texmf
 
-.include "make.init.mk"
-.include "make.own.mk"
+.include "bps.init.mk"
+.include "bps.own.mk"
 
 .endif
 

@@ -39,7 +39,7 @@ SUBDIR+= locale
 .MAKEFLAGS: BHRIDBASEDIR=${.CURDIR}
 .MAKEFLAGS: USE_SWITCH_CREDENTIALS=no
 
-.include "make.subdir.mk"
+.include "bps.subdir.mk"
 
 afterinstall:	.USE
 	mktexlsr
