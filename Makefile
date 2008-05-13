@@ -22,6 +22,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
+PROJECT = bhrid
+VERSION = 0.1
+AUTHOR = Michael Grünewald
 
 SUBDIR+= src
 SUBDIR+= macro
@@ -40,10 +43,12 @@ SUBDIR+= locale
 .MAKEFLAGS: USE_SWITCH_CREDENTIALS=no
 
 .include "bps.subdir.mk"
+.include "bps.project.mk"
 
 afterinstall:	.USE
 	mktexlsr
 
 install:	afterinstall
+
 
 ### End of file `Makefile'

@@ -85,9 +85,11 @@ doc: do-doc
 WEBFILES = ${SRCS}
 TEXFILES = ${SRCS:.nw=.tex}
 LTXFILES = ${WEBFILES:.nw=.latex}
-OBJFILES = ${TEXFILES} ${FORMAT:.fmt=.tex} ${FORMAT} ${LTXFILES}
 
-CLEANFILES = ${OBJFILES}
+REALCLEANFILES+= ${TEXFILES}
+REALCLEANFILES+= ${LTXFILES}
+
+CLEANFILES = ${FORMAT:.fmt=.tex} ${FORMAT}
 
 .SUFFIXES: .fmt .tex .latex .nw
 
@@ -103,7 +105,7 @@ FORMAT+= ${format}_${driver}.fmt
 ${format}_${driver}.fmt: ${format}_${driver}.tex drv${driver}.tex
 ${format}_${driver}.tex: format.spec
 	perl format.pl -m format.spec -f ${format} -d ${driver} > ${.TARGET}
-CLEANFILES+= ${format}_${driver}.tex
+REALCLEANFILES+= ${format}_${driver}.tex
 .endfor
 .endfor
 
