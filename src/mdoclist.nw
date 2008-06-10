@@ -48,7 +48,7 @@ type de marque utilisé:
   introduit par un court texte.
 \end{description}
 Les anglicismes que \brTeX\ associse à ces trois listes sont
-respectivement \emph{itemization}, \emph{enumeration}
+respectivement \emph{roster}, \emph{enumeration}
 et~\emph{description}. L'anglicisme associé au terme marque tel
 qu'employé ci-dessus est~\emph{label}.
 
@@ -249,7 +249,7 @@ Les procédures \fn{beginlist} et \fn{endlist} doivent être utilisées
 avant de commencer à énumérer les termes d'une liste et après avoir
 terminé. La procédure~\fn{newlist} permet de créer des listes
 personnalisées, elle est utilisée pour définir les listes
-\fn{itemization}, \fn{enumeration} et \fn{description}.
+\fn{roster}, \fn{enumeration} et \fn{description}.
 
 <<Préparation des listes>>=
 \def\beginlist{%
@@ -264,12 +264,11 @@ personnalisées, elle est utilisée pour définir les listes
 \def\endlist{%
   \par
   \listendskip
-  \ignorespaces
 }
 
 \def\newlist#1\with#2\done{%
   \csdef{begin#1}{\begingroup#2\relax\beginlist}%
-  \csdef{end#1}{\par\endgroup\endlist}
+  \csdef{end#1}{\par\endlist\endgroup\noindent\ignorespaces}
 }
 
 @ \subsection{Listes à marque fixe}
@@ -282,7 +281,7 @@ pour introduire les termes de la liste. Le texte de remplacement de
 \def\labelprepare@mark#1{\llap{\labelmake{#1}\hskip\labelspace}}
 \def\labelmake@itemmark#1{\itemmark}
 
-\newlist{itemization}\with
+\newlist{roster}\with
   \let\listbeginskip\smallskip
   \let\listinterskip\smallskip
   \let\listendskip\smallskip
