@@ -37,7 +37,11 @@ _BHRID_INSTALLDIR = ${TEXMFDIR}/tex${APPLICATIONDIR}
 
 CLASSDIR =	${_BHRID_INSTALLDIR}/class
 MACRODIR =	${_BHRID_INSTALLDIR}/macro
+.if defined(STYLECLASS)
 STYLEDIR =	${_BHRID_INSTALLDIR}/style/${STYLECLASS}
+.else
+STYLEDIR =	${_BHRID_INSTALLDIR}/style
+.endif
 FONTSDIR =	${_BHRID_INSTALLDIR}/fonts
 FORMATDIR =	${TEXMFDIR}/web2c
 DOCDIR =	${TEXMFDIR}/doc${APPLICATIONDIR}
@@ -52,7 +56,7 @@ NOTANGLE?=	notangle
 .if defined(${group}) && !empty(${group})
 .for file in ${${group}}
 .if exists(${file:C/\..*$/.nw/})
-CLEANFILES+= ${file}
+REALCLEANFILES+= ${file}
 ${file}: ${file:C/\..*$/.nw/}
 	${NOTANGLE} ${.ALLSRC} > ${.TARGET}
 .endif

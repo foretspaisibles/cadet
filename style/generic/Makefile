@@ -1,10 +1,10 @@
 ### Makefile
 
 # Author: Michael Grünewald
-# Date: Sat Apr  8 16:23:55 CEST 2006
-# Copyright: (C) 2006, 2013 Michael Grünewald
+# Date: Mar  3 jui 2008 10:40:47 CEST
+# Copyright: (C) 2008, 2013 Michael Grünewald
 
-# Copyright (C) 2006, 2013 Michael Grünewald
+# Copyright (C) 2008, 2013 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Bhrìd TeX.
@@ -22,8 +22,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIR = generic
+STYLE = twelvepoint.sty
 
-.include "bps.subdir.mk"
+.include "bhrid.files.mk"
 
 ### End of file `Makefile'

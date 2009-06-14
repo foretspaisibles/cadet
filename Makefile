@@ -29,12 +29,12 @@ AUTHOR = Michael Grünewald
 SUBDIR+= src
 SUBDIR+= macro
 SUBDIR+= class
+SUBDIR+= style
 SUBDIR+= make
 SUBDIR+= paper
 SUBDIR+= example
 SUBDIR+= locale
 
-#SUBDIR+= style
 #SUBDIR+= ancillary
 #SUBDIR+= fonts
 
