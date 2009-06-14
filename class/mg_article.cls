@@ -197,7 +197,6 @@
 \def\settitlefont{%
   \setnormalfont
   \setlargesize
-  \setfontfamily{lmd}%
 }%
 
 \def\title{%

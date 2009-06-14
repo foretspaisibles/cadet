@@ -99,7 +99,6 @@ coutume en vigueur au moyen de \fn{selectlocale}.
 <<Bibliothèques>>
 <<Paramètres régionaux>>
 <<Initialisation des paramètres de TeX>>
-
 @ \subsection{Discipline}
 
 Le programme que l'on fait évaluer à \TeX\ pour préparer le
@@ -2833,6 +2832,12 @@ traité par~\TeX. Par exemple~[[\class correspondance]] essaie de
 cherger la bibliothèque~\emph{correspondance} dans le
 fichier~\pa{correspondance.cls}.
 
+De plus, pour tenir compte des particularités de formats, le fichier
+\pa{\va{class}/\va{fmtname}.sty} est lu, à moins qu'il n'existe pas. Il est
+donc recommandé d'écrire une classe de document «portable» et de lui ajouter
+des variations grâce au mécanisme tout juste exposé pour tenir compte des
+particluarités d'un format, comme par exemple une fonte spéciale.
+
 Après le chargement réussi d'une classe de document, la
 macro~\va{classname} contient le nom de cette classe de
 document. Avant le chargement d'une classe de document, la
@@ -2861,6 +2866,15 @@ variables~\va{libraryname} et~\va{libraryversion}.
   \libraryadd
   \let\macro@M\macro@A
   \let\class\class@E
+  % If we can find a `class/fmtname.sty' file, we read it
+  \beginnext
+    \testexists{\classname/\fmtname.sty}%
+    \ifexists
+      \edef\next{\noexpand\input \classname/\fmtname.sty}%
+    \else
+      \let\next\empty
+    \fi
+  \endnext
   \ignorespaces
 }
 
@@ -2868,7 +2882,7 @@ variables~\va{libraryname} et~\va{libraryversion}.
 
 \def\class@E{%
   \errhelp{It is the second time you call the `class' procedure, that
-  load a document class library. It is not allowed to load two such
+  loads a document class library. It is not allowed to load two such
   libraries, only zero or one document class library load is
   allowed. It is also forbidden to load the same document class
   library twice.}%
@@ -2887,7 +2901,7 @@ styles subordonnés à une classe de document. Un style générique est un
 fichier dont le suffixe est~\pa{sty}, il est chargé par une
 commande~\fn{style} avant le chargement de toute classe de
 document. Lorsqu'une classe de document a été chargée les
-commandes~\fn{style} recherhcent le fichier de style dans un dossier
+commandes~\fn{style} recherchent le fichier de style dans un dossier
 dont le nom est~\va{classname}.
 
 <<Bibliothèques>>=
