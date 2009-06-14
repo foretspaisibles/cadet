@@ -204,6 +204,7 @@ clean:
 .include "bhrid.files.mk"
 .include "bps.init.mk"
 .include "bps.files.mk"
+.include "bps.clean.mk"
 .include "bps.usertarget.mk"
 
 install: doc

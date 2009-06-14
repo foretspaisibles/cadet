@@ -57,6 +57,13 @@ leur propre procédure.
 \def\advancepageno{\ifnum\pageno<\z@ \global\advance\pageno\m@ne
   \else\global\advance\pageno\@ne \fi} % increase |pageno|
 
+% Ces définitions sont utilisées par du code dans output.nw. Pour son
+% indépendance ce code definit `footnotefont{}'
+\def\setfootnotefont{%
+  \setnormalfont
+  \setverysmallsize
+}
+\def\footnotefont{\setfootnotefont\selectfont}
 \newinsert\footins
 \def\footnote#1{\let\@sf\empty % parameter #2 (the text) is read later
   \ifhmode\edef\@sf{\spacefactor\the\spacefactor}\/\fi
@@ -66,7 +73,7 @@ leur propre procédure.
   \splittopskip\ht\strutbox % top baseline for broken footnotes
   \splitmaxdepth\dp\strutbox \floatingpenalty\@MM
   \leftskip\z@skip \rightskip\z@skip \spaceskip\z@skip \xspaceskip\z@skip
-  \textindent{#1}\footstrut\futurelet\next\fo@t}
+  \footnotefont\textindent{#1}\footstrut\futurelet\next\fo@t}
 \def\fo@t{\ifcat\bgroup\noexpand\next \let\next\f@@t
   \else\let\next\f@t\fi \next}
 \def\f@@t{\bgroup\aftergroup\@foot\let\next}
@@ -156,14 +163,15 @@ leur propre procédure.
 
 \newhook\selectlayouthook
 
-% selectlayout
+% selectlayoutmargin
 %
 % La commande `selectlayout' calcule les valeurs `hoffset' et
 % `voffset' appropriées à partir des quatre paramètres
 % `layoutleftmargin', etc.
 %
 % Remarque: il faut modifier la magnification avant la commande
-%  selectlayouthoot.
+%  selectlayouthook.
+
 
 % setmargin HMARGIN VMARGIN
 %
@@ -189,7 +197,7 @@ leur propre procédure.
   \unmagnify\layoutmarginbottom
 }
 
-\def\selectlayout{%
+\def\selectlayoutverticalmargin{%
   %
   % On utilise un registre pour éviter l'utilisation de `true'.
   % Après avoir utilisé `true' la manipulation du registre `mag' est
@@ -197,11 +205,7 @@ leur propre procédure.
   %
   \rdA=1 in
   \unmagnify\rdA
-  \hoffset\layoutmarginleft \advance\hoffset - \rdA
   \voffset\layoutmargintop \advance\voffset - \rdA
-  \hsize\paperwidth
-  \advance\hsize-\layoutmarginleft
-  \advance\hsize-\layoutmarginright
   \vsize\paperheight
   \advance\vsize-\layoutmargintop
   \advance\vsize-\layoutmarginbottom
@@ -210,10 +214,58 @@ leur propre procédure.
   \divide\rcA by\rcB
   \vsize=\normalbaselineskip
   \multiply\vsize by\rcA
-  \advance\vsize by 1em
+  %
+  % Ajustement pour topskip
+  %
   \advance\vsize by -\normalbaselineskip
-  \relax
+  \advance\vsize by \topskip
   \runhook\selectlayouthook
+}
+
+\def\selectlayouthorizontalmargin{%
+  \rdA=1 in
+  \unmagnify\rdA
+  \hoffset\layoutmarginleft \advance\hoffset - \rdA
+  \hsize\paperwidth
+  \advance\hsize-\layoutmarginleft
+  \advance\hsize-\layoutmarginright
+  \runhook\selectlayouthook
+}
+
+\def\selectlayoutmargin{%
+  \selectlayoutverticalmargin
+  \selectlayouthorizontalmargin
+  \relax
+  \global\let\selectlayout\selectlayoutmargin
+}
+
+\def\selectlayoutverticalbalance{%
+  \rdA=1 in
+  \unmagnify\rdA
+  \layoutmargintop\paperheight
+  \advance\layoutmargintop-\vsize
+  \divide\layoutmargintop\tw@
+  \layoutmarginbottom\layoutmargintop
+  \voffset\layoutmargintop \advance\voffset - \rdA
+  \runhook\selectlayouthook
+}
+
+\def\selectlayouthorizontalbalance{%
+  \rdA=1 in
+  \unmagnify\rdA
+  \layoutmarginleft\paperwidth
+  \advance\layoutmarginleft-\hsize
+  \divide\layoutmarginleft\tw@
+  \layoutmarginright\layoutmarginleft
+  \hoffset\layoutmarginleft \advance\hoffset - \rdA
+  \runhook\selectlayouthook
+}
+
+\def\selectlayoutbalance{%
+  \selectlayoutverticalbalance
+  \selectlayouthorizontalbalance
+  \relax
+  \global\let\selectlayout\selectlayoutbalance
 }
 
 \addhook{%

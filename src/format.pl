@@ -127,7 +127,7 @@ sub format_spec_output {
     print $channel "\n";
     print $channel "\\normalfont\n";
     print $channel "\\normalsize\n";
-    print $channel "\\selectlayout\n";
+    print $channel "\\selectlayoutmargin\n";
     print $channel "\\runhook\\formatdumphook\n";
     print $channel "\\let\\formatdumphook\\undefined\n";
     print $channel "\\def\\fmtname\{$name\}\n";
