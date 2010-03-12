@@ -1,8 +1,8 @@
-### Makefile
+### Makefile -- Marqueur constant pour les termes des listes
 
 # Author: Michael Grünewald
 # Date: Lun 16 oct 2006 08:22:38 CEST
-# Copyright: (C) 2006, 2013 Michael Grünewald
+# Copyright: (C) 2010 Michael Grünewald, 2013 Michael Grünewald
 
 # Copyright (C) 2006, 2013 Michael Grünewald
 # All rights reserved.
@@ -22,11 +22,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIR+= hyphenation
-SUBDIR+= punctuation
-SUBDIR+= itemmark
-SUBDIR+= letter
 
-.include "bps.subdir.mk"
+APPLICATION = structure
+
+LOCALE = kobaia.tex
+LOCALE+= de.tex
+LOCALE+= en.tex
+LOCALE+= fr.tex
+
+.include "bhrid.locale.mk"
 
 ### End of file `Makefile'

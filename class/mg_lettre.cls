@@ -90,6 +90,20 @@
 \def\the@date{\the\day.~\the\month.~\the\year}
 
 %
+% Paramètres régionaux
+%
+
+\def\lettreadjustment#1#2{%
+  \csbindlocalecsname{Subject}{#1}{#2}\to{Subjectname}%
+  \csbindlocalecsname{Phone}{#1}{#2}\to{Phonename}%
+  \csbindlocalecsname{Fax}{#1}{#2}\to{Faxname}%
+  \csbindlocalecsname{EMail}{#1}{#2}\to{EMailname}%
+}
+
+\addlocaleadjustment\lettreadjustment
+\addlocalefacility{letter}
+
+%
 % Ramasser les adresses
 %
 
@@ -183,14 +197,14 @@
   \endnext
 }
 \def\makename{\makeany\the@name\the@name}
-\def\makephone{\makeany\the@phone{Tél: \the@phone}}
-\def\makefax{\makeany\the@fax{Fax: \the@fax}}
-\def\makeemail{\makeany\the@email{E-Mail: {\tt\the@email}}}
+\def\makephone{\makeany\the@phone{\Phonename: \the@phone}}
+\def\makefax{\makeany\the@fax{\Faxname: \the@fax}}
+\def\makeemail{\makeany\the@email{\EMailname: {\tt\the@email}}}
 
 \def\makedate{%
   \noindent
   \ifx\the@place\undefined\else\the@place,\enspace\fi
-  le~\the@date
+  \the@date
 }
 
 \def\makesubject{%
@@ -202,8 +216,7 @@
     \hangindent=\itemindent
     \hangafter=1
     \raggedright
-    Objet:\space
-    \the@subject
+    \Subjectname:\space\the@subject
     \par
     \endgroup
     \vskip2\baselineskip
@@ -398,6 +411,7 @@
 % Trampoline
 %
 
+\selectlocalemainlocale
 \relaxmode
 
 %%% End of file `mg_lettre.cls'
