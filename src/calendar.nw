@@ -1,0 +1,193 @@
+%%% calendar.nw -- Fonctions pour le calendrier
+
+% Author: Michael Grünewald <michael.lebarbier@laposte.net>
+% Date: Sam 24 mar 2007 12:02:40 CET
+
+% Copyright (C) 2005, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\section{Calendrier}
+
+On réalise un calendrier perpétuel.
+
+<<*>>=
+\def\calendaradjustment#1#2{%
+  \csbindlocalecs{dayname}{#1}{#2}\to\calendar@dayname
+  \csbindlocalecs{monthname}{#1}{#2}\to\calendar@monthname
+  \csbindlocalecs{today}{#1}{#2}\to\calendar@today
+}
+\addlocaleadjustment\calendaradjustment
+\addlocalefacility{calendar}
+
+
+
+
+
+% @* |\testbissextil<year>| teste si une année donnée est
+% bissextile. Ceci ne vaut que pour les années suffisamment récentes
+% (pour le calendrier contemporain).
+
+\newif\ifleapyear
+
+\def\testleapyear#1{%
+  \begingroup
+  \rcA=#1
+  \rcB=\rcA
+  \divide\rcB by 4
+  \multiply\rcB by 4
+  \advance\rcA by -\rcB
+  \ifnum\rcA=0
+    \rcA=#1
+    \rcB=\rcA
+    \divide\rcB by 100
+    \multiply\rcB by 100
+    \advance\rcA by -\rcB
+    \ifnum\rcA>0
+      \aftergroup\leapyeartrue
+    \else
+      \rcA=#1
+      \rcB=\rcA
+      \divide\rcB by 400
+      \multiply\rcB by 400
+      \advance\rcA by -\rcB
+      \ifnum\rcA=0
+	\aftergroup\leapyeartrue
+      \else
+	\aftergroup\leapyearfalse
+      \fi
+    \fi % \ifnum\rcA>0
+  \else
+    \aftergroup\leapyearfalse
+  \fi
+  \endgroup
+}%
+
+% @* |\todayname| est remplacé par le nom du jour
+% |\day,\month,\year|, comme ``Vendredi'' dans ``Vendredi 15 juillet
+% 2005''. La fonction |\todayname| utilise |\dayname| pour trouver le
+% nom du jour.
+
+% @* |\storetodayname<macro>| est une variante de |\todayname| qui
+% place sa réponse dans la macro dont l'identifiant est <macro>.
+
+\def\calendar@toksloadname#1#2\to#3{%
+  \beginnext
+  \def\next{#3={<invalid>}}%
+  \def\\##1{%
+    \advance\rcA\@ne
+    \ifnum#2=\rcA
+      \def\next{#3={##1}}%
+      \let\\\ignore
+    \fi
+  }%
+  \rcA=0
+  #1%
+  \endnext
+}
+
+\def\toksloaddayname{\calendar@toksloadname\calendar@dayname}
+\def\toksloadmonthname{\calendar@toksloadname\calendar@monthname}
+
+\def\toksloaddaynumber#1#2#3\to#4{%
+  \beginnext
+  \rcA=\ifcase#2\relax
+    0\relax\toksloaddaynumber@e
+    \or 0	% Janvier 31
+    \or 3 % 31	% Février 28 (usually)
+    \or 3 % 59	% Mars 31
+    \or 6 % 90	% Avril 30
+    \or 1 % 120	% Mai 31
+    \or 4 % 151	% Juin 30
+    \or 6 % 181	% Jullet 31
+    \or 2 % 212	% Août 31
+    \or 5 % 243	% Septembre 30
+    \or 0 % 273	% Octobre 31
+    \or 3 % 304	% Novembre 30
+    \or 5 % 334	% Décembre 31
+    \else
+    0\relax\toksloaddaynumber@e
+  \fi
+  \relax
+  \testleapyear{#3}%
+  \ifleapyear
+    \ifnum #2<3
+    \else
+      \advance\rcA by 1
+    \fi
+  \fi
+  \advance\rcA #1\relax
+  \rcB=1970
+  \loop
+    \testleapyear{\the\rcB}%
+    \ifleapyear
+      \advance\rcA by 2 % 2 = 366 [7]
+    \else
+      \advance\rcA by 1 % 1 = 361 [7]
+    \fi
+    \advance\rcB by 1
+  \ifnum\rcB<#3\relax
+  \repeat
+  % On fait de façon naturelle
+  % \advance\rcA by 4
+  % quand on sait que 1er janvier 1970 est un jeudi
+  % - on enlève ensuite 1 car si la date \year\month\day est le
+  %   premier jancier 1970, la petite arithmétique précédente tombe
+  %   sur \rcA=1;
+  % - on enlève encore une fois 1 pour calculer le résidu modulo 7
+  %   représenté par un nombre entre 0 et 6, et on rajoute 1 plus bas
+  %   pour obteir un résidu entre 1 et 7 (appel à \dayname)
+  \advance\rcA by 2 % Le 1er janvier 1970 est un jeudi (3 = 4 - 1 - 1)
+  \rcB=\rcA
+  \divide\rcB by 7
+  \multiply\rcB by 7
+  \advance\rcA by -\rcB
+  \advance\rcA by \@ne
+  \rtA={#4}%
+  \edef\next{\the\rtA=\the\rcA\noexpand\relax}%
+  \endnext
+}
+
+\def\toksloaddaynumber@e{%
+  \errhelp{%
+    I am trying to calculate the name for the day adressed by the
+    quantities day=\the\day, month=\the\month, year=\the\year. The
+    value for the month, is invalid, and it is likely it is a value
+    you specified to me. I thus urge you to reread your manuscript.
+  }%
+  \errmessage{The number \the\month\ is not a month number!}%
+}%
+
+% @* |\today| est remplacé par la date décrite par les registres
+% |\day,\month,\year|. Par exemple au triplet |15,7,2005| correspond
+% le remplacement ``Vendredi 15 juillet 2005''.
+%
+% Si le format de sortie n'est pas adapté, il est trivial de réécrire
+% une macro |\today|, à partir de |\todayname|.
+
+\def\today{%
+  \beginnext
+  \toksloadmonthname\month\to\rtA
+  \toksloaddaynumber\day\month\year\to\rcB
+  \toksloaddayname\rcB\to\rtB
+  \rtC={\calendar@today}%
+  \edef\next{\the\rtC{\the\day}{\the\rtB}{\the\month}{\the\rtA}{\the\year}}%
+  \endnext
+}
+
+%%% End of file `calendrier.nw'

@@ -26,6 +26,7 @@ SUBDIR+= hyphenation
 SUBDIR+= punctuation
 SUBDIR+= itemmark
 SUBDIR+= letter
+SUBDIR+= calendar
 
 .include "bps.subdir.mk"
 

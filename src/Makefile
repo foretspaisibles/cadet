@@ -23,6 +23,7 @@
 
 
 SRCS+= kernel.nw
+SRCS+= calendar.nw
 SRCS+= basedef.nw
 SRCS+= mdoclist.nw
 SRCS+= paper.nw

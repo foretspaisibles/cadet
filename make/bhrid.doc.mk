@@ -25,7 +25,9 @@
 # Confer `tex.doc.mk'.
 
 TEX = pdftex
-PDFTEX = pdftex
+PDFTEX = ${TEX}
+TEX.dvi = ${TEX}
+TEX.pdf = ${PDFTEX}
 
 .if defined(FORMAT)&&!empty(FORMAT)&&!defined(FORMAT.bhrid)
 FORMAT.bhrid = ${FORMAT}

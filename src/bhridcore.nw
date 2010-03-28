@@ -38,6 +38,7 @@
 % choses énoncées ci-dessus mais remet à plus tard le choix d'un driver.
 
 \input kernel
+\input calendar
 \input basedef
 \input mdoclist
 \input paper    % Keep paper before output

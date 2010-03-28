@@ -32,13 +32,13 @@
 
 %%% Choses à faire
 
+% Tenir compte des paramètres régionaux (en cours)
 % Créer une véritable `output routine'.
-% Tenir compte des paramètres régionaux.
 
 % Commentaires:
 %
 % La présentation des lettres relève toute entière des paramètres
-% régionaux, cependant la biblioth`ue `lettre' devrait pouvoir
+% régionaux, cependant la bibliothèque `lettre' devrait pouvoir
 % comprendre:
 %  -- différentes façons d'écrire la date;
 %  -- des variantes pour les `objet', `pièces jointes' etc., par
@@ -87,7 +87,7 @@
 \identdef{vref}
 \identdef{subject}
 
-\def\the@date{\the\day.~\the\month.~\the\year}
+\def\the@date{\today}
 
 %
 % Paramètres régionaux
@@ -98,6 +98,8 @@
   \csbindlocalecsname{Phone}{#1}{#2}\to{Phonename}%
   \csbindlocalecsname{Fax}{#1}{#2}\to{Faxname}%
   \csbindlocalecsname{EMail}{#1}{#2}\to{EMailname}%
+  \csbindlocalecsname{CarbonCopy}{#1}{#2}\to{CarbonCopyname}%
+  \csbindlocalecsname{Enclosings}{#1}{#2}\to{Enclosingsname}%
 }
 
 \addlocaleadjustment\lettreadjustment
@@ -376,12 +378,12 @@
   \annotations@C\linesmode
 }
 
-\def\enclosings{\annotations@B\linesmode{P.j.}}
+\def\enclosings{\annotations@B\linesmode{\Enclosingsname}}
 
-\def\carboncopy{\annotations@B\linesmode{C.c.}}
+\def\carboncopy{\annotations@B\linesmode{\CarbonCopyname}}
 
 \def\postscriptum{%
-  \annotations@B\normalmode{PS:}%
+  \annotations@B\normalmode{P.S.}%
 }
 
 \addhook\endmode\to\endhook

@@ -746,7 +746,7 @@ commandes \fn{parbox}, \fn{makebox} et \fn{framebox} de~\LaTeX.
 
 Les effets des affectations aux registres \va{wd}, \va{ht} et \va{dp}
 d'une boîte, largrement utilisés ci-dessous, sont expliqués dans
-l'appendice D du \TeX book, paragraphe `6. Box maneuvers', cf. en
+l'appendice D du \TeX book, paragraphe \em{6. Box maneuvers}, cf. en
 particulier la page~388.
 
 @ \paracommand{%
@@ -761,7 +761,7 @@ haut~(\fn{boxloadtbox}), au milieu~(\fn{boxloadcbox}) ou tout en
 bas~(\fn{boxloadbbox}).
 
 Le paramètre \fa{width} peut être vide ou prendre une valeur qui est une
-`right hand side' pour un registre de dimension. Dans le premier cas,
+\em{right hand side} pour un registre de dimension. Dans le premier cas,
 la boîte crée dans~\fa{box\_register} est de la largeur indiquée par
 la valeur courante de~\va{hsize} dans le second cas, de la largeur
 indiquée par~\fa{width}.

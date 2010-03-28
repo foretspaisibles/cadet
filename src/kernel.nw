@@ -2985,9 +2985,9 @@ Pour utiliser ces définitions, la classe de document~\emph{livre}
 définit une fonction d'ajustement nommée~\fn{bookstructadjustment}:
 \begin{example}
 \def\bookstructadjustment{%
-  \csbindcurrentlocalecsname{chaptername}\to{chaptername}%
-  \csbindcurrentlocalecsname{Chaptername}\to{Chaptername}%
-  \csbindcurrentlocalecsname{tocname}\to{tocname}%
+  \csbindcurrentlocalecsname{chapter}\to{chaptername}%
+  \csbindcurrentlocalecsname{Chapter}\to{Chaptername}%
+  \csbindcurrentlocalecsname{toc}\to{tocname}%
 }%
 \end{example}
 La bibliothèque~\emph{livre} inscrit ensuite cet ajustement auprès de
@@ -2997,7 +2997,7 @@ l'administration réalisée par le noyau:
 \end{example}
 Lorsque~[[\selectlocale{fr}{CH}]] est appelée, les
 commandes~\va{chaptername}, \va{Chaptername} et~\va{tocname} sont
-liées vers~\va{locale@chaptername@fr@CH}, etc.
+liées vers~\va{locale@chapter@fr@CH}, etc.
 
 Cet aperçu est une vue générale de l'utilisation des procédures d'aide
 à la prise en compte des paramètre régionaux. La documentation
