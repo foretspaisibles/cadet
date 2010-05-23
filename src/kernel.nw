@@ -3247,6 +3247,8 @@ La procédure \fn{selectmainlocale} est comme la procédure
   \selectlocale{#1}{#2}%
 }
 
+\def\babel#1#2 #3#4{\selectmainlocale{#1#2}{#3#4}}
+
 @ \paracommand{\fn{selectlocalemainlocale}}
 La procédure~\fn{selectlocalemainlocale} active les paramètres
 régionaux principaux définis grâce à~\fn{selectmainlocale}.
