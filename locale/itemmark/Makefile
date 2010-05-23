@@ -23,7 +23,7 @@
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-APPLICATION = itemmark
+PACKAGE = itemmark
 
 LOCALE = kobaia.tex
 LOCALE+= de.tex
@@ -31,6 +31,6 @@ LOCALE+= en.tex
 LOCALE+= en_US.tex
 LOCALE+= fr.tex
 
-.include "bhrid.locale.mk"
+.include "bhrid.files.mk"
 
 ### End of file `Makefile'

@@ -23,11 +23,11 @@
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-APPLICATION = punctuation
+PACKAGE = punctuation
 
 LOCALE = kobaia.tex
 LOCALE+= fr.tex
 
-.include "bhrid.locale.mk"
+.include "bhrid.files.mk"
 
 ### End of file `Makefile'

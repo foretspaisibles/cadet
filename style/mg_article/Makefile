@@ -22,7 +22,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-STYLECLASS = mg_article
+PACKAGE = mg_article
 
 STYLE+=	Lutece.sty
 STYLE+=	Original.sty

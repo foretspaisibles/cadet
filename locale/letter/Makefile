@@ -23,13 +23,13 @@
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-APPLICATION = letter
+PACKAGE = letter
 
 LOCALE = kobaia.tex
 LOCALE+= de.tex
 LOCALE+= en.tex
 LOCALE+= fr.tex
 
-.include "bhrid.locale.mk"
+.include "bhrid.files.mk"
 
 ### End of file `Makefile'

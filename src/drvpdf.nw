@@ -52,22 +52,49 @@
 \newdimen\imageheight
 \newdimen\imagewidth
 
+\def\boxloadimage@l{%
+  \\{pdf}\\{png}\\{jpg}\\{jpeg}%
+}
+
+\def\boxloadimage@L#1{%
+  \beginnext
+  \edef\next{\noexpand\testexists{\the\rtA.#1}}%
+  \endnext
+  \ifexists
+    \beginnext
+    \edef\next{\rtA={\the\rtA.#1}}%
+    \endnext
+    \let\\\ignore
+    \flagtrue
+  \fi
+}
+
+
 \def\boxloadimage#1\to#2{%
   \beginnext
+  \rtA={#1}%
   \let\rmA\empty
   \let\rmB\empty
   \ifdim\imagewidth>0pt\edef\rmA{ width \the\imagewidth}\fi
   \ifdim\imageheight>0pt\edef\rmB{ height \the\imageheight}\fi
-  \testexists{#1.pdf}\ifexists\rtA{#1.pdf}\else\rtA{#1.png}\fi
-  \rtB={#2}%
-  \rtC={\imagewidth\z@\imageheight\z@}%
-  \edef\next{%
-    \noexpand\setbox\the\rtB=\noexpand\hbox{%
-      \noexpand\pdfximage\rmA\rmB{\the\rtA}%
-      \pdfrefximage\pdflastximage
+  \let\\\boxloadimage@L
+  \flagfalse
+  \boxloadimage@l
+  \ifflag
+    \rtB={#2}%
+    \rtC={\imagewidth\z@\imageheight\z@}%
+    \edef\next{%
+      \noexpand\setbox\the\rtB=\noexpand\hbox{%
+        \noexpand\pdfximage\rmA\rmB{\the\rtA}%
+        \pdfrefximage\pdflastximage
+      }%
+      \the\rtC
     }%
-    \the\rtC
-  }%
+  \else
+    \edef\next{%
+      \noexpand\setbox\the\rtB=\noexpand\hbox{Image #1 not found}%
+    }%
+  \fi
   \endnext
 }
 

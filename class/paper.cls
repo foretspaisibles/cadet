@@ -37,7 +37,7 @@
 \macro zapfd
 \macro verbatim
 
-\enableauxfile
+%\enableauxfile
 
 %%% A. Fontes
 
