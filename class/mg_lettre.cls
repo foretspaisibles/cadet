@@ -64,6 +64,24 @@
 \selectlayout
 \let\\\undefined
 
+\def\setsectionfont{%
+  \setnormalfont\setfontshape{i}\setnormalsize
+}
+
+\outer\def\section#1\par{%
+  \removelastskip
+  \vskip\z@ plus.1\vsize
+  \penalty-250
+  \vskip\z@ plus-.1\vsize
+  \bigskip
+  \vskip\parskip
+  \vskip\baselineskip
+  \leftline{\hskip\layoutmarginleft\sectionfont#1}\nobreak
+  \medskip
+  \noindent
+  \ignoreblanks
+}
+
 %
 % Identification
 %
@@ -398,7 +416,7 @@
   \vskip 1 true cm
   \hrule
   \vskip 1 true mm
-  \line{\the\footline}%
+  \line{\normalfont\the\footline}%
 }
 
 \footline={%
