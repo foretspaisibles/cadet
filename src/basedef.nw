@@ -22,26 +22,22 @@
 % along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-\section{Définitions de base XXX}
-
-{\em XXX La documentation de ce module doit être considérablement
-  révisée et réarrangée, notamment la partie sur les espaces et le
-  petit bazar de commande, qui ne devrait pas exister. De plus, il
-  faut réecrire les procédures pour la production de tableaux et les
-  procédures pour la production de listes.\bigbreak}
+\section{Définitions de base}
 
 Ce fichier définit de nombreuses procédures de base correspondant
-grosso-modo à la partie visible de PLAIN TeX. Une grande partie
-d'entre elles est d'ailleur adaptée du fichier `plain.tex' de Donald
+grosso-modo à l'interface de \emph{PLAIN {\TeX}}. Une grande partie
+d'entre elles est d'ailleur adaptée du fichier \pa{plain.tex} de Donald
 Knuth. Ces procédures se réaprtissent selon les groupes suivants:
 \begin{enumerate}
-\item Un petit bazar de commandes;
+\item Définitions simples
 \item Manipulation des espaces horizontaux et verticaux, des pénalités;
 \item Manipulation des paramètres de l'alinéa;
 \item Préparation de boîtes spéciales;
 \item Préparation de tableaux;
 \item Préparations spéciales pour le paragraphe et la structure.
 \end{enumerate}
+Les définitions simples
+
 Le petit bazar de commandes est assez réduit, il s'agit de définition
 `pervasives' bien utiles mais n'ayant pas leur place dans le
 noyau. Les facilités concernant la manipulation des espaces et des
@@ -62,129 +58,14 @@ des fonctions pour le marquage symbolique du texte, de façon
 semblable à celle proposée par la bibliothèque `mdoc' (de troff).
 
 <<*>>=
-<<Un petit bazar de commandes>>
 <<Manipulation des espaces et des pénalités>>
 <<Manipulation des paramètres de l'alinéa>>
 <<Préparation de boîtes spéciales>>
 <<Préparation de tableaux>>
 <<Préparations spéciales>>
 
-@ \subsection{Un petit bazar de commandes}
 
-Ce petit bazar est très restreint, il contient cependant quelques
-commandes \emph{pervasives} qui n'ont pas leur place ailleurs.
-
-@ \paracommand{\cs{nomathsurround}}
-Ajuste à zéro l'espace autour d'une formule mathématique dans le mode
-paragraphe. Ceci est utilisé pour certaines préparations tirant
-avantage du mode mathématique de~\TeX.
-
-Le nom de la commande est calqué sur~\fn{nointerlineskip}.
-<<Un petit bazar de commandes>>=
-\def\nomathsurround{\mathsurround\z@}
-
-@ \paracommand{\cs{underbar}\fa{h\_stuff}}
-Réalise une boîte horizontale soulignée dont le contenu est
-\fa{h\_stuff}. C'est en général une bien mauvaise idée de souligner du
-texte, qu'il vaut mieux mettre en italiques. Il est cependant de
-reares situations dans lesquelles on souhaite souligner quelque chose,
-on peut s'en remettre à la commande \fn{underbar} ou en écrire une
-variante spécialement adaptée à la situation.
-
-<<Un petit bazar de commandes>>=
-\def\underbar#1{$
-  \nomathsurround
-  \setbox\z@\hbox{#1}
-  \dp\z@\z@
-  \underline{\box\z@}
-$}
-
-@ \paracommand{\cs{strut}}
-Le \fn{strut} est un calibre à insérer pour garantir une hauteur et
-une profondeur minimales à une liste horizontale.
-
-<<Un petit bazar de commandes>>=
-\newbox\strutbox
-\setbox\strutbox=\hbox{\vrule height8.5pt depth3.5pt width\z@}
-\def\strut{\relax\ifmmode\copy\strutbox\else\unhcopy\strutbox\fi}
-
-@ \paracommand{\cs{leavevmode}}
-Quitte le mode vertical, c'est à dire commence un nouvel alinéa à
-moins que l'on ne soit déjà dans un alinéa.
-
-<<Un petit bazar de commandes>>=
-\def\leavevmode{\unhbox\voidb@x}
-
-
-@ \paracommand{\cs{obeylines} et \cs{obeyspaces}}
-Ces commandes rendent actifs les caractères de fin de ligne et les
-espaces (respectivement). On peut définir le sens de la fin de ligne
-avec \fn{setobeylines}, comme dans
-\begin{example}
-\setobeylines\par
-\end{example}
-qui fait se comporter les caractères de fin de ligne comme la commande
-\fn{par}. Idem avec \fn{setobeyspaces} pour \fn{obeyspaces}.
-
-La forme [[\let^^M\obeylines@t]] est préférée à la forme
-[[\def^^M{\obeylines@t}]] car cela permet de traiter réellement le
-retour de ligne comme un token~[[\obeylines@t]]. À cause de cela la
-définition de \fn{setobeylines} n'est pas très jolie et contient deux
-affectations apparemment redondantes.
-
-<<Un petit bazar de commandes>>=
-\begingroup
-\setcatcodeactive\^^M%
-\gdef\obeylines{\setcatcodeactive\^^M\global\let^^M\obeylines@t}%
-\gdef\setobeylines#1{\let\obeylines@t#1\let^^M#1}%
-\endgroup
-
-\begingroup
-\setcatcodeactive\^^`%
-\gdef\obeyspaces{\setcatcodeactive\^^`\global\let^^`\obeyspaces@t}%\
-\gdef\setobeyspaces#1{\let\obeyspaces@t#1\let^^`#1}%
-\endgroup
-
-\setobeylines\endgraf
-\setobeyspaces\space
-
-@ La liaison globale est utile car les tokens [[^^M]] peuvent rester
-en attente jusqu'à la routine \fn{output}. Il faut donc faire en sorte
-que [[^^M]](13) ait un sens à ce moment là.
-
-@ \paracommand{\cs{magnification}}
-La commande \fn{magnification} manipule le registre \va{mag}, qui contrôle
-le facteur d'agrandissement à appliquer au document. Elle permet de
-charger dans ce facteur une valeur prédéfinie au moyen de la
-commande compagnon \fn{magstep}.
-
-Si le facteur d'agrandissement est modifié, les dimensions affectant
-la procédure de sortie des pages --- la procédure \fn{output} ---
-doivent certainement être recalculées, par exemple pour correspondre
-aux dimensions du papier. À cette fin, on définit un \emph{hook}
-nommé~\va{magnificationhook} qui est déclenché après la modification
-du registre~\va{mag}.
-
-La commande \fn{unmagnify} permet après la modification du
-registre~\va{mag} de rétablir la valeur du registre passé en
-paramètre, comme-ci sa valeur avait été affectée par une
-dimension~\emph{true} après modification de~\va{mag}.
-
-Remarque importante: la valeur du registre \va{mag} ne doit pas être
-modifiée après qu'une page ait été éjectée, ni après qu'une dimension
-marquée [[true]] ait été lue.
-
-<<Un petit bazar de commandes>>=
-\newhook\magnificationhook
-\def\magstephalf{1095 }
-\def\magstep#1{\ifcase#1 \@m\or 1200\or 1440\or 1728\or 2074\or 2488\fi\relax}
-\def\magnification{\afterassignment\m@g\count@}
-\def\m@g{\mag\count@\runhook\magnificationhook}
-\def\unmagnify#1{%
-  \divide#1\mag
-  \multiply#1\@m
-}
-
+@ \subsection{Procédures de diagnostic}
 
 @ \paracommand{\cs{loggingall} et \cs{tracingall}}
 Les commandes \fn{loggingall} et \fn{tracingall} sont des aides au
@@ -193,7 +74,7 @@ commandes ajoutent au fichier journal d'éxécution (fichier~\emph{log})
 un très grand nombre d'informations complexes sur le comportement
 intime de \TeX.
 
-<<Un petit bazar de commandes>>=
+<<Procédures de diagnostic>>=
 \def\loggingall{%
   \tracingcommands\tw@
   \tracingstats\tw@
@@ -214,7 +95,7 @@ intime de \TeX.
 Affiche sur le terminal, et dans le journal d'éxécution, les point de
 coupure possibles pour le~\va{text}.
 
-<<Un petit bazar de commandes>>=
+<<Procédures de diagnostic>>=
 \def\showhyphens#1{%
   \setbox0\vbox{%
     \parfillskip\z@skip
@@ -226,32 +107,6 @@ coupure possibles pour le~\va{text}.
   }%
 }
 
-@ \paracommand{\cs{dospecials}}
-La procédure \fn{dospecials} peut être utilisée pour effectuer quelque
-chose sur tous les caractères ayant un \emph{catcode} spécial dans Bhrìd
-\TeX\ (à l'exception de l'ascii NULL, de TAB, de FORMFEED, LINEFEED,
-RETURN et DELETE). Pour effectuer un traitement su chacun de ces
-caractères, on définit la procédure~\fn{do}.
-
-Cette procédure contient traite plus de caractères que celle de
-\emph{plain}~\TeX, car les signes de ponctuation sont actifs dans Bhrìd
-\TeX, et certaines bibliothèques ne pensent pas à ajuster leurs code de
-catégorie. C'est notamment le cas de `epsf' qui n'ajuste pas le code
-de catégorie du deux-points sur~12 avant de traiter son fichier
-d'entrée.
-
-Remarque: cette procédure est définie dans \emph{plain} \TeX, sa présence
- augmente la compatibilité de Bhrìd \TeX et de \emph{plain} \TeX. Sans ce
- désir de compatibilité, elle porterait un nom différent et serait
- programmée autrement, avec des listes et la commande~[[\\]].
-
-<<Un petit bazar de commandes>>=
-\def\dospecials{%
-  \do\ \do\\\do\{\do\}\do\$\do\&%
-  \do\#\do\^\do\^^K\do\_\do\^^A\do\%\do\~%
-  \do\:\do\;\do\?\do\!%
-  \do\«\do\»\do\¡\do\¿%
-}
 
 
 @ \subsection{Manipulation des espaces et des pénalités}
@@ -322,6 +177,7 @@ interligne.
   \lineskip\z@
   \lineskiplimit\maxdimen
 }
+
 
 
 @ \paracommand{\cs{normalbaselines}}
@@ -395,7 +251,7 @@ Les commandes suivantes terminent un paragraphe et donnent une
 indication sur l'opportunité d'une coupure de page à cet endroit.
 
 @ \paracommand{\cs{goodbreak}, \cs{filbreak}, \cs{eject},
-  \cs{supereject} et \cs{bye}}
+  \cs{supereject}, \cs{newpage} \cs{supernewpage} et \cs{bye}}
 La commande \fn{goodbreak} incite une coupure de page. La commande
 \fn{filbreak} incite une coupure qui termine la page par un blanc.
 La commande \fn{eject} cause un appel immédiat à la routine
@@ -407,6 +263,8 @@ qui est un code de communication avec la procédure \fn{output}.
 \def\filbreak{\par\vfil\penalty-200\vfilneg}
 \def\eject{\par\break}
 \def\supereject{\par\penalty-\@MM}
+\def\newpage{\par\vfill\eject}
+\def\supernewpage{\par\vfill\supereject}
 
 \outer\def\bye{\par\vfill\supereject\end}
 
@@ -746,7 +604,7 @@ commandes \fn{parbox}, \fn{makebox} et \fn{framebox} de~\LaTeX.
 
 Les effets des affectations aux registres \va{wd}, \va{ht} et \va{dp}
 d'une boîte, largrement utilisés ci-dessous, sont expliqués dans
-l'appendice D du \TeX book, paragraphe \em{6. Box maneuvers}, cf. en
+l'appendice D du \TeX book, paragraphe \emph{6. Box maneuvers}, cf. en
 particulier la page~388.
 
 @ \paracommand{%
@@ -761,7 +619,7 @@ haut~(\fn{boxloadtbox}), au milieu~(\fn{boxloadcbox}) ou tout en
 bas~(\fn{boxloadbbox}).
 
 Le paramètre \fa{width} peut être vide ou prendre une valeur qui est une
-\em{right hand side} pour un registre de dimension. Dans le premier cas,
+\emph{right hand side} pour un registre de dimension. Dans le premier cas,
 la boîte crée dans~\fa{box\_register} est de la largeur indiquée par
 la valeur courante de~\va{hsize} dans le second cas, de la largeur
 indiquée par~\fa{width}.
@@ -933,10 +791,10 @@ boîte.
 \long\def\boxload@P#1#2#3{#1{#2}\to\boxload@b{#3}\box\boxload@b}
 
 
-@ \subsection{Préparation de tableaux XXX}
+@ \subsection{Préparation de tableaux}
 
 Ces commandes permettant la réalisation de tableaux basiques sont
-décrites au début du chapitre~22 du \TeX book.
+décrites au début du chapitre~22 du~{\TeXbook}, il s'agit du code de~Knuth.
 
 <<Préparation de tableaux>>=
 \def\hidewidth{\hskip\hideskip} % for alignment entries that can stick out
@@ -996,6 +854,61 @@ pour présenter les énumérations, on insère les définitions de
 \fn{hang}, \fn{hangindent}, etc. Ces procédures ne devraient cependant
 pas être utilisées par les scripteurs qui leur préféreront les
 \emph{listes à la mdoc}.
+
+
+@ \paracommand{\cs{underbar}\fa{h\_stuff}}
+Réalise une boîte horizontale soulignée dont le contenu est
+\fa{h\_stuff}. C'est en général une bien mauvaise idée de souligner du
+texte, qu'il vaut mieux mettre en italiques. Il est cependant de
+reares situations dans lesquelles on souhaite souligner quelque chose,
+on peut s'en remettre à la commande \fn{underbar} ou en écrire une
+variante spécialement adaptée à la situation.
+
+<<Préparations spéciales>>=
+\def\underbar#1{$
+  \nomathsurround
+  \setbox\z@\hbox{#1}
+  \dp\z@\z@
+  \underline{\box\z@}
+$}
+
+
+@ \paracommand{\cs{obeylines} et \cs{obeyspaces}}
+Ces commandes rendent actifs les caractères de fin de ligne et les
+espaces (respectivement). On peut définir le sens de la fin de ligne
+avec \fn{setobeylines}, comme dans
+\begin{example}
+\setobeylines\par
+\end{example}
+qui fait se comporter les caractères de fin de ligne comme la commande
+\fn{par}. Idem avec \fn{setobeyspaces} pour \fn{obeyspaces}.
+
+La forme [[\let^^M\obeylines@t]] est préférée à la forme
+[[\def^^M{\obeylines@t}]] car cela permet de traiter réellement le
+retour de ligne comme un token~[[\obeylines@t]]. À cause de cela la
+définition de \fn{setobeylines} n'est pas très jolie et contient deux
+affectations apparemment redondantes.
+
+<<Préparations spéciales>>=
+\begingroup
+\setcatcodeactive\^^M%
+\gdef\obeylines{\setcatcodeactive\^^M\global\let^^M\obeylines@t}%
+\gdef\setobeylines#1{\let\obeylines@t#1\let^^M#1}%
+\endgroup
+
+\begingroup
+\setcatcodeactive\^^`%
+\gdef\obeyspaces{\setcatcodeactive\^^`\global\let^^`\obeyspaces@t}%\
+\gdef\setobeyspaces#1{\let\obeyspaces@t#1\let^^`#1}%
+\endgroup
+
+\setobeylines\endgraf
+\setobeyspaces\space
+
+@ La liaison globale est utile car les tokens [[^^M]] peuvent rester
+en attente jusqu'à la routine \fn{output}. Il faut donc faire en sorte
+que [[^^M]](13) ait un sens à ce moment là.
+
 
 @ \paracommand{\cs{itemindent}}
 Dans \emph{plain} \TeX\ le retrait utilisé par \fn{item} a la même

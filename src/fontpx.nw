@@ -101,7 +101,7 @@
 
 % La collection fournit plusieurs fontes pouvant jouer le même rôle,
 % les exemplaires supplémentaires pour une sorte de fonte difèrent
-% seulement par queleques caractères.
+% seulement par quelques caractères.
 %
 % Ces fichiers supplémentaires son pour l'instant ignorés, en voici la
 % liste: pxmi1, pxbmi1.
@@ -220,6 +220,6 @@
 
 \def\systemfont{\setsystemfont\fontswitch}
 
-\input fontcmmt
+%\input fontcmmt
 
 %%% End of file `fontpx.nw'

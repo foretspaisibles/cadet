@@ -54,7 +54,7 @@ sous-système. Comme constantes particulières se trouvent les fonctions
 caractères spéciaux utilisés, comme le caractère souligné ou
 l'esperluette, avec de \emph{catcodes} modifiés à~12.
 
-\item[Allocation des registres] Cette section réalise les services
+\item[Registres] Cette section réalise les services
 d'allocation des registres, exactement comme dans le format
 \emph{plain}. On réserve par ailleurs une poignée de registres
 \emph{touzuzages} aussi appelés \emph{scratch registers}.
@@ -93,7 +93,7 @@ coutume en vigueur au moyen de \fn{selectlocale}.
 <<*>>=
 <<Catcodes>>
 <<Constantes>>
-<<Allocation des registres>>
+<<Registres>>
 <<Programmation>>
 <<Assistance à la définition de macros>>
 <<Bibliothèques>>
@@ -361,6 +361,33 @@ caractères.
 \def\setcatcodeother#1{\catcode`#1=\catcodeother}
 \def\setcatcodeactive#1{\catcode`#1=\catcodeactive}
 
+@ \paracommand{\cs{dospecials}}
+La procédure \fn{dospecials} peut être utilisée pour effectuer quelque
+chose sur tous les caractères ayant un \emph{catcode} spécial dans Bhrìd
+\TeX\ (à l'exception de l'ascii NULL, de TAB, de FORMFEED, LINEFEED,
+RETURN et DELETE). Pour effectuer un traitement su chacun de ces
+caractères, on définit la procédure~\fn{do}.
+
+Cette procédure traite plus de caractères que celle de
+\emph{plain}~\TeX, car les signes de ponctuation sont actifs dans Bhrìd
+\TeX, et certaines bibliothèques ne pensent pas à ajuster leurs code de
+catégorie. C'est notamment le cas de `epsf' qui n'ajuste pas le code
+de catégorie du deux-points sur~12 avant de traiter son fichier
+d'entrée.
+
+Remarque: cette procédure est définie dans \emph{plain} \TeX, sa présence
+ augmente la compatibilité de Bhrìd \TeX et de \emph{plain} \TeX. Sans ce
+ désir de compatibilité, elle porterait un nom différent et serait
+ programmée autrement, avec des listes et la commande~[[\\]].
+
+<<Procédures manipulant le tableau des catcodes>>=
+\def\dospecials{%
+  \do\ \do\\\do\{\do\}\do\$\do\&%
+  \do\#\do\^\do\^^K\do\_\do\^^A\do\%\do\~%
+  \do\:\do\;\do\?\do\!%
+  \do\«\do\»\do\¡\do\¿%
+}
+
 @ \paragraph{Espace de noms privé}
 Afin de ne pas empiéter sur l'espace des noms de macros de l'opérateur
 de saisie, on joue sur le \emph{catcode} du caractère~[[@]].  Ce
@@ -484,7 +511,7 @@ infiniment extensible. Ce ressort apparaît dans la définition
 de~\fn{hidewidth} que l'on peut utiliser dans la cellule d'un
 tableau. La séquence se comporte comme un~\fn{hfill} mais cache la
 largeur des colonnes trop grandes, ce qui autorise le contenu de la
-case à dorder sur la colonne suivante.
+case à déborder sur la colonne suivante.
 
 \item[centering] ([[0pt plus 1000pt minus 1000pt]]) une valeur de
 ressort qui peut être utilisé pour centrer des éléments. Pour une
@@ -577,7 +604,7 @@ mettre au point un mode \emph{verbatim}.
 *endgroup
 
 
-@ \subsection{Allocation des registres}
+@ \subsection{Registres}
 
 On définit ici des macros réalisant une allocation automatique des
 registres \emph{count}, \emph{box}, \emph{dimen}, \emph{skip},
@@ -599,13 +626,17 @@ La création d'une nouvelle conditionnelle peut être considérée comme
 la création d'une registre booléen, pouvant contenir des valeurs parmi
 un ensemble à deux éléments.
 
-<<Allocation des registres>>=
+On termine par quelques définitions simples faisant intervenir des
+registres spéciaux de {\TeX}.
+
+<<Registres>>=
 <<Message de progression: registres>>
 <<Procédure d'allocation automatique de registres>>
+<<Procédure d'allocation automatique de registres booléens>>
 <<Allocation des registres de travail>>
 <<Allocation des registres constants>>
 <<Initialisation des registres constants>>
-<<Procédure d'allocation automatique de registres booléens>>
+<<Manipulation de certains registres>>
 
 @ \paragraph{Procédures d'allocation automatique des registres}
 Here are macros for the automatic allocation of [[\count]], [[\box]],
@@ -861,7 +892,7 @@ qu'on lui crée une abréviation. On peut
 constuction. Lorsqu'on utilise \fn{beginnext} et~\fn{endnext} il est
 obligatoire d'affecter un texte de remplacement à~\fn{next}, par
 exemple avec~[[\let\next=\empty]].
-<<Allocation des registres>>=
+<<Registres>>=
 \def\beginnext{\begingroup\let\next\undefined}
 \def\endnext{\expandafter\endgroup\next}
 
@@ -925,7 +956,7 @@ réalise une interface, il l'enregistre comme une bibliothèque. Ces
 interfaces s'enregistrent sous un nom commençant par~\emph{kif}
 pour~\emph{kernel interface}.
 
-<<Allocation des registres>>=
+<<Manipulation de certains registres>>=
 \newif\ifdriver
 \def\setdriver#1{\global\def\driver@m{#1}\global\let\setdriver\undefined}
 \def\driver@m{none}
@@ -940,6 +971,59 @@ pour~\emph{kernel interface}.
   \endnext
 }
 \def\toksloaddriver\to#1{\toksloadcsexpansion\driver@m\to#1}
+
+
+@ \paracommand{\cs{leavevmode}}
+Quitte le mode vertical, c'est à dire commence un nouvel alinéa à
+moins que l'on ne soit déjà dans un alinéa.
+
+<<Manipulation de certains registres>>=
+\def\leavevmode{\unhbox\voidb@x}
+
+@ \paracommand{\cs{strut}}
+Le \fn{strut} est un calibre à insérer pour garantir une hauteur et
+une profondeur minimales à une liste horizontale.
+
+<<Manipulation de certains registres>>=
+\newbox\strutbox
+\setbox\strutbox=\hbox{\vrule height8.5pt depth3.5pt width\z@}
+\def\strut{\relax\ifmmode\copy\strutbox\else\unhcopy\strutbox\fi}
+
+
+@ \paracommand{\cs{magnification}}
+La commande \fn{magnification} manipule le registre \va{mag}, qui contrôle
+le facteur d'agrandissement à appliquer au document. Elle permet de
+charger dans ce facteur une valeur prédéfinie au moyen de la
+commande compagnon \fn{magstep}.
+
+Si le facteur d'agrandissement est modifié, les dimensions affectant
+la procédure de sortie des pages --- la procédure \fn{output} ---
+doivent certainement être recalculées, par exemple pour correspondre
+aux dimensions du papier. À cette fin, on définit un \emph{hook}
+nommé~\va{magnificationhook} qui est déclenché après la modification
+du registre~\va{mag}.
+
+La commande \fn{unmagnify} permet après la modification du
+registre~\va{mag} de rétablir la valeur du registre passé en
+paramètre, comme-ci sa valeur avait été affectée par une
+dimension~\emph{true} après modification de~\va{mag}.
+
+Remarque importante: la valeur du registre \va{mag} ne doit pas être
+modifiée après qu'une page ait été éjectée, ni après qu'une dimension
+marquée [[true]] ait été lue.
+
+<<Manipulation de certains registres>>=
+\newhook\magnificationhook
+\def\magstephalf{1095 }
+\def\magstep#1{\ifcase#1 \@m\or 1200\or 1440\or 1728\or 2074\or 2488\fi\relax}
+\def\magnification{\afterassignment\m@g\count@}
+\def\m@g{\mag\count@\runhook\magnificationhook}
+\def\unmagnify#1{%
+  \divide#1\mag
+  \multiply#1\@m
+}
+
+
 
 @ \subsection{Programmation}
 On définit dans cette section des macros utiles pour la
@@ -1429,6 +1513,18 @@ conditionnel.
 
 @ \paragraph{Manipulation des macros et des registres de tokens}
 
+
+@ \paracommand{\cs{nomathsurround}}
+Ajuste à zéro l'espace autour d'une formule mathématique dans le mode
+paragraphe. Ceci est utilisé pour certaines préparations tirant
+avantage du mode mathématique de~\TeX.
+
+Le nom de la commande est calqué sur celui de~\fn{nointerlineskip},
+définie dans le~{\TeXbook}.
+<<Manipulation des registres>>=
+\def\nomathsurround{\mathsurround\z@}
+
+
 @ \paracommand{\cs{tokscat}\fa{answer}=\fa{r1}\&\fa{r2}}
 Place le résultat de la concaténation de \fa{r1} et \fa{r2}
 dans~\fa{answer}.
@@ -1438,6 +1534,7 @@ dans~\fa{answer}.
   \edef\next{#1={\the#2\the#3}}%
   \endnext
 }
+
 
 @ \paracommand{\cs{testtoksempty}\fa{toks\_register}}
 Teste la vacuité du registre de tokens~\fa{toks\_register}.
@@ -1800,7 +1897,7 @@ Usuellement, les noms d'évènements utilisés
 pour~\fa{control\_sequence} se terminent par~\fn{hook},
 comme~\fn{endhook} ou~\fn{outputsanitizehook}.
 
-<<Manipulation des hooks>>=
+<<Procédure d'allocation automatique de registres>>=
 \def\newhook#1{\def#1{}}
 
 

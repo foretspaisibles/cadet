@@ -22,14 +22,16 @@
 % along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-\section{Fichier fontcmm.nw}
+\section{Fontes Computer Modern Math}
+Ce module contient les définitions nécessaires pour utiliser les
+fontes mathématiques Computer Modern avec le PFSS. Cette utilisation
+est un sujet technique et les définitions suivantes sont
+liées à des fontes particulières.
+
+La fin du fichier lit les définitions de caractères pour ces fontes
+dans le fichier \pa{fontcmmt}
+
 <<*>>=
-
-% Ce module contient les définitions nécessaires pour utiliser les
-% fontes mathématiques Computer Modern avec le PFSS. Cette utilisation
-% est un sujet technique et les définitions suivantes sont fortement
-% liées à des fontes particulières.
-
 %
 % Computer Math Roman
 %
@@ -171,7 +173,5 @@
 \setfontsize{5}\fontbind{cmbx5}
 
 \addhook\fam\mathbf\to\bfhook
-
-\input fontcmmt
 
 %%% End of file `fontcmm.nw'

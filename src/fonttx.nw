@@ -221,6 +221,6 @@
 
 \def\systemfont{\setsystemfont\fontswitch}
 
-\input fontcmmt
+%\input fontcmmt
 
 %%% End of file `fonttx.nw'

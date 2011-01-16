@@ -104,6 +104,7 @@ sub format_spec_output {
     foreach my $font (@{$spec->{'Fontes_support'}}) {
 	print $channel "\\input $font\n";
     };
+    print $channel "\\input convent\n";
     print $channel "\\localesupport{%\n";
     foreach my $locale (@{$spec->{'Locales_support'}}) {
 	$locale =~ m/(..)_(..)/
