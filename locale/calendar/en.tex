@@ -1,0 +1,50 @@
+%%% calendar/en.tex -- Noms français dans le caldendrier
+
+% Copyright (C) 2010, 2013 Michael Grünewald
+% All rights reserved.
+%
+% This file is part of Bhrìd TeX.
+%
+% Bhrìd TeX is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Bhrìd TeX is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+\def\locale@dayname@en{%
+  \\{Monday}%
+  \\{Tuesday}%
+  \\{Wednesday}%
+  \\{Thursday}%
+  \\{Friday}%
+  \\{Saturday}%
+  \\{Sunday}%
+}
+
+\def\locale@monthname@en{%
+  \\{January}%
+  \\{February}%
+  \\{March}%
+  \\{April}%
+  \\{May}%
+  \\{June}%
+  \\{Juli}%
+  \\{August}%
+  \\{September}%
+  \\{October}%
+  \\{November}%
+  \\{December}%
+}
+
+\def\locale@today@en#1#2#3#4#5{%
+  #3 the~#1\ifcase#2\relax th\or st\or nd\else th\fi. of~#4 #5%
+}
+
+%%% End of file `calendar/en.tex'
