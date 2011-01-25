@@ -267,10 +267,10 @@
 
 %%% SYMBOLES SPÉCIAUX
 
-\def ^^a2{\undefined}% XXX ¢
+\def ^^a2{\undefined}% Cents
 \def ^^a3{\undefined}
 \def ^^a4{\undefined}
-\def ^^a5{\undefined}% XXX ¥
+\def ^^a5{\undefined}% Yen
 \def ^^a7{\undefined}
 \def ^^b6{\undefined}% ¶
 \def ^^a9{\undefined}
@@ -282,7 +282,7 @@
 \def ^^ac{\undefined}% logical not
 \def ^^ad{\undefined}% ­
 \def ^^af{\undefined}% ¯
-\def ^^b0{\superscript{}{o}}% XXX °
+\def ^^b0{\superscript{}{o}}% exponant o
 \def ^^b1{\undefined}% plusminus
 \def ^^b2{\undefined}% power two
 \def ^^b3{\undefined}% power three
