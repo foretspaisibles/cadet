@@ -1,0 +1,6 @@
+*.latex
+*.tex
+*.fmt
+!bhridman.tex
+!orientation.tex
+bhridman.out

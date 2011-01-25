@@ -1,0 +1,11 @@
+# Exclude patterns for bewerbung
+#
+# 1 Ignore TeX produced files, anywhere in the tree
+*.log
+*.pdf
+*.dvi
+*.aux
+*.toc
+*.ps
+*.eps
+.cookie.*
