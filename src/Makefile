@@ -55,6 +55,7 @@ SRCS+= drvdvips.nw
 SRCS+= drvpdf.nw
 
 MANUAL+= bhridman.tex
+MANUAL+= bhridman.sty
 MANUAL+= orientation.tex
 
 TEXMFDIST = /usr/local/share/texmf-dist
