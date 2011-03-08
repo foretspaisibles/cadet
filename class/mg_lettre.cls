@@ -104,6 +104,7 @@
 \identdef{nref}
 \identdef{vref}
 \identdef{subject}
+\identdef{sceal}
 
 \def\the@date{\today}
 
@@ -353,7 +354,16 @@
 
 \def\signature{%
   \endmode
-  \vskip 35 true mm     % Espace pour la signature
+  \ifx\the@sceal\undefined
+    \vskip 35 true mm     % Espace pour la signature
+  \else
+    \vbox to 35 true mm{%
+      \vfill
+      \noindent
+      \hskip 60 true mm \image{\the@sceal}%
+      \vfill
+    }%
+  \fi
   \def\endmode{\vskip\bigskipamount\par\egroup\relaxmode}%
   \noindent
   \hskip 50 true mm
