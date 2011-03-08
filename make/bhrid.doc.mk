@@ -29,8 +29,8 @@ PDFTEX = ${TEX}
 TEX.dvi = ${TEX}
 TEX.pdf = ${PDFTEX}
 
-.if defined(FORMAT)&&!empty(FORMAT)&&!defined(FORMAT.bhrid)
-FORMAT.bhrid = ${FORMAT}
+.if defined(BHRIDFORMAT)&&!empty(BHRIDFORMAT)&&!defined(FORMAT.bhrid)
+FORMAT.bhrid = ${BHRIDFORMAT}
 .endif
 
 FORMAT.bhrid?= original
