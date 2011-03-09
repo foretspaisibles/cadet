@@ -1,8 +1,8 @@
-### Makefile
+### Makefile -- Directives BSD Make pour les fichiers de style
 
 # Author: Michael Grünewald
-# Date: Sat Apr  8 16:23:55 CEST 2006
-# Copyright: (C) 2006, 2013 Michael Grünewald
+# Date: Dim 15 mar 2009 09:42:47 CET
+# Copyright: (C) 2011, 2013 Michael Grünewald
 
 # Copyright (C) 2006, 2013 Michael Grünewald
 # All rights reserved.
@@ -22,10 +22,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIR = generic
-SUBDIR+= mg_article
-SUBDIR+= mg_lettre
+PACKAGE = mg_lettre
 
-.include "bps.subdir.mk"
+STYLE+=	dlleft.sty
+
+.include "bhrid.files.mk"
 
 ### End of file `Makefile'

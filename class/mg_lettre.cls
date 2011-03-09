@@ -66,7 +66,7 @@
 \newdimen\lettermarginleft
 \newdimen\lettermarginright
 \lettermarginleft=25 true mm
-\lettermarginright=25 true mm
+\lettermarginright=0 true mm
 
 \newdimen\letteraddresseewidth
 \newdimen\letteraddresseeheight
