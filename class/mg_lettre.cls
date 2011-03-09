@@ -61,8 +61,41 @@
 \\\layoutmarginright
 \\\layoutmargintop
 \\\layoutmarginbottom
-\selectlayout
 \let\\\undefined
+
+\newdimen\lettermarginleft
+\newdimen\lettermarginright
+\lettermarginleft=25 true mm
+\lettermarginright=25 true mm
+
+\newdimen\letteraddresseewidth
+\newdimen\letteraddresseeheight
+\letteraddresseewidth=85 true mm
+\letteraddresseeheight=35 true mm
+
+\newdimen\letteraddresswidth
+% The height of the address box is a priori unimportant
+
+% The gap between addressee and address
+\newdimen\letterheadersep
+\letterheadersep=20 true mm
+
+% The indentation before the signature
+\newdimen\lettersignatureindent
+
+\def\selectlayoutletter{%
+  \letteraddresswidth=\paperwidth
+  \advance\letteraddresswidth -\layoutmarginleft
+  \advance\letteraddresswidth -\layoutmarginright
+  \advance\letteraddresswidth -\letteraddresseewidth
+  \advance\letteraddresswidth -\letterheadersep
+  \lettersignatureindent=\letteraddresswidth
+  \advance\lettersignatureindent\letterheadersep
+}
+
+\addhook\selectlayoutletter\to\selectlayouthook
+
+\selectlayout
 
 \def\setsectionfont{%
   \setnormalfont\setfontshape{i}\setnormalsize
@@ -237,7 +270,7 @@
     \hangindent=\itemindent
     \hangafter=1
     \raggedright
-    \Subjectname:\space\the@subject
+    {\bf \Subjectname:\space\the@subject}%
     \par
     \endgroup
     \vskip2\baselineskip
@@ -286,10 +319,9 @@
   \endnext
 }
 
-\def\makeheader{%
-  \line{%
+\def\makeheaderaddress{%
     \vtop{%
-      \hsize=82 true mm
+      \hsize=\letteraddresswidth
       \parindent\z@
       \makeaddress
       \testmakeheader
@@ -303,15 +335,24 @@
       \fi
       \vfill
     }%
-    \hskip 20 true mm
-    \hss                % Compense les erreurs d'arrondi
+}
+
+\def\makeheaderaddressee{%
     \vtop{%
-      \hsize=85 true mm
+      \hsize=\letteraddresseewidth
       \makedate
       \vskip -\baselineskip
       \vskip 30 true mm % 55 - layoutmargintop = 30
       \vtop to 35 mm {\makeaddressee\vfill}%
     }%
+}
+
+\def\makeheader{%
+  \line{%
+    \makeheaderaddress
+    \hskip\letterheadersep
+    \hss                % Compense les erreurs d'arrondi
+    \makeheaderaddressee
   }%
 }
 
@@ -319,14 +360,21 @@
 % Parties modales
 %
 
-\def\relaxmode{\let\endmode\relax}
+\def\relaxmode{%
+  \let\endmode\relax
+}
 
-\def\normalmode{\let\endmode\par\parskip=\smallskipamount}
+\def\normalmode{%
+  \let\endmode\par
+  \parskip=\smallskipamount
+}
 
-\def\linesmode{\begingroup
+\def\linesmode{%
+  \begingroup
   \parindent\z@
   \parskip\z@
-  \obeylines\def\endmode{\par\endgroup}%
+  \obeylines
+  \def\endmode{\par\endgroup}%
 }
 
 \def\opening{%
@@ -336,7 +384,8 @@
   \advance\rdA by - \layoutmargintop
   \vbox to\rdA{\makeheader\vss}%
   \readline\to\rtA\then
-    \advance\leftskip\layoutmarginleft
+    \advance\leftskip\lettermarginleft
+    \advance\rightskip\lettermarginright
     \makesubject
     \noindent\the\rtA
     \smallskip
@@ -358,18 +407,23 @@
     \vskip 35 true mm     % Espace pour la signature
   \else
     \vbox to 35 true mm{%
+      \leftskip\lettersignatureindent
+      \parskip\z@
+      \rightskip\z@
       \vfill
-      \noindent
-      \hskip 60 true mm \image{\the@sceal}%
+      \noindent\image{\the@sceal}\hss
       \vfill
     }%
+    \nointerlineskip
   \fi
-  \def\endmode{\vskip\bigskipamount\par\egroup\relaxmode}%
-  \noindent
-  \hskip 50 true mm
+  \def\endmode{%
+    \par
+    \vskip\bigskipamount
+    \egroup
+    \relaxmode
+  }%
   \vtop\bgroup
-    \leftskip\z@
-    \hsize = 85 true mm
+    \leftskip\lettersignatureindent
     \parindent\z@
     \parskip\z@
     \obeylines\ignorespaces
