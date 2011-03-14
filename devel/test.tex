@@ -1,0 +1,13 @@
+% test.tex
+\input setup
+\title We test miscellaneous features of \TeX
+
+\long\def\testignoreblanks#1{\ignoreblanks#1}
+
+\meaning\spacetoken
+\meaning\newlinetoken
+
+\testignoreblanks{
+\par A}
+
+\bye

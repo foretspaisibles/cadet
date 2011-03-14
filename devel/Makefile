@@ -1,3 +1,4 @@
+DOCS+= test.tex
 DOCS+= boxes.tex
 DOCS+= sscan.tex
 

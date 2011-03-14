@@ -2018,75 +2018,122 @@ d'appeler la commande \fn{shipout}.
 
 @ \paragraph{Procédures d'analyse lexicale}
 
+<<Assistance à la définition de macros>>=
+\def\cslet#1{\expandafter\let\csname #1\endcsname}
+
+@ \paracommand{\cs{spacetoken}, \cs{newlinetoken}}
+Des constantes qui sont des liaison de type \emph{let} avec des
+caractères ordinairement interprétés comme des des espaces.
+
+<<Procédures d'analyse lexicale>>=
+{%
+  \setcatcodeactive\*
+  \let*\ignore
+  % The relax at the end of the next line is ignored
+  \global\futurelet\spacetoken*^^20\relax
+  % The relax at the end of the next line plays no role
+  \global\futurelet\newlinetoken*^^0a\relax
+}
+
 @ \paracommand{\TeX\cs{ignorespaces}}
-\TeX\ reads and expands tokens, doing nothing until reaching one that
+{\TeX} reads and expands tokens, doing nothing until reaching one that
 is not a \emph{space token}. A space token is either a character with
 category 10, or an implict character whose definition is such a
 character.
 
-@ \paracommand{\cs{ignoreblanks}}
+@ \paracommand{\cs{ignoreblanks}, \cs{readblanks}\cs{then}\fa{callback}\cs{done}}
 Absorbe tous les blancs, et traite correctement les fichiers inclus.
 Lorsqu'une directive~\fn{input} est rencontrée, les espaces au début
-du fichier inclus sont eux aussi absorbés.
+du fichier inclus sont eux aussi absorbés.  La version \cs{readblanks}
+traite ensuite les instructions de~\fa{callback}.
 
 Les blancs sont les membres de la liste~\va{ignoreblanks@l}.
 
 <<Procédures d'analyse lexicale>>=
-\def\ignoreblanks@l{%
-  \\{\par}%
+\def\readblanks@l{%
   \\{\spacetoken}%
-  \\{\tabtoken}%
+  \\{\par}%
   \\{\newlinetoken}%
-  %\\{^^0c}\\{^^0d}}
+  % Les caractères suivants pourraient aussi être ignorés:
+  %   \\{^^09}
+  %   \\{^^0c}
+  %   \\{^^0d}
 }%
 
-\def\ignoreblanks@A{%
-  \let\ignoreblanks@N=\ignoreblanks@D
-  \flagtrue
-  \let\\=\ignoreblanks@B
-  \ignoreblanks@l
-  \ifx\ignoreblanks@T\input
-    \let\ignoreblanks@N=\ignoreblanks@C
-  \else
-    \ifflag
-      \let\ignoreblanks@N=\ignoreblanks@E%
-    \fi
+\def\readblanks\then#1\done{%
+  \begingroup
+  \def\rmC{#1}%		Save the callback
+  \readblanks@M%	Jump to @M (main)
+}
+
+\def\readblanks@M{%
+  \futurelet%		Save the next token
+  \readblanks@t%	Jumpt to @A
+  \readblanks@A
+}
+
+\def\readblanks@A{%
+  \let\readblanks@N\readblanks@E%	Next is @E (end)
+  \flagfalse
+  \let\\\readblanks@P
+  \readblanks@l
+  \ifflag
+    \let\readblanks@N\readblanks@I%	Next is @I (ignore)
   \fi
-  \ignoreblanks@N
+  \ifx\readblanks@t\spacetoken
+    \let\readblanks@N\readblanks@S%	Next is @S (space)
+  \fi
+  \ifx\readblanks@t\input
+    \let\readblanks@N\readblanks@X%	Next is @X (expand)
+  \fi
+  \readblanks@N
 }
 
-\long\def\ignoreblanks@B#1{%
-  \let\rmA=#1%
-  \ifx\rmA\ignoreblanks@T
-    \flagfalse
+@ La rédaction du prédicat \cs{readblank@P} est le lieu d'une petite
+difficulté:  un \cs{spacetoken} ne peut être le terme de droite
+d'un \cs{let}, seulement d'un \cs{futurelet}.
+
+Le \emph{callback} de ce \cs{futurelet} doit être \cs{ignore}, de
+sorte que l'objet est détruit, mais les espaces sont invisibles
+lorsque l'argument du \emph{callback} est recherché et le reste du
+programme est protégé par \cs{relax}.
+
+Ainsi, lors d'un appel \cs{readblanks@P}\cs{spacetoken} c'est
+\cs{relax} qui est traité par \cs{ignore}, dans les autres cas, c'est
+l'argument de \cs{readblanks@P} qui est retiré du flot d'entrée.
+
+<<Procédures d'analyse lexicale>>=
+\long\def\readblanks@P#1{%
+  \futurelet\rmA\ignore#1\relax
+  \ifx\readblanks@t\rmA
+    \flagtrue
+    \let\\\ignore
   \fi
 }
 
-\def\ignoreblanks@C{%
-  % We met an `input' statement, let'us expand it and try again to
-  % ignore blanks.
-  \endgroup
-  \expandafter\ignoreblanks
+\def\readblanks@E{%
+  \expandafter\endgroup\rmC
 }
 
-\def\ignoreblanks@E{%
-  \endgroup
+\long\def\readblanks@I#1{%
+  \readblanks@M
 }
 
-\def\ignoreblanks@D{%
-  \afterassignment\ignoreblanks@M
-  \let\ignoreblanks@T
+
+@ Dans \cs{readblanks@S}, la recherche du paramètre supprime l'espace
+suivant la dernière lettre de l'identifiant la macro.
+
+<<Procédures d'analyse lexicale>>=
+\long\def\readblanks@S#1{%
+  \readblanks@M#1%
 }
 
-\def\ignoreblanks@M{%
-  \futurelet
-  \ignoreblanks@T
-  \ignoreblanks@A
+\def\readblanks@X{%
+  \expandafter\readblanks@M
 }
 
 \def\ignoreblanks{%
-  \begingroup
-  \ignoreblanks@M
+  \readblanks\then\relax\done
 }
 
 
@@ -2218,18 +2265,6 @@ etc.
 On définit un nouveau nom grâce à son identifiant~\fa{identifier},
 comme avec \fn{csdef}, mais l'opération effectuée est un \fn{let} au
 lieu d'un \fn{def}.
-
-<<Assistance à la définition de macros>>=
-\def\cslet#1{\expandafter\let\csname #1\endcsname}
-
-@ \paracommand{\cs{spacetoken}, \cs{tabtoken}, \cs{newlinetoken}}
-Des constantes qui sont des liaison de type \emph{let} avec des
-caractères ordinairement interprétés comme des des espaces.
-
-<<Assistance à la définition de macros>>=
-{\setcatcodeactive\*\def*{}\global\futurelet\spacetoken *^^20}
-{\setcatcodeactive\*\def*{}\global\futurelet\tabtoken *^^09}
-{\setcatcodeactive\*\def*{}\global\futurelet\newlinetoken *^^0a}
 
 @ \paracommand{\long\cs{readline}\cs{to}\fa{toks\_register}\cs{then}\fa{token\_list}\cs{done}}
 Cette commande modifie le code de catégorie du caractère de fin de

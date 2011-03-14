@@ -45,50 +45,6 @@
 
 \section 2. Read blanks then trigger a callback
 
-\def\readblanks\then#1\done{%
-  \begingroup
-  \def\ignoreblanks@E{%
-    %[ignoreblanks@E]\par\medbreak\hrule\medbreak
-    \endgroup#1%
-  }%
-  \ignoreblanks@M
-}
-
-\long\def\ignoreblanks@B#1{%
-  %[ignoreblanks@B]\par
-  %* \string#1 -> \meaning#1\par
-  %* comparison = \meaning\rmA\par
-  %* ignoreblanks@T = \meaning\ignoreblanks@T\par
-  \ifx #1\ignoreblanks@T
-    %* it matches!\par
-    \flagfalse
-  \fi
-}
-
-%% \def\ignoreblanks@M{%
-%%   %[ignoreblanks@M]\par
-%%   \futurelet
-%%   \ignoreblanks@T
-%%   \ignoreblanks@F
-%% }
-
-%% \def\ignoreblanks@E{%
-%%   %[ignoreblanks@E]\par
-%%   \endgroup
-%% }
-
-%% \def\ignoreblanks@F{%
-%%   [ignoreblanks@T = \meaning\ignoreblanks@T]\par
-%%   \ignoreblanks@A
-%% }
-
-%% \def\ignoreblanks@D{%
-%%   %[ignoreblanks@D]\par
-%%   \afterassignment\ignoreblanks@M
-%%   \let\ignoreblanks@T
-%% }
-
-
 \def\discardblanks@L#1{%
   \beginnext
     \def\rmA{#1}%
@@ -276,7 +232,7 @@ boxes specifications.
 
 \testreadspec star width 12pt height 16pt depth 13pt{text}
 \testreadspec star[\P]width 12pt height 16pt depth 13pt{text}
-\testreadspec star[\P] width 12pt height 16pt depth 13pt{text}
+\testreadspec star [\P] width 12pt height 16pt depth 13pt{text}
 
 
 \meaning\ignoreblanks@l
