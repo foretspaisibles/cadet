@@ -1,19 +1,40 @@
 \usepackage{hyperref}
 \usepackage{noweb}
-\usepackage[cmyk,x11names]{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{fancyvrb}
 \usepackage[latin9]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{txfonts}
+\usepackage{pxfonts}
+
 %
-% Définition des couleurs
+% Définitions des couleurs
 %
 
-\colorlet{emphasize}{Azure2}
-\colorlet{example}{DodgerBlue3}
+\colorlet{emphasize}{Gray!20}
+\colorlet{example}{BlueViolet}
+
+%
+% Paramètres hypersetup
+%
 
 \hypersetup{%
-  colorlinks=true
+	hyperindex,
+	% pagebackref,
+	pdftex,
+	pdfpagelabels,
+	pdfpagelayout=TwoPageRight,
+	pdfview={FitBV},
+        pdfstartview={FitBV},
+	pdfdisplaydoctitle,
+	pdfpagemode=UseNone,
+	breaklinks=true,
+	% extension=pdf,
+	bookmarks=true,
+	% plainpages=false,
+	colorlinks,
+	linkcolor=BlueViolet,
+	citecolor=BrickRed,
+	urlcolor=Plum,
 }%
 
 %
@@ -117,11 +138,12 @@
   {Verbatim}%
   {%
     xleftmargin=\parindent,
-    % formatcom=\let\FancyVerbFormatLine\FancyExampleFormatLine
-    formatcom=\color{example}
+    formatcom=\let\FancyVerbFormatLine\FancyExampleFormatLine
   }%
 
-\def\FancyExampleFormatLine#1{\llap{\smash{$\vdots$}\enspace}\texttt{#1}}
+\def\FancyExampleFormatLine#1{%
+  \textcolor{example}{\texttt{#1}}%
+}
 
 \let\begin@example@O\example
 
