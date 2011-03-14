@@ -2459,7 +2459,7 @@ comme les options de ligne de commande sur les sytèmes~UNIX.
 La commande \fn{getopttag} a trois paramètres globaux, qui doivent
 impérativement être initialisés avant l'appel à \fn{getopttag}:
 \begin{description}
-\item[getopttagvoid] liste des tags sans paramètres;
+\item[getopttagunit] liste des tags sans paramètres;
 \item[getopttagmandatory] liste des tags à paramètre obligatoire;
 \item[getopttagbracket] liste des tags à paramètre optionnel entre crochets.
 \end{description}
@@ -2485,7 +2485,7 @@ l'interprétation des tags à \fn{trial@A}.
   \def\beta=\trial@beta
   \def\gamma=\trial@gamma
   \def\delta=\trial@delta
-  \def\getopttagvoid{\\{\alpha}\\{\beta}}%
+  \def\getopttagunit{\\{\alpha}\\{\beta}}%
   \def\getopttagmandatory{\\{\gamma}}%
   \def\getopttagbracket{\\{\delta}}%
   \getopttag\trial@M
@@ -2537,11 +2537,11 @@ de la macro~{\tt .Bd} dans~\emph{groff\_mdoc(7)\/}).
 
 
 @ \paracommand{\cs{getopttagreset}}
-Initialise les listes~\va{getopttagvoid},
+Initialise les listes~\va{getopttagunit},
 \va{getopttagbracket} et~\va{getopttagmandatory} avec la liste vide.
 <<Assistance à la définition de macros>>=
 \def\getopttagreset{%
-  \let\getopttagvoid\empty
+  \let\getopttagunit\empty
   \let\getopttagmandatory\empty
   \let\getopttagbracket\empty
 }
@@ -2577,7 +2577,7 @@ Initialise les listes~\va{getopttagvoid},
 
 \def\getopttag@B{%
   \let\next=\getopttag@E
-  \testgetopttag\getopttagvoid\getopttag@T
+  \testgetopttag\getopttagunit\getopttag@T
   \ifgetopttag\let\next=\getopttag@V\fi
   \testgetopttag\getopttagmandatory\getopttag@T
   \ifgetopttag\let\next=\getopttag@M\fi
@@ -2618,12 +2618,12 @@ primitives \cs{hbox} ou \cs{vbox} de~\emph{\TeX}.
 
 
 @ \paracommand{\cs{getoptspecreset}}
-Initialise les listes~\va{getoptspecvoid},
+Initialise les listes~\va{getoptspecunit},
 \va{getoptspecbracket} et~\va{getoptspecmandatory} avec la liste vide.
 
 <<Assistance à la définition de macros>>=
 \def\getoptspecreset{%
-  \let\getoptspecvoid\empty
+  \let\getoptspecunit\empty
   \let\getoptspecmandatory\empty
   \let\getoptspecbracket\empty
 }
@@ -2658,11 +2658,11 @@ Initialise les listes~\va{getoptspecvoid},
 
 \def\getoptspec@L{%
   % We look for the identifier stored in rtA
-  % in the association lists getoptspecvoid, getoptspecmandatory,
+  % in the association lists getoptspecunit, getoptspecmandatory,
   % getoptspecbracket.
   \flagfalse
   \rtD{\getoptspec@E}%
-  \getoptspec@A\getoptspecvoid\getoptspec@V
+  \getoptspec@A\getoptspecunit\getoptspec@V
   \getoptspec@A\getoptspecmandatory\getoptspec@M
   \getoptspec@A\getoptspecbracket\getoptspec@B
   \ifflag
