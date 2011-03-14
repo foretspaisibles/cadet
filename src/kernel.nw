@@ -2356,21 +2356,23 @@ Les commandes \TeX\ peuvent présenter une interface très sophistiquée
 Dans ce paragraphe, on définit un petit jeu de commandes facilitant
 l'écriture de macros acceptant de tels arguments optionnels.
 
+\subparagraph{Arguments optionnels délimités par des crochets}
 Le premier type d'argument optionnel traité par nos macros est
 l'option présentée entre crochets; ce format d'argument optionnel est
-très largement utilisé dans le format \LaTeX. Une macro acceptant un
+très largement utilisé dans le format {\LaTeX}. Une macro acceptant un
 argument optionnel de cette forme peut être invoquée de deux façons
 différentes, comme le montre l'exemple suivant illustrant deux appels
-à une hypothétique commande~\fn{name}.
+à une hypothétique commande~\fn{name}, qui serait utile pour préparer
+les noms d'une manière spéciale.
 \begin{example}
-\name{Serre}
-\name[J.-P]{Serre}
+\name{France}
+\name[A.]{France}
 \end{example}
 et l'on peut aussi bien imaginer une autre façon, comme la suivante:
 \begin{example}
-  \name Serre\return
-  \name[J.-P.]Serre\return
-  \name[J.-P.] Serre\return
+  \name France\return
+  \name[A.]France\return
+  \name[A.] France\return
 \end{example}
 Dans ce dernier exemple, on voit que la macro \fn{name}
 devrait contenir un \fn{ignorespaces} bien placé pour permettre aux
@@ -2389,23 +2391,33 @@ et la procédure~\fn{callback} est appelée avec la liste de
 La commande ne cause pas d'erreur lorsqu'elle est utilisée juste
 avant la fin du flot d'entrée.
 
-\begin{formalparagraph}{Exemple de commande name}
+\subparagraph{Exemple d'utilisation de \fn{getoptbracket}}
 La commande \fn{name} définie dans cet exemple a pour rôle de préparer
-le nom d'un auteur et tient compte de la présence d'un prénom. Cette
-commande peut être utile pour produire un index des noms, par exemple.
+le nom d'un auteur et tient compte de la présence d'un prénom.  C'est
+une exemple d'implémentation de la macro~\fn{name} discutée ci-dessus.
+
+L'utilisation d'une telle command, outre la facilitation de la
+préparation des noms des personnes dans un style homogène, pourrait
+être modifiée pour inscrire les numéros des pages de toutes les
+occurences d'un nom dans un fichier annexe, qui servirait de base la
+préparation d'un index des noms cités.  Dans notre exemple illustrant
+l'utilisation de~\fn{getoptbracket}, on ne considère que la prépartion
+du nom.
 \begin{example}
 \def\name{\getoptbracket\name@A}
 \def\name@A#1#2{%
   \ifoptbracket
-    % Cas où aucune option n'est donnée
-  \else
     % Cas où une option est donnée
     #1~%
+  \else
+    % Cas où aucune option n'est donnée
   \fi
   {\sc\ignorespaces #2}%
 }
 \end{example}
-\end{formalparagraph}
+Redéfinir la command~\fn{name} permet de changer le mode de
+préparation de tous les noms, si par exemple l'éditeur ne souahite pas
+qu'apparaissent les initiales des auteurs.
 
 <<Assistance à la définition de macros>>=
 \newif\ifoptbracket
@@ -2415,11 +2427,11 @@ commande peut être utile pour produire un index des noms, par exemple.
   \rtA{#1}%
   \rtB{}%
   \rtC{\optbracketfalse}%
-  \futurelet\getoptbracket@T\getoptbracket@A
+  \futurelet\getoptbracket@t\getoptbracket@A
 }
 
 \def\getoptbracket@A{%
-  \ifx\getoptbracket@T[% Bluff Emacs]
+  \ifx\getoptbracket@t[% Bluff Emacs]
      \let\next=\getoptbracket@B
   \else
      \let\next=\getoptbracket@E
@@ -2438,70 +2450,94 @@ commande peut être utile pour produire un index des noms, par exemple.
   \endnext
 }
 
-@ Le second type d'argument optionnel est une séquence, éventuellement
+@ \subparagraph{Arguments optionnels introduits par des symboles}
+Le second type d'argument optionnel est une séquence, éventuellement
 vide, de macros, appelées~\emph{tags}. Ce type d'argument optionnel
 permet de réaliser des macros comprenant des commutateurs, un peu
 comme les options de ligne de commande sur les sytèmes~UNIX.
 
-La commande getopttag a trois paramètres globaux, qui doivent
+La commande \fn{getopttag} a trois paramètres globaux, qui doivent
 impérativement être initialisés avant l'appel à \fn{getopttag}:
 \begin{description}
 \item[getopttagvoid] liste des tags sans paramètres;
 \item[getopttagmandatory] liste des tags à paramètre obligatoire;
 \item[getopttagbracket] liste des tags à paramètre optionnel entre crochets.
 \end{description}
+La commande~\fn{getopttagreset} assigne la liste vide à chacune de ces
+trois variables.
 
-\begin{formalparagraph}{Exemple}
-Suit un exemple d'utilisation. Pour commencer on définit le sens des
-tags name, surname, alpha et beta.
+\subparagraph{Exemple d'utilisation de getopttag}
+Ensuite, on définit la commande \fn{trial} qui reconnaît les tags
+\fn{alpha}, \fn{beta}, \fn{gamma} et \fn{delta}. Elle initialise
+chacun des paramètres globaux puis appelle getopttag qui délègue
+l'interprétation des tags à \fn{trial@A}.
 \begin{example}
-\def\name#1{@<< NAME #1 >>}
-\def\surname#1{%
-   \teststrempty{#1}\ifstrempty@<< SURNAME not provided >>\else@<< SURNAME #1 >>\fi
-}
-\def\alpha{@<< ALPHA >>}
-\def\beta{@<< BETA >>}
-\end{example}
-Ensuite, on définit la commande trial qui reconnaît les tags alpha,
-beta, name et surname. Elle initialise chacun des paramètres globaux
-puis appelle getopttag qui délègue l'interprétation des tags à
-trial@A.
-\begin{example}
+\def\trial@alpha{(alpha)}
+\def\trial@beta{(beta)}
+\def\trial@gamma##1{(gamma ##1)}
+\def\trial@delta##1{%
+  \teststrempty{##1}%
+  \ifstrempty(delta)\else(delta ##1)\fi
+}%
 \def\trial{%
+  \begingroup
+  \def\alpha=\trial@alpha
+  \def\beta=\trial@beta
+  \def\gamma=\trial@gamma
+  \def\delta=\trial@delta
   \def\getopttagvoid{\\{\alpha}\\{\beta}}%
-  \def\getopttagmandatory{\\{\name}}%
-  \def\getopttagbracket{\\{\surname}}%
-  \getopttag\trial@A
+  \def\getopttagmandatory{\\{\gamma}}%
+  \def\getopttagbracket{\\{\delta}}%
+  \getopttag\trial@M
 }
-\def\trial@A#1{\par *** #1 ***\par}
+\def\trial@M#1{%
+  \par(tags\teststrempty{#1}\ifstrempty\else\space #1\fi)\par
+  \endgroup
+}
 \end{example}
 On conclut enfin par une petite batterie d'essais.
 \begin{example}
 \trial\alpha\beta
-\trial\alpha\name{BOB}
-\trial\alpha\name1
+\trial\alpha\gamma{A}
+\trial\alpha\gamma1
 \trial\alpha
-\trial\surname[Mephiso]
-\trial\surname\alpha
+\trial\delta[B]
+\trial\delta\alpha
 \beta\alpha\beta
-\trial Les poux de l'Empereur
+\trial``Oh oh!'' cried baby Sally.
 \end{example}
 Ces essais produisent la sortie suivante.
 \begin{example}
-*** @<< ALPHA >>@<< BETA >> ***
-*** @<< ALPHA >>@<< NAME BOB >> ***
-*** @<< ALPHA >>@<< NAME 1 >> ***
-*** @<< ALPHA >> ***
-*** @<< SURNAME Mephiso >> ***
-*** @<< SURNAME not provided >>@<< ALPHA >>
-  @<< BETA >>@<< ALPHA >>@<< BETA >> ***
-*** ***
-Les poux de l'Empereur
+(tags (alpha)(beta))
+(tags (alpha)(gamma A))
+(tags (alpha)(gamma 1))
+(tags (alpha))
+(tags (delta B))
+(tags (delta)(alpha)(beta)(alpha)(beta))
+(tags)
+``Oh oh !'' cried baby Sally.
 \end{example}
-\end{formalparagraph}
+
+\begin{remark}
+La technique consistant à ne pas inscrire la définition des
+\emph{tags} \fn{alpha}, \fn{beta}, etc. dans celle de~\fn{trial} mais
+plutôt d'y utiliser une liaison introduite par \fn{let} permet à des
+tiers de facilement modifier la signification de ces~\emph{tags}.
+\end{remark}
+
+Des exemples plausibles d'utilisation sont le champ des macros de type
+environnement, les \fn{tags} permettent de passer des options.  Par
+exemple, on peut définir une macro~\fn{exercise}, qui commence un
+nouvelle ligne et imprime le mot «exercice», reconnaissant le
+\fn{tag}~\cs{P} qui fait apparaître un signe~{\P} dans la marge, à la
+gauche du mot «exercice».  On pourrait aussi écrire des macros imitant
+la syntaxe de \emph{begin display} dans \emph{mdoc} (cf. documentation
+de la macro~{\tt .Bd} dans~\emph{groff\_mdoc(7)\/}).
+
+
 
 @ \paracommand{\cs{getopttagreset}}
-Cette commande initialise les listes~\va{getopttagvoid},
+Initialise les listes~\va{getopttagvoid},
 \va{getopttagbracket} et~\va{getopttagmandatory} avec la liste vide.
 <<Assistance à la définition de macros>>=
 \def\getopttagreset{%
@@ -2510,13 +2546,13 @@ Cette commande initialise les listes~\va{getopttagvoid},
   \let\getopttagbracket\empty
 }
 
-@ \paracommand{\cs{getopttag}\fa{callback}}
+@ \paracommand{\cs{testgetopttag}\fa{list}\fa{item}}
 <<Assistance à la définition de macros>>=
 \newif\ifgetopttag
 \def\testgetopttag#1#2{%
   \begingroup
   \flagfalse
-  \def\\##1{\ifx#2##1\flagtrue\fi}#1%
+  \def\\##1{\ifx#2##1\flagtrue\let\\\ignore\fi}#1%
   \ifflag
     \aftergroup\getopttagtrue
   \else
@@ -2525,6 +2561,9 @@ Cette commande initialise les listes~\va{getopttagvoid},
   \endgroup
 }
 
+
+@ \paracommand{\cs{getopttag}\fa{callback}}
+<<Assistance à la définition de macros>>=
 \def\getopttag#1{%
   \beginnext
   \rtA={#1}%
@@ -2532,7 +2571,10 @@ Cette commande initialise les listes~\va{getopttagvoid},
   \getopttag@A
 }
 
-\def\getopttag@A{\futurelet\getopttag@T\getopttag@B}
+\def\getopttag@A{%
+  \futurelet\getopttag@T\getopttag@B
+}
+
 \def\getopttag@B{%
   \let\next=\getopttag@E
   \testgetopttag\getopttagvoid\getopttag@T
@@ -2568,6 +2610,121 @@ Cette commande initialise les listes~\va{getopttagvoid},
   \toksrappend{{#1}}\to\rtB
   \getopttag@A
 }
+
+@ \subparagraph{Liste de spécifications}
+Le troisième type d'argument optionnel pris en charge est celui des
+spécifications du type de celles apparaissant en argument des
+primitives \cs{hbox} ou \cs{vbox} de~\emph{\TeX}.
+
+
+@ \paracommand{\cs{getoptspecreset}}
+Initialise les listes~\va{getoptspecvoid},
+\va{getoptspecbracket} et~\va{getoptspecmandatory} avec la liste vide.
+
+<<Assistance à la définition de macros>>=
+\def\getoptspecreset{%
+  \let\getoptspecvoid\empty
+  \let\getoptspecmandatory\empty
+  \let\getoptspecbracket\empty
+}
+
+@ \paracommand{\cs{getoptspecreset}}
+<<Assistance à la définition de macros>>=
+\def\getoptspec{%
+  \beginnext
+  \readtokens\getoptspec@P\to\rtA\then\getoptspec@L\done
+}
+
+\def\getoptspec@P#1{%
+  \beginnext
+  \let\next\@false
+  \ifcat A\noexpand#1\let\next\@true\fi
+  \endnext
+}
+
+\def\getoptspec@A#1#2{%
+  \ifflag\else
+    \beginnext
+    \rtB={\toksloadalistvalue#1}%
+    \rtC={\to\rtB}%
+    \edef\next{\the\rtB{\the\rtA}\the\rtC}%
+    \endnext
+    \ifexception\else
+      \flagtrue
+      \rtD{#2}%
+    \fi
+  \fi
+}
+
+\def\getoptspec@L{%
+  % We look for the identifier stored in rtA
+  % in the association lists getoptspecvoid, getoptspecmandatory,
+  % getoptspecbracket.
+  \flagfalse
+  \rtD{\getoptspec@E}%
+  \getoptspec@A\getoptspecvoid\getoptspec@V
+  \getoptspec@A\getoptspecmandatory\getoptspec@M
+  \getoptspec@A\getoptspecbracket\getoptspec@B
+  \ifflag
+    \edef\next{%
+      \noexpand\readblanks
+      \noexpand\then
+      \the\rtD
+      \noexpand\done
+    }%
+  \else
+    % We did not find a match
+    %  and rtD = {\getoptspec@E}
+    \def\next{\the\rtD}%
+  \fi
+  \next
+}
+
+\def\getoptspec@E{%
+  % We reached the end of the specification and
+  % put back the tokens stored in rtA on the input
+  \edef\next{\the\rtA}%
+  \endnext
+}
+
+\def\getoptspec@V{%
+  % Specifications without values
+  %  we give control to the callback
+  %  and start the whole thing again
+  \edef\next{\the\rtB}%
+  \endnext
+  \getoptspec
+}
+
+\def\getoptspec@M{%
+  % Specifications with a value
+  %  we expect the value linked with the key rtA
+  %  to call again readspec on its own
+  \edef\next{\the\rtB}%
+  \endnext
+}
+
+\def\getoptspec@B{%
+  % Specifications with an optional bracket value
+  \getoptbracket\getoptspec@C
+}
+
+\def\getoptspec@C#1{%
+  \rtA={#1}%
+  \edef\next{\the\rtB{\the\rtA}\noexpand\getoptspec@S}%
+  \endnext
+}
+
+\def\getoptspec@S{%
+  \readblanks\then\getoptspec\done
+}
+
+\def\getoptspec@R{%
+  \afterassignment\getoptspec@S
+}
+
+
+
 
 @ \paragraph{Définition de commandes select}
 On utilise dans \brTeX\ de nombreuses commandes dont le préfixe est
