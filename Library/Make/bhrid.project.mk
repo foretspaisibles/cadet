@@ -41,6 +41,10 @@ TEXINPUTS+= ${BHRIDBASEDIR}/style
 TEXINPUTS+= ${INPUTS.amsfonts}
 TEXINPUTS+= ${INPUTS.null}
 
+.if defined(BHRIDFORMAT)&&!empty(BHRIDFORMAT)&&!defined(FORMAT.bhrid)
+FORMAT.bhrid = ${BHRIDFORMAT}
+.endif
+
 FORMAT.bhrid?= original
 FORMAT.ps?= ${FORMAT.bhrid}_dvips
 FORMAT.pdf?= ${FORMAT.bhrid}_pdf
