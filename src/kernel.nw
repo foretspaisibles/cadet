@@ -1257,6 +1257,35 @@ quand-même accompli. (i.e.~\fa{alist} n'est pas modifié).
   \fi
 }
 
+@ \paracommand{\cs{toksloadalistvalue}\fa{alist}\fa{key}\cs{to}\fa{toks\_register}}
+Trouve la valeur associée à la liaison \fa{key} dans \fa{alist}, cette
+valeur est rangée dans \fa{toks\_register}.
+
+Exemple:~[[\toksloadalistvalue\abbrev{PC}\to{\toks0}]]
+
+Lorsque \fa{key} n'est l'objet d'aucune liaison dans \fa{alist}, le
+drapeau \fn{ifexception} est positionné, mais le travail est
+quand-même accompli.
+<<Manipulation des listes d'associations>>=
+\def\toksloadalistvalue#1#2\to#3{%
+  \exceptionfalse
+  \beginnext
+  \def\rmA{#2}%
+  \rtA={#3}%
+  \def\next{\exceptiontrue}%
+  \def\\##1{\toksloadalistvalue@A##1}#1%
+  \endnext
+}
+
+\def\toksloadalistvalue@A#1#2{%
+  \def\rmB{#1}%
+  \ifx\rmA\rmB
+    \let\\=\ignore
+    \rtB={#2}%
+    \edef\next{\the\rtA={\the\rtB}}%
+  \fi
+}
+
 @ \paracommand{\cs{alistremove}\fa{alist}\fa{key}}
 Supprime la dernière liaison à \fa{key} dans \fa{alist}. Si \fa{key}
 n'est l'objet d'aucune liaison dans \fa{alist} lors de l'appel, le
@@ -2003,7 +2032,13 @@ du fichier inclus sont eux aussi absorbés.
 Les blancs sont les membres de la liste~\va{ignoreblanks@l}.
 
 <<Procédures d'analyse lexicale>>=
-\def\ignoreblanks@l{\\{\par}\\{^^20}\\{^^09}\\{^^0a}}%\\{^^0c}\\{^^0d}}
+\def\ignoreblanks@l{%
+  \\{\par}%
+  \\{\spacetoken}%
+  \\{\tabtoken}%
+  \\{\newlinetoken}%
+  %\\{^^0c}\\{^^0d}}
+}%
 
 \def\ignoreblanks@A{%
   \let\ignoreblanks@N=\ignoreblanks@D
@@ -2026,12 +2061,23 @@ Les blancs sont les membres de la liste~\va{ignoreblanks@l}.
     \flagfalse
   \fi
 }
-\def\ignoreblanks@C{\endgroup\expandafter\ignoreblanks}
-\def\ignoreblanks@E{\endgroup}
+
+\def\ignoreblanks@C{%
+  % We met an `input' statement, let'us expand it and try again to
+  % ignore blanks.
+  \endgroup
+  \expandafter\ignoreblanks
+}
+
+\def\ignoreblanks@E{%
+  \endgroup
+}
+
 \def\ignoreblanks@D{%
   \afterassignment\ignoreblanks@M
   \let\ignoreblanks@T
 }
+
 \def\ignoreblanks@M{%
   \futurelet
   \ignoreblanks@T
@@ -2176,11 +2222,14 @@ lieu d'un \fn{def}.
 <<Assistance à la définition de macros>>=
 \def\cslet#1{\expandafter\let\csname #1\endcsname}
 
-@ \paracommand{\cs{spacetoken}}
-Une constante qui est une liaison avec un espace.
+@ \paracommand{\cs{spacetoken}, \cs{tabtoken}, \cs{newlinetoken}}
+Des constantes qui sont des liaison de type \emph{let} avec des
+caractères ordinairement interprétés comme des des espaces.
 
 <<Assistance à la définition de macros>>=
-{\setcatcodeactive\*\def*{}\global\futurelet\spacetoken * }
+{\setcatcodeactive\*\def*{}\global\futurelet\spacetoken *^^20}
+{\setcatcodeactive\*\def*{}\global\futurelet\tabtoken *^^09}
+{\setcatcodeactive\*\def*{}\global\futurelet\newlinetoken *^^0a}
 
 @ \paracommand{\long\cs{readline}\cs{to}\fa{toks\_register}\cs{then}\fa{token\_list}\cs{done}}
 Cette commande modifie le code de catégorie du caractère de fin de
