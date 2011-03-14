@@ -66,6 +66,11 @@
 % Structure
 %
 
+\renewcommand\subparagraph{%
+  \@startsection{subparagraph}{3}{0pt}{\medskipamount}{-2ex}{\normalsize\it}*%
+}
+
+
 \newenvironment{formalparagraph}[1]%
   {%
     \par
