@@ -1182,13 +1182,19 @@ l'égalité des listes de tokens est~\fn{ifx}.
 \end{example}
 <<Manipulation des listes>>=
 \newif\iflistmem
+<<Manipulation des listes>>=
+\newif\iflistmem
 \def\testlistmem#1#2{%
-  \beginnext
+  \begingroup
   \flagfalse
   \def\rmA{#2}%
   \def\\##1{\def\rmB{##1}\ifx\rmA\rmB\flagtrue\let\\=\ignore\fi}%
-  #1\let\next\ifflag
-  \endnext
+  #1\ifflag
+    \aftergroup\listmemtrue
+  \else
+    \aftergroup\listmemfalse
+  \fi
+  \endgroup
 }
 
 
