@@ -79,25 +79,25 @@ macro `space' between D and EFG, you will get
 The specifications we want to read look like those appearing in {\TeX}
 boxes specifications.
 
-\def\readspecreset{%
-  \let\readspecvoid\empty
-  \let\readspecmandatory\empty
-  \let\readspecbracket\empty
+\def\getoptspecreset{%
+  \let\getoptspecvoid\empty
+  \let\getoptspecmandatory\empty
+  \let\getoptspecbracket\empty
 }
 
-\def\readspec@P#1{%
+\def\getoptspec@P#1{%
   \beginnext
   \let\next\@false
   \ifcat A\noexpand#1\let\next\@true\fi
   \endnext
 }
 
-\def\readspec{%
+\def\getoptspec{%
   \beginnext
-  \readtokens\readspec@P\to\rtA\then\readspec@L\done
+  \readtokens\getoptspec@P\to\rtA\then\getoptspec@L\done
 }
 
-\def\readspec@A#1#2{%
+\def\getoptspec@A#1#2{%
   \ifflag\else
     \beginnext
     \rtB={\toksloadalistvalue#1}%
@@ -111,15 +111,15 @@ boxes specifications.
   \fi
 }
 
-\def\readspec@L{%
+\def\getoptspec@L{%
   % We look for the identifier stored in rtA
-  % in the association lists readspecvoid, readpsecmandatory,
-  % readspecbracket.
+  % in the association lists getoptspecvoid, getoptspecmandatory,
+  % getoptspecbracket.
   \flagfalse
-  \rtD{\readspec@E}%
-  \readspec@A\readspecvoid\readspec@V
-  \readspec@A\readspecmandatory\readspec@M
-  \readspec@A\readspecbracket\readspec@B
+  \rtD{\getoptspec@E}%
+  \getoptspec@A\getoptspecvoid\getoptspec@V
+  \getoptspec@A\getoptspecmandatory\getoptspec@M
+  \getoptspec@A\getoptspecbracket\getoptspec@B
   \ifflag
     \edef\next{%
       \noexpand\readblanks
@@ -129,29 +129,29 @@ boxes specifications.
     }%
   \else
     % We did not find a match
-    %  and rtD = {\readspec@E}
+    %  and rtD = {\getoptspec@E}
     \def\next{\the\rtD}%
   \fi
   \next
 }
 
-\def\readspec@E{%
+\def\getoptspec@E{%
   % We reached the end of the specification and
   % put back the tokens stored in rtA on the input
   \edef\next{\the\rtA}%
   \endnext
 }
 
-\def\readspec@V{%
+\def\getoptspec@V{%
   % Specifications without values
   %  we give control to the callback
   %  and start the whole thing again
   \edef\next{\the\rtB}%
   \endnext
-  \readspec
+  \getoptspec
 }
 
-\def\readspec@M{%
+\def\getoptspec@M{%
   % Specifications with a value
   %  we expect the value linked with the key rtA
   %  to call again readspec on its own
@@ -159,42 +159,42 @@ boxes specifications.
   \endnext
 }
 
-\def\readspec@B{%
+\def\getoptspec@B{%
   % Specifications with an optional bracket value
-  \getoptbracket\readspec@C
+  \getoptbracket\getoptspec@C
 }
 
-\def\readspec@C#1{%
+\def\getoptspec@C#1{%
   \rtA={#1}%
-  \edef\next{\the\rtB{\the\rtA}\noexpand\readspec@S}%
+  \edef\next{\the\rtB{\the\rtA}\noexpand\getoptspec@S}%
   \endnext
 }
 
-\def\readspec@S{%
-  \readblanks\then\readspec\done
+\def\getoptspec@S{%
+  \readblanks\then\getoptspec\done
 }
 
-\def\readspec@R{%
-  \afterassignment\readspec@S
+\def\getoptspec@R{%
+  \afterassignment\getoptspec@S
 }
 
 %
 % Un exemple
 %
 
-\def\testreadspec#1#{\testreadspec@M{#1}}
+\def\testgetoptspec#1#{\testgetoptspec@M{#1}}
 
-\def\testreadspec@M#1#2{%
+\def\testgetoptspec@M#1#2{%
   \rdA=0pt
   \rdB=0pt
   \rdC=0pt
-  \readspecreset
-  \def\readspecmandatory{%
-    \\{{width}{\readspec@R\rdA}}%
-    \\{{height}{\readspec@R\rdB}}%
-    \\{{depth}{\readspec@R\rdC}}%
+  \getoptspecreset
+  \def\getoptspecmandatory{%
+    \\{{width}{\getoptspec@R\rdA}}%
+    \\{{height}{\getoptspec@R\rdB}}%
+    \\{{depth}{\getoptspec@R\rdC}}%
   }%
-  \def\readspecbracket{%
+  \def\getoptspecbracket{%
     \\{{star}{\makestar}}%
   }%
   \def\makestar##1{%
@@ -212,7 +212,7 @@ boxes specifications.
   \par
   \tt
   START\par
-  \readspec#1{#2}\par
+  \getoptspec#1{#2}\par
   STOP\par
   \normalfont
   \begindisplay\tt
@@ -230,9 +230,9 @@ boxes specifications.
   \enddisplay
 }
 
-\testreadspec star width 12pt height 16pt depth 13pt{text}
-\testreadspec star[\P]width 12pt height 16pt depth 13pt{text}
-\testreadspec star [\P] width 12pt height 16pt depth 13pt{text}
+\testgetoptspec star width 12pt height 16pt depth 13pt{text}
+\testgetoptspec star[\P]width 12pt height 16pt depth 13pt{text}
+\testgetoptspec star [\P] width 12pt height 16pt depth 13pt{text}
 
 
 \meaning\ignoreblanks@l
