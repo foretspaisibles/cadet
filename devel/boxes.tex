@@ -1,0 +1,227 @@
+% boxes.tex -- Playing with boxes
+
+\input setup
+\title
+
+% First, we draw an horizontal line, to find the basepoint of the
+% containing line.
+%
+% If we want to have the baseline of the first box on the page to be
+% located at `layoutmarginleft,layoutmargintop), we have to unskip the
+% `topskip' glue.
+\null
+\vskip-\topskip
+\hrule width \hsize height 0pt depth 10pt
+\vskip 10mm
+\hrule
+\medskip
+\noindent
+Off with her head!
+\newpage
+
+% Production of a box with its baseline, this is from the TeXbook,
+% experiments, that only shall go on-screenlines 3624--.
+
+% Macros for drawing figures (not in Appendix E)
+\def\hidehrule#1#2{\kern-#1\hrule height#1 depth#2 \kern-#2 }
+\def\hidevrule#1#2{\kern-#1{\dimen0=#1
+    \advance\dimen0 by#2\vrule width\dimen0}\kern-#2 }
+% \makeblankbox puts rules at the edges of a blank box
+% whose dimensions are those of \box0 (assuming nonnegative wd,ht,dp)
+% #1 is rule thickness outside, #2 is rule thickness inside
+\def\makeblankbox#1#2{\hbox{\lower\dp0\vbox{\hidehrule{#1}{#2}%
+    \kern-#1% overlap the rules at the corners
+    \hbox to\wd0{\hidevrule{#1}{#2}%
+      \raise\ht0\vbox to #1{}% set the vrule height
+      \lower\dp0\vtop to #1{}% set the vrule depth
+      \hfil\hidevrule{#2}{#1}}%
+    \kern-#1\hidehrule{#2}{#1}}}}
+\def\maketypebox{\makeblankbox{0pt}{1pt}}
+\def\makelightbox{\makeblankbox{.2pt}{.2pt}}
+
+% \box\bigdot is a null box with a bullet at its reference point
+\newbox\bigdot \newbox\smalldot
+\setbox0=\hbox{$\vcenter{}$} % \ht0 is the axis height
+\setbox1=\hbox to\z@{$\hss\bullet\hss$} % bullet is centered on the axis
+\setbox\bigdot=\vbox to\z@{\kern-\ht1 \kern\ht0 \box1 \vss}
+\setbox1=\hbox to\z@{$\hss\cdot\hss$} % cdot is centered on the axis
+\setbox\smalldot=\vbox to\z@{\kern-\ht1 \kern\ht0 \box1 \vss}
+
+% \samplebox makes the outline of a box, with big dot at reference point
+\def\samplebox#1#2#3#4{% #1=ht, #2=dp, #3=wd, #4=text
+  {\setbox0=\vtop{\vbox to #1{\hbox to #3{}\vss}
+      \nointerlineskip
+      \vbox to #2{}}% now \box0 has the desired ht, dp, and wd
+    \hbox{\copy\bigdot
+      \vrule height.2pt depth.2pt width#3%
+      \kern-#3%
+      \makelightbox
+      \kern-#3%
+      \raise#1\vbox{\hbox to #3{\hss#4\hss}
+        \kern 3pt}}}}
+
+% \sampleglue makes glue between sample boxes
+\newdimen\varunit
+\varunit=\hsize \advance\varunit by-2\parindent
+\divide\varunit by 58 % illustrations in Chapter 12
+\def\sampleglue#1#2{% #1=width, #2=text
+  \vtop{\hbox to #1{\xleaders\hbox to .5\varunit{\hss\copy\smalldot\hss}\hfil}
+    \kern3pt
+    \tabskip \z@ plus 1fil
+    \halign to #1{\hfil##\cr#2\cr}}}
+
+{\eightpoint
+\setbox0=\hbox{$\uparrow$}
+\setbox1=\hbox to \wd0{$\hss\mid\hss$} % with luck, they'll line up
+\setbox2=\vbox{\copy0
+  \nointerlineskip \kern-.5pt \copy1
+  \nointerlineskip \kern-.5pt \copy1
+  \moveleft 1em\hbox{height}
+  \copy1 \nointerlineskip \kern-.5pt
+  \copy1 \nointerlineskip \kern-.5pt
+  \hbox{$\downarrow$}
+  \kern.2pt}
+\setbox3=\vbox{\kern.2pt\copy0
+  \moveleft 1em\hbox{depth}
+  \hbox{$\downarrow$}
+  \kern0pt}
+\setbox4=\vtop{\kern-3pt % this cancels the null text above the samplebox
+  \hbox{\samplebox{\ht2}{\ht3}{6em}{}%
+    \kern-6em
+    \raise3pt\hbox to 6em{\hss Baseline\hss}}
+  \kern3pt
+  %\arrows{6em}{width}
+}
+\medskip\indent
+\setbox0=\hbox{$\vcenter{}$}% \ht0 is the axis height
+\lower\ht0\hbox{Reference point$-$\kern-.2em$\rightarrow$\kern2pt}%
+\raise\ht2\box4
+\kern1.5em
+\raise\ht2\vtop{\kern0pt\box2\nointerlineskip\box3}}
+
+\newpage
+
+
+% We study the placement of points using there coordinates.
+
+
+
+% Now we demonstrate the technique allowing us to place a box anywhere
+% on the page.
+
+\newdimen\gridhoffset
+\newdimen\gridvoffset
+\newdimen\gridhorigin
+\newdimen\gridvorigin
+
+\gridhorigin=0pt
+\gridvorigin=0pt
+
+\def\setgridorigin#1#2{%
+  \gridhorigin=#1\relax
+  \gridvorigin=#2\relax
+}
+
+\def\setgridoriginzero{%
+  \setgridorigin{0pt}{0pt}%
+}
+
+\def\setgridoriginpaper{%
+  \setgridorigin{-\layoutmarginleft}{-\layoutmargintop}%
+}
+
+\def\begingrid{%
+  \setgridoriginzero
+  \null
+  \nointerlineskip
+}
+
+\def\begintopgrid{%
+  \begingrid
+  \setgridoriginpaper
+  \vskip-\topskip
+}
+
+\def\endgrid{%
+  \relax
+}
+
+\def\gridbox#1{%
+  \vbox to 0pt{%
+    \kern\gridvorigin
+    \kern\gridvoffset
+    \hbox{%
+      \kern\gridhorigin
+      \kern\gridhoffset
+      \box#1
+    }%
+    \vss
+  }%
+  \nointerlineskip
+}
+
+\def\gridboxbaseline#1{%
+  \begingroup
+  \advance\gridvoffset-\ht#1%
+  \gridbox#1%
+  \endgroup
+}
+
+
+\begintopgrid
+\setbox\rbA\copy\bigdot
+\gridbox\rbA
+\gridvoffset=10mm
+\gridhoffset=20mm
+\setbox\rbA\copy\bigdot
+\gridbox\rbA
+\setbox\rbA=\vbox{\nointerlineskip\samplebox{10pt}{20pt}{40pt}{}}
+\gridboxbaseline\rbA
+\setbox\rbB=\hbox{X}
+\boxloadframe\rbB\to\rbA
+\gridbox\rbA
+%\boxloadtframe\rbB\to\rbA{X}{X}
+%\gridbox\rbA
+%\boxloadcframe\rbB 0pt\to\rbA
+%\gridbox\rbA
+\setbox\rbA=\hbox{X}
+\gridboxbaseline\rbA
+\endgrid
+
+%% \vskip\gridvoffset
+%% \vbox to 0pt{%
+%%   \noindent
+%%   \hbox to 0pt{%
+%%     \hskip\gridhoffset
+%%     % Here goes your own content. The baseline of this box will be
+%%     % the baseline of all your construction.
+%%     \vtop to\gridvsize{%
+%%       \hsize=\gridhsize
+%%       \parindent=0pt
+%%       \strut X\par
+%%       \vrule width \gridhsize depth 5pt
+%%       \vfil
+%%     }%
+%%     % Now we are back to the general code.
+%%     % First we negate the width of the previous hbox together with its
+%%     % leading hskip, this makes the containing box look like it has
+%%     % width 0.
+%%     \hss
+%%   }%
+%%   % We also need to negate the height of our box.
+%%   \vss
+%% }
+
+
+\newpage
+
+
+
+%\def\begintopgrid#1#2{%
+%  \null
+
+\newpage
+
+
+
+\bye

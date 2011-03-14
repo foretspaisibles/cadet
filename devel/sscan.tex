@@ -1,0 +1,287 @@
+\input setup
+
+\title Scanning macro arguments
+
+\section 1. Playing with getoptag
+
+\def\makeattribute#1{$\left\{\mbox{#1}\right\}$}
+
+\def\taga{\makeattribute{A}}
+
+\def\tagb#1{\makeattribute{B = #1}}
+
+\def\tagc#1{%
+  \teststrempty{#1}%
+  \ifstrempty
+    \makeattribute{C}%
+  \else
+    \makeattribute{C = #1}%
+  \fi
+}
+
+\def\getopttrial{%
+  \def\getopttagvoid{\\{\taga}}
+  \def\getopttagmandatory{\\{\tagb}}
+  \def\getopttagbracket{\\{\tagc}}
+  \getopttag\getopttrial@M
+}
+
+\def\getopttrial@M#1{%
+  \noindent
+  \hbox to .6\hsize{\##1\#\hfill\#}%
+  \ignorespaces
+}
+
+\begingroup
+\obeylines
+\getopttrial\taga 		Off with her head!
+\getopttrial\taga\taga		Off with her head!
+\getopttrial\tagb 1		Off with her head!
+\getopttrial\tagb{2}\taga	Off with her head!
+\getopttrial\tagc[3]\tagc	Off with her head!
+\getopttrial\tagb{4}\tagc\taga	Off with her head!
+\endgroup
+
+
+\section 2. Read blanks then trigger a callback
+
+\def\readblanks\then#1\done{%
+  \begingroup
+  \def\ignoreblanks@E{%
+    %[ignoreblanks@E]\par\medbreak\hrule\medbreak
+    \endgroup#1%
+  }%
+  \ignoreblanks@M
+}
+
+\long\def\ignoreblanks@B#1{%
+  %[ignoreblanks@B]\par
+  %* \string#1 -> \meaning#1\par
+  %* comparison = \meaning\rmA\par
+  %* ignoreblanks@T = \meaning\ignoreblanks@T\par
+  \ifx #1\ignoreblanks@T
+    %* it matches!\par
+    \flagfalse
+  \fi
+}
+
+%% \def\ignoreblanks@M{%
+%%   %[ignoreblanks@M]\par
+%%   \futurelet
+%%   \ignoreblanks@T
+%%   \ignoreblanks@F
+%% }
+
+%% \def\ignoreblanks@E{%
+%%   %[ignoreblanks@E]\par
+%%   \endgroup
+%% }
+
+%% \def\ignoreblanks@F{%
+%%   [ignoreblanks@T = \meaning\ignoreblanks@T]\par
+%%   \ignoreblanks@A
+%% }
+
+%% \def\ignoreblanks@D{%
+%%   %[ignoreblanks@D]\par
+%%   \afterassignment\ignoreblanks@M
+%%   \let\ignoreblanks@T
+%% }
+
+
+\def\discardblanks@L#1{%
+  \beginnext
+    \def\rmA{#1}%
+    \def\rmB{\stop}%
+    \ifx\rmA\rmB
+      \let\next=\relax
+    \else
+      \def\next{#1\discardblanks}%
+    \fi
+  \endnext
+}
+
+\def\discardblanks{%
+  \readblanks\then\discardblanks@L\done
+}
+
+\medskip
+\noindent
+This is how we are discarding blanks:
+\begindisplay
+\discardblanks AB C D EFG HI JK L\stop
+\enddisplay
+Note that macros in the argument are not expanded, so if you put the
+macro `space' between D and EFG, you will get
+\begindisplay
+\discardblanks AB C D\space EFG HI JK L\stop
+\enddisplay
+
+
+\section 3. Read specifications
+
+The specifications we want to read look like those appearing in {\TeX}
+boxes specifications.
+
+\def\readspecreset{%
+  \let\readspecvoid\empty
+  \let\readspecmandatory\empty
+  \let\readspecbracket\empty
+}
+
+\def\readspec@P#1{%
+  \beginnext
+  \let\next\@false
+  \ifcat A\noexpand#1\let\next\@true\fi
+  \endnext
+}
+
+\def\readspec{%
+  \beginnext
+  \readtokens\readspec@P\to\rtA\then\readspec@L\done
+}
+
+\def\readspec@A#1#2{%
+  \ifflag\else
+    \beginnext
+    \rtB={\toksloadalistvalue#1}%
+    \rtC={\to\rtB}%
+    \edef\next{\the\rtB{\the\rtA}\the\rtC}%
+    \endnext
+    \ifexception\else
+      \flagtrue
+      \rtD{#2}%
+    \fi
+  \fi
+}
+
+\def\readspec@L{%
+  % We look for the identifier stored in rtA
+  % in the association lists readspecvoid, readpsecmandatory,
+  % readspecbracket.
+  \flagfalse
+  \rtD{\readspec@E}%
+  \readspec@A\readspecvoid\readspec@V
+  \readspec@A\readspecmandatory\readspec@M
+  \readspec@A\readspecbracket\readspec@B
+  \ifflag
+    \edef\next{%
+      \noexpand\readblanks
+      \noexpand\then
+      \the\rtD
+      \noexpand\done
+    }%
+  \else
+    % We did not find a match
+    %  and rtD = {\readspec@E}
+    \def\next{\the\rtD}%
+  \fi
+  \next
+}
+
+\def\readspec@E{%
+  % We reached the end of the specification and
+  % put back the tokens stored in rtA on the input
+  \edef\next{\the\rtA}%
+  \endnext
+}
+
+\def\readspec@V{%
+  % Specifications without values
+  %  we give control to the callback
+  %  and start the whole thing again
+  \edef\next{\the\rtB}%
+  \endnext
+  \readspec
+}
+
+\def\readspec@M{%
+  % Specifications with a value
+  %  we expect the value linked with the key rtA
+  %  to call again readspec on its own
+  \edef\next{\the\rtB}%
+  \endnext
+}
+
+\def\readspec@B{%
+  % Specifications with an optional bracket value
+  \getoptbracket\readspec@C
+}
+
+\def\readspec@C#1{%
+  \rtA={#1}%
+  \edef\next{\the\rtB{\the\rtA}\noexpand\readspec@S}%
+  \endnext
+}
+
+\def\readspec@S{%
+  \readblanks\then\readspec\done
+}
+
+\def\readspec@R{%
+  \afterassignment\readspec@S
+}
+
+%
+% Un exemple
+%
+
+\def\testreadspec#1#{\testreadspec@M{#1}}
+
+\def\testreadspec@M#1#2{%
+  \rdA=0pt
+  \rdB=0pt
+  \rdC=0pt
+  \readspecreset
+  \def\readspecmandatory{%
+    \\{{width}{\readspec@R\rdA}}%
+    \\{{height}{\readspec@R\rdB}}%
+    \\{{depth}{\readspec@R\rdC}}%
+  }%
+  \def\readspecbracket{%
+    \\{{star}{\makestar}}%
+  }%
+  \def\makestar##1{%
+    \def\makestar@x{##1}%
+  }%
+  \let\makestar@x\undefined
+  %
+  % Here we go
+  %
+  We process the sequence
+  \begindisplay
+  \tt #1$\{$#2$\}$%
+  \enddisplay
+  through `readspec' now.
+  \par
+  \tt
+  START\par
+  \readspec#1{#2}\par
+  STOP\par
+  \normalfont
+  \begindisplay\tt
+  \indent
+  \ifx\makestar@x\undefined\else
+     \ifx\makestar@x\empty
+       \llap{* }%
+     \else
+       \llap{\makestar@x\space}%
+     \fi
+  \fi
+  rdA = \the\rdA\endgraf
+  rdB = \the\rdB\endgraf
+  rdC = \the\rdC\endgraf
+  \enddisplay
+}
+
+\testreadspec star width 12pt height 16pt depth 13pt{text}
+\testreadspec star[\P]width 12pt height 16pt depth 13pt{text}
+\testreadspec star[\P] width 12pt height 16pt depth 13pt{text}
+
+
+\meaning\ignoreblanks@l
+\meaning\spacetoken
+\meaning\tabtoken
+\meaning\newlinetoken
+
+\bye
