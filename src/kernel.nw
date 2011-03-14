@@ -2370,9 +2370,9 @@ les noms d'une manière spéciale.
 \end{example}
 et l'on peut aussi bien imaginer une autre façon, comme la suivante:
 \begin{example}
-  \name France\return
-  \name[A.]France\return
-  \name[A.] France\return
+\name France\return
+\name[A.]France\return
+\name[A.] France\return
 \end{example}
 Dans ce dernier exemple, on voit que la macro \fn{name}
 devrait contenir un \fn{ignorespaces} bien placé pour permettre aux
@@ -2456,28 +2456,138 @@ vide, de macros, appelées~\emph{tags}. Ce type d'argument optionnel
 permet de réaliser des macros comprenant des commutateurs, un peu
 comme les options de ligne de commande sur les sytèmes~UNIX.
 
-La commande \fn{getopttag} a trois paramètres globaux, qui doivent
-impérativement être initialisés avant l'appel à \fn{getopttag}:
+@ \paracommand{%
+  \cs{getopttagunit},
+  \cs{getopttagmandatory} and
+  \cs{getopttagoptional}%
+}
+Variables globales paramétrant la procédure \fn{getopttag}
+qui doivent impérativement être initialisées avant l'appel à
+\fn{getopttag}:
 \begin{description}
-\item[getopttagunit] liste des tags sans paramètres;
+\item[getopttagunit] liste des tags sans paramètre;
 \item[getopttagmandatory] liste des tags à paramètre obligatoire;
-\item[getopttagbracket] liste des tags à paramètre optionnel entre crochets.
+\item[getopttagoptional] liste des tags à paramètre optionnel entre crochets.
 \end{description}
 La commande~\fn{getopttagreset} assigne la liste vide à chacune de ces
-trois variables.
+trois variables, on recommande aux utilisateurs de~\fn{getopttag}
+d'utiliser~\fn{getopttagreset} avant d'assigner des valeurs aux trois
+paramètres globaux précédents.
 
-\subparagraph{Exemple d'utilisation de getopttag}
-Ensuite, on définit la commande \fn{trial} qui reconnaît les tags
+@ \paracommand{\cs{getopttagreset}}
+Initialise les listes~\va{getopttagunit},
+\va{getopttagoptional} et~\va{getopttagmandatory} avec la liste vide.
+
+<<Assistance à la définition de macros>>=
+\def\getopttagreset{%
+  \let\getopttagunit\empty
+  \let\getopttagmandatory\empty
+  \let\getopttagoptional\empty
+}
+
+@ \paracommand{\cs{testgetopttag}\fa{list}\fa{item}}
+Prédicat vérifiant si une macro ayant le même développement
+que~\fa{item} appartient à~\fa{list}.
+
+<<Assistance à la définition de macros>>=
+\newif\ifgetopttag
+\def\testgetopttag#1#2{%
+  \begingroup
+  \flagfalse
+  \def\\##1{\ifx#2##1\flagtrue\let\\\ignore\fi}#1%
+  \ifflag
+    \aftergroup\getopttagtrue
+  \else
+    \aftergroup\getopttagfalse
+  \fi
+  \endgroup
+}
+
+
+@ \paracommand{\cs{getopttag}\fa{callback}}
+Rassemble les \emph{tags} appartenant aux listes~\fa{getopttagany}
+ainsi que leurs arguments éventuels.  La procédure~\fa{callback} est
+alors appelée avec en argument une séquence s'évaluant en un appel
+des~\emph{tags} rassemblés.
+
+Un \emph{tag} dont l'argument optionnel est absent est appelé avec comme
+argument la chaîne vide et le drapeau~\fn{ifoptbracket} baissé, dont
+l'argument optionnel est présent avec comme argument cet argument
+optionnel est le drapeau~\fn{ifoptbracket} levé.
+<<Assistance à la définition de macros>>=
+\def\getopttag#1{%
+  \beginnext
+  \rtA={#1}%
+  \rtB={}%
+  \getopttag@A
+}
+
+\def\getopttag@A{%
+  \futurelet\getopttag@T\getopttag@B
+}
+
+\def\getopttag@B{%
+  \let\next=\getopttag@E
+  \testgetopttag\getopttagunit\getopttag@T
+  \ifgetopttag\let\next=\getopttag@V\fi
+  \testgetopttag\getopttagmandatory\getopttag@T
+  \ifgetopttag\let\next=\getopttag@M\fi
+  \testgetopttag\getopttagoptional\getopttag@T
+  \ifgetopttag\let\next=\getopttag@N\fi
+  \next
+}
+
+\def\getopttag@E{%
+  \edef\next{\the\rtA{\the\rtB}}%
+  \endnext
+}
+
+\def\getopttag@V#1{%
+  \toksrappend#1\to\rtB
+  \getopttag@A
+}
+
+\def\getopttag@M#1#2{%
+  \toksrappend{#1{#2}}\to\rtB
+  \getopttag@A
+}
+
+\def\getopttag@N#1{%
+  \rtC={#1}%
+  \getoptbracket\getopttag@O
+}
+
+\def\getopttag@O#1{%
+  \beginnext
+  \ifoptbracket
+    \edef\next{%
+      \noexpand\toksrappend{%
+        \noexpand\optbrackettrue\the\rtC{#1}%
+      }\to\rtB
+    }%
+  \else
+    \edef\next{%
+      \noexpand\toksrappend{%
+        \noexpand\optbracketfalse\the\rtC{}%
+      }\to\rtB
+    }%
+  \fi
+  \endnext
+  \getopttag@A
+}
+
+@ \subparagraph{Exemple d'utilisation de getopttag}
+On définit la commande \fn{trial} qui reconnaît les tags
 \fn{alpha}, \fn{beta}, \fn{gamma} et \fn{delta}. Elle initialise
 chacun des paramètres globaux puis appelle getopttag qui délègue
 l'interprétation des tags à \fn{trial@A}.
 \begin{example}
 \def\trial@alpha{(alpha)}
 \def\trial@beta{(beta)}
-\def\trial@gamma##1{(gamma ##1)}
-\def\trial@delta##1{%
-  \teststrempty{##1}%
-  \ifstrempty(delta)\else(delta ##1)\fi
+\def\trial@gamma#1{(gamma #1)}
+\def\trial@delta#1{%
+    \ifoptbracket(delta "#1")\else(delta)\fi
+  }%
 }%
 \def\trial{%
   \begingroup
@@ -2487,7 +2597,7 @@ l'interprétation des tags à \fn{trial@A}.
   \def\delta=\trial@delta
   \def\getopttagunit{\\{\alpha}\\{\beta}}%
   \def\getopttagmandatory{\\{\gamma}}%
-  \def\getopttagbracket{\\{\delta}}%
+  \def\getopttagoptional{\\{\delta}}%
   \getopttag\trial@M
 }
 \def\trial@M#1{%
@@ -2512,7 +2622,7 @@ Ces essais produisent la sortie suivante.
 (tags (alpha)(gamma A))
 (tags (alpha)(gamma 1))
 (tags (alpha))
-(tags (delta B))
+(tags (delta "B"))
 (tags (delta)(alpha)(beta)(alpha)(beta))
 (tags)
 ``Oh oh !'' cried baby Sally.
@@ -2534,98 +2644,49 @@ gauche du mot «exercice».  On pourrait aussi écrire des macros imitant
 la syntaxe de \emph{begin display} dans \emph{mdoc} (cf. documentation
 de la macro~{\tt .Bd} dans~\emph{groff\_mdoc(7)\/}).
 
-
-
-@ \paracommand{\cs{getopttagreset}}
-Initialise les listes~\va{getopttagunit},
-\va{getopttagbracket} et~\va{getopttagmandatory} avec la liste vide.
-<<Assistance à la définition de macros>>=
-\def\getopttagreset{%
-  \let\getopttagunit\empty
-  \let\getopttagmandatory\empty
-  \let\getopttagbracket\empty
-}
-
-@ \paracommand{\cs{testgetopttag}\fa{list}\fa{item}}
-<<Assistance à la définition de macros>>=
-\newif\ifgetopttag
-\def\testgetopttag#1#2{%
-  \begingroup
-  \flagfalse
-  \def\\##1{\ifx#2##1\flagtrue\let\\\ignore\fi}#1%
-  \ifflag
-    \aftergroup\getopttagtrue
-  \else
-    \aftergroup\getopttagfalse
-  \fi
-  \endgroup
-}
-
-
-@ \paracommand{\cs{getopttag}\fa{callback}}
-<<Assistance à la définition de macros>>=
-\def\getopttag#1{%
-  \beginnext
-  \rtA={#1}%
-  \rtB={}%
-  \getopttag@A
-}
-
-\def\getopttag@A{%
-  \futurelet\getopttag@T\getopttag@B
-}
-
-\def\getopttag@B{%
-  \let\next=\getopttag@E
-  \testgetopttag\getopttagunit\getopttag@T
-  \ifgetopttag\let\next=\getopttag@V\fi
-  \testgetopttag\getopttagmandatory\getopttag@T
-  \ifgetopttag\let\next=\getopttag@M\fi
-  \testgetopttag\getopttagbracket\getopttag@T
-  \ifgetopttag\let\next=\getopttag@N\fi
-  \next
-}
-
-\def\getopttag@E{%
-  \edef\next{\the\rtA{\the\rtB}}%
-  \endnext
-}
-
-\def\getopttag@V#1{%
-  \toksrappend#1\to\rtB
-  \getopttag@A
-}
-
-\def\getopttag@M#1#2{%
-  \toksrappend{#1{#2}}\to\rtB
-  \getopttag@A
-}
-
-\def\getopttag@N#1{%
-  \toksrappend#1\to\rtB
-  \getoptbracket\getopttag@O
-}
-
-\def\getopttag@O#1{%
-  \toksrappend{{#1}}\to\rtB
-  \getopttag@A
-}
-
 @ \subparagraph{Liste de spécifications}
 Le troisième type d'argument optionnel pris en charge est celui des
 spécifications du type de celles apparaissant en argument des
 primitives \cs{hbox} ou \cs{vbox} de~\emph{\TeX}.
 
+@ \paracommand{%
+  \cs{getoptspecunit},
+  \cs{getoptspecmandatory} and
+  \cs{getoptspecoptional}%
+}
+Variables globales paramétrant la procédure \fn{getoptspec}
+qui doivent impérativement être initialisées avant l'appel à
+\fn{getoptspec}:
+\begin{description}
+\item[getoptspecunit] liste des arguments sans paramètre;
+\item[getoptspecmandatory] liste des arguments à paramètre obligatoire;
+\item[getoptspecoptional] liste des arguments à paramètre optionnel
+  entre crochets.
+\end{description}
+Chacune de ces trois listes est une liste d'associations dont la clef
+est un mot~(suite de tokens dont le \emph{catcode} est celui d'une
+lettre), et la valeur un~\emph{callback}.  Comme dans le cas
+de~\emph{getoptag}, les~\emph{callbacks} admettant un paramètre
+optionnel sont appelés avec~\emph{ifoptbracket} levé si, et seulement
+si, l'argument est présent.  Cependant, la convention d'appel
+de~\fn{getoptspec} diffère de celle de~\fn{getopttag}.  En effet, le
+\emph{callback} associé à un argument à paramètre obligatoire doit
+lui-même lire son argument.
+
+La commande~\fn{getoptspecreset} assigne la liste vide à chacune de ces
+trois variables, on recommande aux utilisateurs de~\fn{getoptspec}
+d'utiliser~\fn{getoptspecreset} avant d'assigner des valeurs aux trois
+paramètres globaux précédents.
 
 @ \paracommand{\cs{getoptspecreset}}
 Initialise les listes~\va{getoptspecunit},
-\va{getoptspecbracket} et~\va{getoptspecmandatory} avec la liste vide.
+\va{getoptspecoptional} et~\va{getoptspecmandatory} avec la liste vide.
 
 <<Assistance à la définition de macros>>=
 \def\getoptspecreset{%
   \let\getoptspecunit\empty
   \let\getoptspecmandatory\empty
-  \let\getoptspecbracket\empty
+  \let\getoptspecoptional\empty
 }
 
 @ \paracommand{\cs{getoptspecreset}}
@@ -2659,12 +2720,12 @@ Initialise les listes~\va{getoptspecunit},
 \def\getoptspec@L{%
   % We look for the identifier stored in rtA
   % in the association lists getoptspecunit, getoptspecmandatory,
-  % getoptspecbracket.
+  % getoptspecoptional.
   \flagfalse
   \rtD{\getoptspec@E}%
   \getoptspec@A\getoptspecunit\getoptspec@V
   \getoptspec@A\getoptspecmandatory\getoptspec@M
-  \getoptspec@A\getoptspecbracket\getoptspec@B
+  \getoptspec@A\getoptspecoptional\getoptspec@B
   \ifflag
     \edef\next{%
       \noexpand\readblanks
@@ -2722,6 +2783,56 @@ Initialise les listes~\va{getoptspecunit},
 \def\getoptspec@R{%
   \afterassignment\getoptspec@S
 }
+
+
+@ \subparagraph{Exemple d'utilisation de getoptspec}
+On définit la macro \fn{trial} qui reconnaît les spécifications dont
+les mots sont
+\emph{alpha}, \emph{beta}, \emph{gamma} et \emph{delta}. Elle initialise
+chacun des paramètres globaux puis appelle getopttag qui délègue
+l'interprétation des tags à \fn{trial@A}.
+\begin{example}
+\def\trial@alpha{(alpha)}
+\def\trial@beta{(beta)}
+\def\trial@gamma#1{(gamma #1)}
+\def\trial@delta#1{%
+    \ifoptbracket(delta "#1")\else(delta)\fi
+  }%
+}%
+\def\trial{%
+  \begingroup
+  \def\getopttagunit{\\{{alpha}{\trial@alpha}}\\{{beta}{\trial@beta}}}%
+  \def\getopttagmandatory{\\{{gamma}{trial@gamma}}%
+  \def\getopttagoptional{\\{\delta}}%
+  \getopttag\trial@M
+}
+\def\trial@M#1{%
+  \par(tags\teststrempty{#1}\ifstrempty\else\space #1\fi)\par
+  \endgroup
+}
+\end{example}
+On conclut enfin par une petite batterie d'essais.
+\begin{example}
+\trial\alpha\beta
+\trial\alpha\gamma{A}
+\trial\alpha\gamma1
+\trial\alpha
+\trial\delta[B]
+\trial\delta\alpha
+\beta\alpha\beta
+\trial``Oh oh!'' cried baby Sally.
+\end{example}
+Ces essais produisent la sortie suivante.
+\begin{example}
+(tags (alpha)(beta))
+(tags (alpha)(gamma A))
+(tags (alpha)(gamma 1))
+(tags (alpha))
+(tags (delta "B"))
+(tags (delta)(alpha)(beta)(alpha)(beta))
+(tags)
+``Oh oh !'' cried baby Sally.
+\end{example}
 
 
 

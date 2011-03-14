@@ -21,12 +21,11 @@
   \def\beta{(beta)}
   \def\gamma##1{(gamma ##1)}
   \def\delta##1{%
-    \teststrempty{##1}%
-    \ifstrempty(delta)\else(delta ##1)\fi
+    \ifoptbracket(delta "##1")\else(delta)\fi
   }%
   \def\getopttagunit{\\{\alpha}\\{\beta}}%
   \def\getopttagmandatory{\\{\gamma}}%
-  \def\getopttagbracket{\\{\delta}}%
+  \def\getopttagoptional{\\{\delta}}%
   \getopttag\trial@A
 }
 \def\trial@A#1{\par(tags\teststrempty{#1}\ifstrempty\else\space #1\fi)\par\endgroup}
