@@ -1665,7 +1665,7 @@ représentation des nombres dans une base arbitraire.
 
 @ \paracommand{%
   \cs{toksloadradix}%
-  \fa{radix}\fa{converter}\fa{number}\fa{toks\_register}%
+  \fa{radix}\fa{converter}\fa{number}\cs{to}\fa{toks\_register}%
 }
 Place l'écriture de~\fa{number} en base~\fa{radix} dans le
 registre~\fa{toks\_register}. La conversion des nombres entre~0 et le
@@ -1675,7 +1675,7 @@ même format d'appel que~\fn{toksloadhexdigit} et
 que~\fn{toksloadoctaldigit}.
 
 <<Manipulation des registres>>=
-\def\toksloadradix#1#2#3#4{%
+\def\toksloadradix#1#2#3\to#4{%
   \beginnext
   \rtA={}%
   \rcB=#3\relax
@@ -1693,9 +1693,9 @@ que~\fn{toksloadoctaldigit}.
   \endnext
 }
 
-\def\toksloadhex#1\to#2{\toksloadradix\sixt@@n\toksloadhexdigit{#1}#2}
+\def\toksloadhex#1\to#2{\toksloadradix\sixt@@n\toksloadhexdigit{#1}\to{#2}}
 
-\def\toksloadoctal#1\to#2{\toksloadradix\ei@ht\toksloadoctaldigit{#1}#2}
+\def\toksloadoctal#1\to#2{\toksloadradix\ei@ht\toksloadoctaldigit{#1}\to{#2}}
 
 \def\toksloaddecimal#1\to#2{%
   \beginnext

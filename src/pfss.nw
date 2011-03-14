@@ -288,12 +288,12 @@ paramètre~\va{fontsize}
 \rtC={\expandafter{\toksload@A}}
 \rtD={\noexpand\setfontsize{\the\fontsize}}%
 
-\global\edef\toksloadfontstate#1{%
+\global\edef\toksloadfontstate\to#1{%
   \the\rtB{\the\rtA\the\rtD}%
   #1=\the\rtC
 }
 
-\global\edef\toksloadfontshortstate#1{%
+\global\edef\toksloadfontshortstate\to#1{%
   \the\rtB{\the\rtA}%
   #1=\the\rtC
 }
@@ -398,8 +398,8 @@ identifiants.
 \setfontsize{12}
 \fontname -> lmr/r/.../12
 \fontshortname -> lmr/r/...
-\toksloadcsfontname\rtA -> \rtA{\lmr/r/.../12}
-\toksloadcsfontshortname\rtB -> \rtB{\lmr/r/...}
+\toksloadcsfontname\to\rtA -> \rtA{\lmr/r/.../12}
+\toksloadcsfontshortname\to\rtB -> \rtB{\lmr/r/...}
 \end{example}
 Les registres~\va{rtA} et~\va{rtB} contiennent un seul token après
 évaluation de ces commandes.
@@ -415,24 +415,24 @@ Les registres~\va{rtA} et~\va{rtB} contiennent un seul token après
 
 \global\edef\fontname{\the\rtA\noexpand\the\noexpand\fontsize}
 
-\global\def\toksloadfontname#1{%
+\global\def\toksloadfontname\to#1{%
   \edef\toksload@A{\fontname}%
   #1=\expandafter{\toksload@A}%
 }%
 
-\global\def\toksloadcsfontname#1{%
+\global\def\toksloadcsfontname\to#1{%
   \edef\toksload@A{\csname\fontname\endcsname}%
   #1=\expandafter{\toksload@A}%
 }%
 
 \global\edef\fontshortname{\the\rtA}%
 
-\global\def\toksloadfontshortname#1{%
+\global\def\toksloadfontshortname\to#1{%
   \edef\toksload@A{\fontshortname}%
   #1=\expandafter{\toksload@A}%
 }%
 
-\global\def\toksloadcsfontshortname#1{%
+\global\def\toksloadcsfontshortname\to#1{%
   \edef\toksload@A{\csname\fontshortname\endcsname}%
   #1=\expandafter{\toksload@A}%
 }%
@@ -467,7 +467,7 @@ fermante.
 <<Liaison des paramètres à une fonte externe>>=
 \def\fontbind#1{%
   \begingroup
-  \toksloadcsfontname\rtA
+  \toksloadcsfontname\to\rtA
   \edef\next{\noexpand\global\font\the\rtA=#1\relax}%
   \expandafter\endgroup\next
 }
@@ -511,7 +511,7 @@ actuels font l'objet d'une liaison. Si c'est le cas le drapeau
 <<Sélection de la fonte active>>=
 \def\fontswitchquery{%
   \begingroup
-  \toksloadcsfontname\rtA
+  \toksloadcsfontname\to\rtA
   \expandafter\ifx\the\rtA\relax
     \def\next{\exceptiontrue}%
   \else
@@ -533,7 +533,7 @@ basculant vers cette fonte.
   #1\relax
   \fontswitchadjustinit
   \loop\fontswitchquery\ifexception\fontswitchadjust\repeat
-  \toksloadcsfontname\rtA
+  \toksloadcsfontname\to\rtA
   \rtB{#2}%
   \edef\next{\the\rtB{\the\rtA}}%
   \expandafter\endgroup\next

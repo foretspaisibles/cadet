@@ -134,7 +134,7 @@
   \toksloadcsname\fontshortname*\to\rtB%
   % Dire \let\next\relax ne fonctionne pas ici, car \relax est une
   % primitive et n'a pas de texte de remplacement. Après
-  % \let\next\relax, l'appel \toksloadcsexpansion\rtA\next a un résultat
+  % \let\next\relax, l'appel \toksloadcsexpansion\next\to\rtA a un résultat
   % indéfini.
   \let\next\empty%
   \expandafter\ifx\the\rtB\relax

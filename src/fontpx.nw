@@ -57,7 +57,7 @@
 }
 
 \def\SetFont#1{%
-  \toksloadfontshortstate\rtA
+  \toksloadfontshortstate\to\rtA
   \global\edef#1{\the\rtA}%
 }
 
