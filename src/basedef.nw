@@ -577,23 +577,34 @@ points de conduites et des formes apparentées, selon ce qui est
 suggéré par leur nom.
 
 <<Préparation de boîtes spéciales>>=
-\def\hrulefill{\leaders\hrule\hfill}
+\def\hrulefill{%
+  \leaders\hrule\hfill
+}
 
-\def\dotfill{\cleaders\hbox{$\nomathsurround \mkern1.5mu.\mkern1.5mu$}\hfill}
+\def\dotfill{%
+  \cleaders\hbox{%
+    $\nomathsurround \mkern1.5mu.\mkern1.5mu$%
+  }\hfill
+}
 
-\def\rightarrowfill{$\nomathsurround\smash-\mkern-7mu%
+\def\rightarrowfill{%
+  $\nomathsurround\smash-\mkern-7mu%
   \cleaders\hbox{$\mkern-2mu\smash-\mkern-2mu$}\hfill
-  \mkern-7mu\mathord\rightarrow$}
+  \mkern-7mu\mathord\rightarrow$%
+}
 
-\def\leftarrowfill{$\nomathsurround\mathord\leftarrow\mkern-7mu%
+\def\leftarrowfill{%
+  $\nomathsurround\mathord\leftarrow\mkern-7mu%
   \cleaders\hbox{$\mkern-2mu\smash-\mkern-2mu$}\hfill
   \mkern-7mu\smash-$}
 
-\def\downbracefill{$\nomathsurround \setbox\z@\hbox{$\braceld$}%
+\def\downbracefill{%
+  $\nomathsurround \setbox\z@\hbox{$\braceld$}%
   \braceld\leaders\vrule height\ht\z@ depth\z@\hfill\braceru
   \bracelu\leaders\vrule height\ht\z@ depth\z@\hfill\bracerd$}
 
-\def\upbracefill{$\nomathsurround \setbox\z@\hbox{$\braceld$}%
+\def\upbracefill{%
+  $\nomathsurround \setbox\z@\hbox{$\braceld$}%
   \bracelu\leaders\vrule height\ht\z@ depth\z@\hfill\bracerd
   \braceld\leaders\vrule height\ht\z@ depth\z@\hfill\braceru$}
 
