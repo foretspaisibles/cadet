@@ -2691,7 +2691,7 @@ Initialise les listes~\va{getoptspecunit},
 
 @ \paracommand{\cs{getoptspecreset}}
 <<Assistance à la définition de macros>>=
-\def\getoptspec{%
+\def\getoptspec\to#1\then#2\done{%
   \beginnext
   \readtokens\getoptspec@P\to\rtA\then\getoptspec@L\done
 }
@@ -2772,8 +2772,17 @@ Initialise les listes~\va{getoptspecunit},
 
 \def\getoptspec@C#1{%
   \rtA={#1}%
-  \edef\next{\the\rtB{\the\rtA}\noexpand\getoptspec@S}%
+  \ifoptbracket
+    \edef\next{%
+      \noexpand\optbrackettrue\the\rtB{\the\rtA}%
+    }%
+  \else
+    \edef\next{%
+      \noexpand\optbracketfalse\the\rtB{}%
+    }%
+  \fi
   \endnext
+  \getoptspec@S
 }
 
 \def\getoptspec@S{%
@@ -2789,48 +2798,42 @@ Initialise les listes~\va{getoptspecunit},
 On définit la macro \fn{trial} qui reconnaît les spécifications dont
 les mots sont
 \emph{alpha}, \emph{beta}, \emph{gamma} et \emph{delta}. Elle initialise
-chacun des paramètres globaux puis appelle getopttag qui délègue
+chacun des paramètres globaux puis appelle getoptpsec qui délègue
 l'interprétation des tags à \fn{trial@A}.
 \begin{example}
 \def\trial@alpha{(alpha)}
 \def\trial@beta{(beta)}
-\def\trial@gamma#1{(gamma #1)}
+\def\trial@gamma{\afterassignment\trial@gamma@M\rcA}
+\def\trial@gamma@M{(gamma \the\rcA)\getoptspec@S}
 \def\trial@delta#1{%
-    \ifoptbracket(delta "#1")\else(delta)\fi
-  }%
+  \ifoptbracket(delta "#1")\else(delta)\fi
 }%
 \def\trial{%
-  \begingroup
-  \def\getopttagunit{\\{{alpha}{\trial@alpha}}\\{{beta}{\trial@beta}}}%
-  \def\getopttagmandatory{\\{{gamma}{trial@gamma}}%
-  \def\getopttagoptional{\\{\delta}}%
-  \getopttag\trial@M
-}
-\def\trial@M#1{%
-  \par(tags\teststrempty{#1}\ifstrempty\else\space #1\fi)\par
-  \endgroup
+  \par
+  \getoptspecreset
+  \def\getoptspecunit{\\{{alpha}{\trial@alpha}}\\{{beta}{\trial@beta}}}%
+  \def\getoptspecmandatory{\\{{gamma}{\trial@gamma}}}%
+  \def\getoptspecoptional{\\{{delta}{\trial@delta}}}%
+  \getoptspec
 }
 \end{example}
 On conclut enfin par une petite batterie d'essais.
 \begin{example}
-\trial\alpha\beta
-\trial\alpha\gamma{A}
-\trial\alpha\gamma1
-\trial\alpha
-\trial\delta[B]
-\trial\delta\alpha
-\beta\alpha\beta
+\trial alpha beta
+\trial alpha gamma 1 alpha gamma2alpha gamma3 ``Oh oh!''
+\trial alpha
+\trial delta [B] delta[b]delta [c]alpha
+\trial delta alpha
+ beta alpha beta
 \trial``Oh oh!'' cried baby Sally.
 \end{example}
 Ces essais produisent la sortie suivante.
 \begin{example}
-(tags (alpha)(beta))
-(tags (alpha)(gamma A))
-(tags (alpha)(gamma 1))
-(tags (alpha))
-(tags (delta "B"))
-(tags (delta)(alpha)(beta)(alpha)(beta))
-(tags)
+(alpha)(beta)
+(alpha)(gamma 1)(alpha)(gamma 2)(alpha)(gamma 3)``Oh oh !''
+(alpha)
+(delta "B")(delta "b")(delta "c")(alpha)
+(delta)(alpha)(beta)(alpha)(beta)
 ``Oh oh !'' cried baby Sally.
 \end{example}
 
