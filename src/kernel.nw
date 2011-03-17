@@ -2647,31 +2647,36 @@ de la macro~{\tt .Bd} dans~\emph{groff\_mdoc(7)\/}).
 @ \subparagraph{Liste de spécifications}
 Le troisième type d'argument optionnel pris en charge est celui des
 spécifications du type de celles apparaissant en argument des
-primitives \cs{hbox} ou \cs{vbox} de~\emph{\TeX}.
+primitives \cs{hrule}, \cs{hbox} ou \cs{vbox} de~{\TeX}.
+
+Chaque argument optionnel est associé à un mot-clef et à une procédure
+de lecture d'argument, qui doit lire l'argument et l'écrire dans le
+registre~\va{getoptspecargument}.
+
+@ \paracommand{\cs{getoptspecargument}}
+Registre de type~\emph{token} utilisé par~\fn{getoptspec}.
 
 @ \paracommand{%
   \cs{getoptspecunit},
-  \cs{getoptspecmandatory} and
-  \cs{getoptspecoptional}%
+  \cs{getoptspecmandatory},
+  et~\cs{getoptspecoptional}
 }
 Variables globales paramétrant la procédure \fn{getoptspec}
-qui doivent impérativement être initialisées avant l'appel à
+qui doivent être initialisées avant l'appel à
 \fn{getoptspec}:
 \begin{description}
-\item[getoptspecunit] liste des arguments sans paramètre;
-\item[getoptspecmandatory] liste des arguments à paramètre obligatoire;
-\item[getoptspecoptional] liste des arguments à paramètre optionnel
+\item[getoptspecunit] table des arguments sans paramètre;
+\item[getoptspecmandatory] table des arguments à paramètre obligatoire;
+\item[getoptspecoptional] table des arguments à paramètre optionnel
   entre crochets.
 \end{description}
-Chacune de ces trois listes est une liste d'associations dont la clef
-est un mot~(suite de tokens dont le \emph{catcode} est celui d'une
-lettre), et la valeur un~\emph{callback}.  Comme dans le cas
-de~\emph{getoptag}, les~\emph{callbacks} admettant un paramètre
-optionnel sont appelés avec~\emph{ifoptbracket} levé si, et seulement
-si, l'argument est présent.  Cependant, la convention d'appel
-de~\fn{getoptspec} diffère de celle de~\fn{getopttag}.  En effet, le
-\emph{callback} associé à un argument à paramètre obligatoire doit
-lui-même lire son argument.
+Chacune de ces trois tables est une liste d'associations.  Les
+tables~\va{getopspecunit} et~\va{getoptspecoptional} lient un
+mot-clef introduisant un argument optionnel à un \emph{callback}.
+La table~\va{getopspmandatory} lie un mot-clef introduisant un
+argument optionnel à un couple dont le premier terme est
+un~\emph{callback} et le second une procédure de lecture de l'argument
+qui écrit l'argument lu dans le registre~\va{getoptspecargument}.
 
 La commande~\fn{getoptspecreset} assigne la liste vide à chacune de ces
 trois variables, on recommande aux utilisateurs de~\fn{getoptspec}
@@ -2683,13 +2688,43 @@ Initialise les listes~\va{getoptspecunit},
 \va{getoptspecoptional} et~\va{getoptspecmandatory} avec la liste vide.
 
 <<Assistance à la définition de macros>>=
+\newtoks\getoptspecargument
+
 \def\getoptspecreset{%
   \let\getoptspecunit\empty
   \let\getoptspecmandatory\empty
   \let\getoptspecoptional\empty
 }
 
-@ \paracommand{\cs{getoptspecreset}}
+@ \paracommand{%
+  \cs{getoptspeccount},
+  \cs{getoptspecdimen},
+  \cs{getoptspecskip},
+  \cs{getoptspectoks},
+  et~\cs{getoptspecfilename}%
+}
+
+Ces procédures lisent un nombre entier, une dimension, des paramètres
+de~\emph{glue}, une liste de~\emph{tokens} ou un nom de fichier et
+écrivent le résultat dans~\va{getoptspecargument}.
+
+On peut écrire d'autres procédures de lecture d'argument.  Ces
+procédures ne doivent pas modifier les registres de~{\TeX},
+hormis~\va{getopstpecargument}, c'est pourquoi de nouvelles procédures
+de lecture d'argument devraient utiliser la
+construction~\fn{beginnext}-\fn{endnext} comme celles que nous
+définissons ici.
+
+<<Assistance à la définition de macros>>=
+\def\getoptspecregister#1{%
+ XXX
+}
+
+
+
+
+
+
 <<Assistance à la définition de macros>>=
 \def\getoptspec\to#1\then#2\done{%
   \beginnext
