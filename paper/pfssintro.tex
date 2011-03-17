@@ -356,7 +356,7 @@ fontes}. Tous les paramètres sont contenus dans des macros, sauf l'un
 d'entre eux, la taille optique, qui est contenu dans un registre
 numérique. Les paramètres sont:
 
-\begindescription%\variables
+\begindescription\variables
 
 \item fontfamily
   Décrit la famille d'une fonte. Ces noms sont généralement abrégés,
@@ -476,19 +476,19 @@ La procédure \fn{fontbind} charge la fonte métrique indiquée au moyen
 de la primitive~\fn{font}. Le noms sous laquelle cette fonte est
 chargée est produit par la procédure \fn{toksloadfontname}. L'appel
 \beginverbatim
-\toksloadfontname\rtA
+\toksloadfontname\to\rtA
 \endverbatim
 charge le registre~\va{rtA} avec le nom d'une macro utilisée pour lier
 la fonte. Par exemple, l'appel |\fontbind{t1xss scaled 868}| est une
 version améliorée de
 \beginverbatim
-\toksloadfontname\rtA
+\toksloadfontname\to\rtA
 \expandafter\font\the\rtA=t1xss scaled 868
 \endverbatim
 Cette procédure lie la fonte \pa{t1xss} à la séquence
 \li{%
   \setAltHelvetica
-  \toksloadfontname\rtA
+  \toksloadfontname\to\rtA
   \expandafter\string\the\rtA
 }, produite grâce la primitive~\fn{csname}.
 

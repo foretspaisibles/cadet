@@ -65,7 +65,7 @@
   \begingroup
   \beginnext
   \getopttagreset
-  \def\getopttagvoid{%
+  \def\getopttagunit{%
     \\{\environment}%
     \\{\variables}%
     \\{\definedvariables}%
