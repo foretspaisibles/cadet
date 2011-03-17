@@ -240,4 +240,256 @@ boxes specifications.
 \meaning\tabtoken
 \meaning\newlinetoken
 
+\section 4. Reading specifications (reprise)
+
+\newtoks\getoptspecargument
+
+\def\getoptspecreset{%
+  \let\getoptspecvoid\empty
+  \let\getoptspecmandatory\empty
+  \let\getoptspecbracket\empty
+}
+
+\def\getoptspecregister#1{%
+  \beginnext
+  \def\getoptspecregister@N{%
+    \getoptspecregister@M{#1}%
+  }%
+  \afterassignment\getoptspecregister@N#1%
+}
+
+\def\getoptspecregister@M#1{%
+  \edef\next{%
+    \noexpand\getoptspecargument={\the#1}%
+    \noexpand\getoptspec@M
+  }%
+  \endnext
+}
+
+
+\def\getoptspecdimen{%
+  \getoptspecregister\rdA
+}
+
+\def\getoptspeccount{%
+  \getoptspecregister\rcA
+}
+
+\def\getoptspecskip{%
+  \getoptspecregister{\skip0}%
+}
+
+\def\getoptspectoks{%
+  \getoptspecregister\rtA%
+}
+
+\def\getoptspec#1{%
+  \beginnext
+  \rtA={}%
+  \rtD={#1}%
+  \getoptspecargument={}%
+  \getoptspec@M
+}
+
+\def\getoptspec@M{%
+  \testtoksempty\getoptspecargument
+  \iftoksempty\else
+  \beginnext
+  \edef\next{%
+    \noexpand\toksrappend{{\the\getoptspecargument}}%
+    \noexpand\to\noexpand\rtA
+  }%
+  \endnext
+  \getoptspecargument={}%
+  \fi
+  \readblanks\then\getoptspec@Z\done
+}
+
+\def\getoptspec@Z{%
+  \readtokens\getoptspec@P\to\rtB\then\getoptspec@L\done
+}
+
+
+\def\getoptspec@P#1{%
+  \beginnext
+  \let\next\@false
+  \ifcat A\noexpand#1\let\next\@true\fi
+  \endnext
+}
+
+% getoptspec@A ALIST CALLBACK
+%
+%  ifflag
+%   true iff we already found a match in a previous list
+%
+%  next
+%   expands to an action to perform after that each list has been looked up
+%
+%  rtA
+%   contains the tokens gathered so far
+%
+%  rtB
+%   contains the key to look up in ALIST
+%
+%  rtD
+%   contains the callback from the invocation of getoptspec
+\def\getoptspec@A#1#2{%
+  \ifflag\else
+    \beginnext
+    % We construct the call to `toksloadalistvalue'
+    %  where the key rtB is expanded
+    \rtA={\toksloadalistvalue#1}%
+    \rtC={\to\rtC}%
+    \edef\rmN{\the\rtA{\the\rtB}\the\rtC}%
+    \rmN
+    \ifexception
+      \let\next\empty
+    \else
+      % rtC contains the value matching the key rtB
+      \rtA={#2}%
+      \edef\next{%
+        \noexpand\def\noexpand\rmN{%
+          \noexpand\flagtrue
+          \the\rtA{\the\rtC}%
+        }%
+      }%
+    \fi
+    \endnext
+  \fi
+}
+
+\def\getoptspec@L{%
+  % We look for the identifier stored in rtB
+  %  in the association lists getoptspecunit, getoptspecmandatory,
+  %  and getoptspecoptional.
+  \flagfalse
+  \def\rmN{\getoptspec@E}%
+  \getoptspec@A\getoptspecunit\getoptspec@U
+  \getoptspec@A\getoptspecmandatory\getoptspec@V
+  \getoptspec@A\getoptspecoptional\getoptspec@O
+  \rmN
+}
+
+\def\getoptspec@E{%
+  % We reached the end of the specification
+  %  and put back the tokens stored in rtB on the input
+  \edef\next{\the\rtD{\the\rtA}\the\rtB}%
+  \endnext
+}
+
+\def\getoptspec@U#1{%
+  \toksrappend#1\to\rtA
+  \getoptspec@M
+}
+
+\def\getoptspec@V#1{\getoptspec@W#1}
+
+\def\getoptspec@W#1#2{%
+  \toksrappend#1\to\rtA
+  #2%
+}
+
+
+%%% TEST
+
+\def\getoptspecunit{%
+  \\{{compact}{\test@compact}}%
+}
+
+\def\getoptspecmandatory{%
+  \\{{width}{{\test@width}{\getoptspecdimen}}}%
+  \\{{height}{{\test@height}{\getoptspecdimen}}}%
+  \\{{depth}{{\test@depth}{\getoptspecdimen}}}%
+  \\{{glue}{{\test@glue}{\getoptspecskip}}}%
+  \\{{text}{{\test@text}{\getoptspectoks}}}%
+  \\{{iteration}{{\test@iteration}{\getoptspeccount}}}%
+}%
+
+\def\getoptspecoptional{%
+  \\{{star}{\test@star}}%
+}%
+
+\def\showtoks#1{%
+  \par
+  \smallskip
+  \beginnext
+  \def\rmA{#1}%
+  \toksloadcsmeaning\rmA\to\rtA\and\rtA
+  \edef\next{\noexpand\toksline{\the\rtA}}%
+  \endnext
+}
+
+\def\toksline#1{%
+  \vbox{\leftskip20pt\noindent\kern-20pt\tt#1}%
+}
+
+
+\tracingmacros=1
+\getoptspec\showtoks compact pomme
+\getoptspec\showtoks
+ width 12pt
+ compact
+ height 12pt
+ glue 12 pt plus 1fil minus 13.1mm
+ iteration 13
+ text={Oh la la ...}%
+\getoptspec\showtoks nomatch ``Oh Oh!''
+
+\tracingmacros=0
+
+% To demonstrate this ...
+%
+% \def\framebox{%
+
+
+
+
+\bye
+
+\def\getoptspec@U{%
+  % Specifications without values
+  %  we give control to the callback
+  %  and start the whole thing again
+  \edef\next{\the\rtB}%
+  \endnext
+  \getoptspec
+}
+
+\def\getoptspec@M{%
+  % Specifications with a value
+  %  we expect the value linked with the key rtA
+  %  to call again readspec on its own
+  \edef\next{\the\rtB}%
+  \endnext
+}
+
+\def\getoptspec@B{%
+  % Specifications with an optional bracket value
+  \getoptbracket\getoptspec@C
+}
+
+\def\getoptspec@C#1{%
+  \rtA={#1}%
+  \ifoptbracket
+    \edef\next{%
+      \noexpand\optbrackettrue\the\rtB{\the\rtA}%
+    }%
+  \else
+    \edef\next{%
+      \noexpand\optbracketfalse\the\rtB{}%
+    }%
+  \fi
+  \endnext
+  \getoptspec@S
+}
+
+\def\getoptspec@S{%
+  \readblanks\then\getoptspec\done
+}
+
+\def\getoptspec@R{%
+  \afterassignment\getoptspec@S
+}
+
+
 \bye
