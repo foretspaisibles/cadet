@@ -1,0 +1,104 @@
+% Ignoring blanks
+\class devel
+\title Ignore blanks
+
+\begingroup
+\setcatcodeactive\*
+\global\def\defchartoken#1#2{%
+  {%
+    \let*\ignore
+    \global\futurelet#1*#2\relax
+  }%
+}%
+\endgroup
+
+\defchartoken\spacetoken{^^20}%
+\defchartoken\tabtoken{^^09}%
+\defchartoken\nltoken{^^0a}%
+
+\def\ignoreblanks@l{\\{\par}\\{\spacetoken}\\{\tabtoken}\\{\nltoken}}%\\{^^0c}\\{^^0d}}
+
+\def\ignoreblanks@A{%
+  \trace{ignoreblanks@A}%
+  \let\ignoreblanks@N=\ignoreblanks@E
+  \flagtrue
+  \let\\=\ignoreblanks@B
+  \ignoreblanks@l
+  \tracevalue{@A}\ignoreblanks@T
+  \tracevalue{@A}\ifflag
+  \ifflag\else
+    \let\ignoreblanks@N=\ignoreblanks@I
+  \fi
+  \ifx\ignoreblanks@T\input
+    \let\ignoreblanks@N=\ignoreblanks@C
+  \fi
+  \ifx\ignoreblanks@T\spacetoken
+    \let\ignoreblanks@N=\ignoreblanks@D
+  \fi
+  \ignoreblanks@N
+}
+
+\long\def\ignoreblanks@B#1{%
+  \trace{ignoreblanks@B}%
+  \futurelet\rmA\ignore#1\relax%
+  \tracevalue{@B}{\rmA}%
+  \tracevalue{@B}{#1}%
+  \tracevalue{@B}{\ignoreblanks@T}%
+  \ifx\rmA\ignoreblanks@T
+    \trace{! got a match}%
+    \flagfalse
+    \let\\\ignore
+  \fi
+}
+
+\def\ignoreblanks@C{%
+  % The next token to be read is `input'
+  \trace{ignoreblanks@C}%
+  \endgroup\expandafter\ignoreblanks
+}
+\def\ignoreblanks@E{%
+  \trace{ignoreblanks@E}%
+  \endgroup
+}
+
+\long\def\ignoreblanks@D#1{%
+  \ignoreblanks@M#1%
+}
+
+\long\def\ignoreblanks@I#1{%
+  \ignoreblanks@M
+}
+
+
+\def\ignoreblanks@M{%
+  \futurelet
+  \ignoreblanks@T
+  \ignoreblanks@A
+}
+
+\def\ignoreblanks{%
+  \trace{ignoreblanks}%
+  \begingroup
+  \ignoreblanks@M
+}
+
+\section How do the white space tokens looks like
+
+
+\begintrace
+\tracevalue{}{\spacetoken}
+\tracevalue{}{\tabtoken}
+\tracevalue{}{\nltoken}
+\endtrace
+
+\section Tracing ignoreblanks
+
+\long\def\traceignoreblanks#1{%
+  \begintrace\ignoreblanks #1\endtrace
+}
+
+\traceignoreblanks{ \par A BC}
+\traceignoreblanks{A BC}
+
+
+\bye

@@ -1,8 +1,7 @@
-\input setup
-
+\class devel
 \title Scanning macro arguments
 
-\section 1. Playing with getoptag
+\section Playing with getoptag
 
 \def\makeattribute#1{$\left\{\mbox{#1}\right\}$}
 
@@ -43,7 +42,42 @@
 \endgroup
 
 
-\section 2. Read blanks then trigger a callback
+
+\section Playing once again with getopttag
+
+\def\alpha{ALPHA}
+\def\beta{BETA}
+\def\gamma{GAMMA}
+\def\delta{DELTA}
+
+\def\trial{%
+  \begingroup
+  \def\alpha{(alpha)}
+  \def\beta{(beta)}
+  \def\gamma##1{(gamma ##1)}
+  \def\delta##1{%
+    \ifoptbracket(delta "##1")\else(delta)\fi
+  }%
+  \def\getopttagunit{\\{\alpha}\\{\beta}}%
+  \def\getopttagmandatory{\\{\gamma}}%
+  \def\getopttagoptional{\\{\delta}}%
+  \getopttag\trial@A
+}
+\def\trial@A#1{\tt\par(tags\teststrempty{#1}\ifstrempty\else\space #1\fi)\par\endgroup}
+
+\trial\alpha\beta
+\trial\alpha\gamma{A}
+\trial\alpha\gamma1
+\trial\alpha
+\trial\delta[B]
+\trial\delta\alpha
+\beta\alpha\beta
+\trial``Oh oh!'' cried baby Sally.
+
+
+
+
+\section Read blanks then trigger a callback
 
 \def\discardblanks@L#1{%
   \beginnext
@@ -74,7 +108,7 @@ macro `space' between D and EFG, you will get
 \enddisplay
 
 
-\section 3. Read specifications
+\section Read specifications
 
 The specifications we want to read look like those appearing in {\TeX}
 boxes specifications.
@@ -234,13 +268,14 @@ boxes specifications.
 \testgetoptspec star[\P]width 12pt height 16pt depth 13pt{text}
 \testgetoptspec star [\P] width 12pt height 16pt depth 13pt{text}
 
+<<<<<<< HEAD
 
 \meaning\ignoreblanks@l
 \meaning\spacetoken
 \meaning\tabtoken
 \meaning\newlinetoken
 
-\section 4. Reading specifications (reprise)
+\section Reading specifications (reprise)
 
 \newtoks\getoptspecargument
 
@@ -492,4 +527,6 @@ boxes specifications.
 }
 
 
+=======
+>>>>>>> Reorganizing directory
 \bye

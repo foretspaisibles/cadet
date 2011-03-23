@@ -1,44 +1,5 @@
 % test.tex
-\input setup
-\title We test miscellaneous features of \TeX
-
-\long\def\testignoreblanks#1{\ignoreblanks#1}
-
-\meaning\spacetoken
-\meaning\newlinetoken
-
-\testignoreblanks{
-\par A}
-
-\def\alpha{ALPHA}
-\def\beta{BETA}
-\def\gamma{GAMMA}
-\def\delta{DELTA}
-
-\def\trial{%
-  \begingroup
-  \def\alpha{(alpha)}
-  \def\beta{(beta)}
-  \def\gamma##1{(gamma ##1)}
-  \def\delta##1{%
-    \ifoptbracket(delta "##1")\else(delta)\fi
-  }%
-  \def\getopttagunit{\\{\alpha}\\{\beta}}%
-  \def\getopttagmandatory{\\{\gamma}}%
-  \def\getopttagoptional{\\{\delta}}%
-  \getopttag\trial@A
-}
-\def\trial@A#1{\par(tags\teststrempty{#1}\ifstrempty\else\space #1\fi)\par\endgroup}
-
-\tt
-
-\trial\alpha\beta
-\trial\alpha\gamma{A}
-\trial\alpha\gamma1
-\trial\alpha
-\trial\delta[B]
-\trial\delta\alpha
-\beta\alpha\beta
-\trial``Oh oh!'' cried baby Sally.
+\class devel
+\title Miscellaneous features of {\TeX} and~{\brTeX}
 
 \bye

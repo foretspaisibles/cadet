@@ -1,14 +1,17 @@
 % boxes.tex -- Playing with boxes
 
-\input setup
-\title
+\class devel
+\title Playing with {\TeX} boxes
 
-% First, we draw an horizontal line, to find the basepoint of the
-% containing line.
-%
-% If we want to have the baseline of the first box on the page to be
-% located at `layoutmarginleft,layoutmargintop), we have to unskip the
-% `topskip' glue.
+\section Horizontal rule
+
+First, we draw an horizontal line, to find the basepoint of the
+containing line.
+
+If we want to have the baseline of the first box on the page to be
+located at `(layoutmarginleft,layoutmargintop)', we have to unskip the
+`topskip' glue.
+
 \null
 \vskip-\topskip
 \hrule width \hsize height 0pt depth 10pt
@@ -17,10 +20,12 @@
 \medskip
 \noindent
 Off with her head!
-\newpage
 
-% Production of a box with its baseline, this is from the TeXbook,
-% experiments, that only shall go on-screenlines 3624--.
+
+\section Geometry of a box
+
+Production of a box with its baseline, this is from the TeXbook,
+experiments, that only shall go on-screenlines 3624--.
 
 % Macros for drawing figures (not in Appendix E)
 \def\hidehrule#1#2{\kern-#1\hrule height#1 depth#2 \kern-#2 }
@@ -99,8 +104,8 @@ Off with her head!
 \kern1.5em
 \raise\ht2\vtop{\kern0pt\box2\nointerlineskip\box3}}
 
-\newpage
 
+\section Grid positionning
 
 % We study the placement of points using there coordinates.
 
@@ -211,17 +216,4 @@ Off with her head!
 %%   % We also need to negate the height of our box.
 %%   \vss
 %% }
-
-
-\newpage
-
-
-
-%\def\begintopgrid#1#2{%
-%  \null
-
-\newpage
-
-
-
 \bye
