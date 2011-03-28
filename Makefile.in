@@ -23,7 +23,7 @@
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 PROJECT = bhrid
-VERSION = 0.1
+VERSION = @version@
 AUTHOR = Michael Grünewald
 
 SUBDIR+= src
@@ -35,20 +35,14 @@ SUBDIR+= paper
 SUBDIR+= example
 SUBDIR+= locale
 
-#SUBDIR+= ancillary
-#SUBDIR+= fonts
+PREFIX?= @prefix@
+TEXMFDIR?= ${PREFIX}/share/mk
 
-.MAKEFLAGS: -I ${.CURDIR}/Library/Make
-.MAKEFLAGS: BHRIDBASEDIR=${.CURDIR}
-.MAKEFLAGS: USE_SWITCH_CREDENTIALS=no
-
-.include "bps.subdir.mk"
 .include "bps.project.mk"
 
-afterinstall:	.USE
-	mktexlsr
+do-mktexlsr:	.USE
+	mktexlsr ${TEXMFDIR}
 
-install:	afterinstall
-
+install: do-mktexlsr
 
 ### End of file `Makefile'

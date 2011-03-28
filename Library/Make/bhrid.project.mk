@@ -22,6 +22,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
+.if !defined(BHRIDBASEDIR)&&defined(PROJECTBASE)
+BHRIDBASEDIR?= ${PROJECTBASE}
+.endif
 
 .if !defined(BHRIDBASEDIR)
 .error You must define BHRIDBASEDIR so that TeX and friends can find the BHRID files.

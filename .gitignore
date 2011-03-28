@@ -9,3 +9,7 @@
 *.ps
 *.eps
 .cookie.*
+/Makefile
+/autom4te.cache/
+/config.status
+/configure
