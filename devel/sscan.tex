@@ -278,6 +278,10 @@ boxes specifications.
 
 \newtoks\getoptspecargument
 
+%
+% Managing getoptspec parameters
+%
+
 \def\getoptspecreset{%
   \let\getoptspecvoid\empty
   \let\getoptspecmandatory\empty
@@ -315,6 +319,65 @@ boxes specifications.
 
 \def\getoptspectoks{%
   \getoptspecregister\rtA%
+}
+
+\let\selectgetoptspec@reset\getoptspecreset
+\defselect{getoptspec}{reset}
+
+\def\defgetoptspec#1{%
+  \cslet{getoptspec@#1@unit}\empty
+  \cslet{getoptspec@#1@mandatory}\empty
+  \cslet{getoptspec@#1@optional}\empty
+  \beginnext
+  \toksloadcsname{selectgetoptspec@#1}\to\rtA
+  \toksloadcsname{getoptspec@#1@unit}\to\rtB
+  \toksloadcsname{getoptspec@#1@mandatory}\to\rtC
+  \toksloadcsname{getoptspec@#1@optional}\to\rtD
+  \let\\\noexpand
+  \edef\next{%
+    \\\def\the\rtA{%
+      \\\let\\\getoptspecunit\the\rtB
+      \\\let\\\getoptspecmandatory\the\rtC
+      \\\let\\\getoptspecoptional\the\rtD
+    }%
+  }%
+  \endnext
+}
+
+\def\getoptspecunitadd#1#2#3{%
+  \beginnext
+  \toksloadcsname{getoptspec@#1@unit}\to\rtA
+  \rtB={#2}%
+  \rtC={#3}%
+  \let\\\noexpand
+  \edef\next{%
+    \\\listrappend{\the\rtB}{\the\rtC}\\\to\the\rtA
+  }%
+  \endnext
+}
+
+\def\getoptspecmandatoryadd#1#2#3#4{%
+  \beginnext
+  \toksloadcsname{getoptspec@#1@mandatory}\to\rtA
+  \rtB={#2}%
+  \rtC={{#3}{#4}}%
+  \let\\\noexpand
+  \edef\next{%
+    \\\listrappend{\the\rtB}{\the\rtC}\\\to\the\rtA
+  }%
+  \endnext
+}
+
+\def\getoptspecoptionaladd#1#2#3{%
+  \beginnext
+  \toksloadcsname{getoptspec@#1@optional}\to\rtA
+  \rtB={#2}%
+  \rtC={#3}%
+  \let\\\noexpand
+  \edef\next{%
+    \\\listrappend{\the\rtB}{\the\rtC}\\\to\the\rtA
+  }%
+  \endnext
 }
 
 \def\getoptspec#1{%
@@ -452,5 +515,157 @@ boxes specifications.
  iteration 13
  text {Oh la la ...}%
 \getoptspec\showtoks nomatch ``Oh Oh!''
+
+
+\section A framed box
+
+The macro `fbox' creates a `vbox' surrounded by a frame.  The
+parameters describing this frame are passed as specifications.
+
+The following specifications are recognized:
+\beginroster
+\item`margin<dimen>'
+set the four margin parameters to `<dimen>', these parameters can also
+be set individually.
+\item`thickness<dimen>'
+set the four thickness parameters to `<dimen>', these parameters can
+also be set individually.
+\item`to<dimen>'
+set the desired height of the resulting `vbox'.
+\endroster
+
+% Quoting from the TeX book, page 290:
+%
+% \afterassignment token . The token is saved in a special place; it
+% will be inserted back into the input just after the next assignment
+% command has been per- formed. An assignment need not follow
+% immediately; if another \afterassignment is performed before the
+% next assignment, the second one overrides the first. If the next
+% assignment is a \setbox, and if the assigned box is \hbox or \vbox
+% or \vtop, the token will be inserted just after the { in the box
+% construction, not after the }; it will also come just before any
+% tokens inserted by \everyhbox or \everyvbox.
+
+
+\def\fbox{%
+  \vbox\bgroup
+  \selectgetoptspec{fbox}%
+  \fboxoverlapfalse
+  \getoptspec\fbox@T
+}
+
+\def\fbox@T#1{%
+  \rtA{#1}%
+  \afterassignment\fbox@M\rtB
+}
+
+\def\fbox@M{%
+  \beginnext
+  \let\\\noexpand
+  \edef\next{%
+    \\\fbox@A{\the\rtA}{\the\rtB}%
+  }%
+  \endnext
+}
+
+\def\fbox@A#1#2{%
+  \setbox\rbA\vbox{#2}%
+  \relax#1\relax
+  \boxloadframe\rbA\to\rbB
+  \hsize=\wd\rbB
+  \iffboxoverlap
+  \hsize=\wd\rbA
+  \kern-\framethicknesstop
+  \kern-\framemargintop
+  \hbox\bgroup
+    \kern-\framethicknessleft
+    \kern-\framemarginleft
+  \fi
+  \box\rbB
+  \iffboxoverlap
+    \kern-\framethicknessleft
+    \kern-\framemarginleft
+    \egroup
+  \fi
+  \egroup
+}%
+
+
+\defgetoptspec{fbox}
+
+\newif\iffboxoverlap
+\getoptspecunitadd{fbox}{overlap}{\fboxoverlaptrue}
+
+\getoptspecmandatoryadd{fbox}{margin}{\fbox@margin}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{margintop}{\fbox@margintop}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{marginbottom}{\fbox@marginbottom}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{marginright}{\fbox@marginright}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{marginleft}{\fbox@marginleft}{\getoptspecdimen}
+
+\def\fbox@margin#1{%
+  \framemargintop=#1\relax
+  \framemarginbottom=#1\relax
+  \framemarginleft=#1\relax
+  \framemarginright=#1\relax
+}
+
+\def\fbox@margintop#1{%
+  \framemargintop=#1\relax
+}
+
+\def\fbox@marginbottom#1{%
+  \framemarginbottom=#1\relax
+}
+
+\def\fbox@marginleft#1{%
+  \framemarginleft=#1\relax
+}
+
+\def\fbox@marginright#1{%
+  \framemarginright=#1\relax
+}
+
+\getoptspecmandatoryadd{fbox}{thickness}{\fbox@thickness}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{thicknesstop}{\fbox@thicknesstop}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{thicknessbottom}{\fbox@thicknessbottom}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{thicknessright}{\fbox@thicknessright}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{thicknessleft}{\fbox@thicknessleft}{\getoptspecdimen}
+
+\def\fbox@thickness#1{%
+  \framethicknesstop=#1\relax
+  \framethicknessbottom=#1\relax
+  \framethicknessleft=#1\relax
+  \framethicknessright=#1\relax
+}
+
+\def\fbox@thicknesstop#1{%
+  \framethicknesstop=#1\relax
+}
+
+\def\fbox@thicknessbottom#1{%
+  \framethicknessbottom=#1\relax
+}
+
+\def\fbox@thicknessleft#1{%
+  \framethicknessleft=#1\relax
+}
+
+\def\fbox@thicknessright#1{%
+  \framethicknessright=#1\relax
+}
+
+
+\def\content{%
+  \hbox{Hello!}%
+}
+
+\hbox{%
+\rdA=1ex
+\advance\rdA-1pt
+\fbox margin \rdA overlap thickness 1pt{%
+  \content
+}%
+\vbox{\content}%
+}
 
 \bye
