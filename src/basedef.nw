@@ -802,6 +802,151 @@ boîte.
 \long\def\boxload@P#1#2#3{#1{#2}\to\boxload@b{#3}\box\boxload@b}
 
 
+@ \paracommand{\cs{fbox}\fa{fbox\_specification}\fa{vertical\_material}}
+Prépare une boîte verticale~\emph{vbox}
+contenant~\fa{vertical\_material} et encadrée.  Le cadre est préparé
+grâce à~\fn{boxloadframe} et est donc paramétrée par les huit
+registres définissant l'allure du cadre produit
+par~\fn{boxloadframe}.  Cependant la liste de
+\emph{tokens}~\fa{fbox\_specification} permet de lier temporairement
+ces registres aux valeurs souhaitées.
+
+La liste de~\emph{tokens}~\fa{fbox\_specification} est une liste
+d'aucun ou plusieurs éléments parmi les suivants:
+\begin{description}
+\item[margin]\fa{dimen} positionne les quatre
+  registres~\va{framemargintop}, \va{framemarginleft},
+  \va{framemarginbottom} et~\va{framemarginright} sur la
+  valeur~\fa{dimen};
+\item[margintop,
+  \textrm{(resp.} marginleft, marginbottom \textrm{et}
+  marginright\textrm{)}]\fa{dimen}
+  positionne sur~\fa{dimen} le registre~\va{framemargintop}, (resp.
+  \va{framemarginleft}, \va{framemarginbottom} et~\va{framemarginright}) sur la
+  valeur~\fa{dimen};
+\item[thickness]\fa{dimen} positionne les quatre
+  registres~\va{framethicknesstop}, \va{framethicknessleft},
+  \va{framethicknessbottom} et~\va{framethicknessright} sur la
+  valeur~\fa{dimen};
+\item[thicknesstop,
+  \textrm{(resp.} thicknessleft, thicknessbottom \textrm{et}
+  thicknessright\textrm{)}]\fa{dimen}
+  positionne sur~\fa{dimen} le registre~\va{framethicknesstop}, (resp.
+  \va{framethicknessleft}, \va{framethicknessbottom} et~\va{framethicknessright}) sur la
+  valeur~\fa{dimen};
+\end{description}
+
+<<Préparation de boîtes spéciales>>=
+\def\fbox{%
+  \vbox\bgroup
+  \selectgetoptspec{fbox}%
+  \fboxoverlapfalse
+  \getoptspec\fbox@T
+}
+
+\def\fbox@T#1{%
+  \rtA{#1}%
+  \afterassignment\fbox@M\rtB
+}
+
+\def\fbox@M{%
+  \beginnext
+  \let\\\noexpand
+  \edef\next{%
+    \\\fbox@A{\the\rtA}{\the\rtB}%
+  }%
+  \endnext
+}
+
+\def\fbox@A#1#2{%
+  \setbox\rbA\vbox{#2}%
+  \relax#1\relax
+  \boxloadframe\rbA\to\rbB
+  \hsize=\wd\rbB
+  \iffboxoverlap
+  \hsize=\wd\rbA
+  \kern-\framethicknesstop
+  \kern-\framemargintop
+  \hbox\bgroup
+    \kern-\framethicknessleft
+    \kern-\framemarginleft
+  \fi
+  \box\rbB
+  \iffboxoverlap
+    \kern-\framethicknessleft
+    \kern-\framemarginleft
+    \egroup
+  \fi
+  \egroup
+}%
+
+@ On utilise l'interface avancée de~\fn{getoptspec} pour définir le
+comportement de chcun des mots-clef reconnu par~\fn{fbox}.
+<<Préparation de boîtes spéciales>>=
+\defgetoptspec{fbox}
+
+\newif\iffboxoverlap
+\getoptspecunitadd{fbox}{overlap}{\fboxoverlaptrue}
+
+\getoptspecmandatoryadd{fbox}{margin}{\fbox@margin}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{margintop}{\fbox@margintop}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{marginbottom}{\fbox@marginbottom}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{marginright}{\fbox@marginright}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{marginleft}{\fbox@marginleft}{\getoptspecdimen}
+
+\def\fbox@margin#1{%
+  \framemargintop=#1\relax
+  \framemarginbottom=#1\relax
+  \framemarginleft=#1\relax
+  \framemarginright=#1\relax
+}
+
+\def\fbox@margintop#1{%
+  \framemargintop=#1\relax
+}
+
+\def\fbox@marginbottom#1{%
+  \framemarginbottom=#1\relax
+}
+
+\def\fbox@marginleft#1{%
+  \framemarginleft=#1\relax
+}
+
+\def\fbox@marginright#1{%
+  \framemarginright=#1\relax
+}
+
+\getoptspecmandatoryadd{fbox}{thickness}{\fbox@thickness}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{thicknesstop}{\fbox@thicknesstop}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{thicknessbottom}{\fbox@thicknessbottom}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{thicknessright}{\fbox@thicknessright}{\getoptspecdimen}
+\getoptspecmandatoryadd{fbox}{thicknessleft}{\fbox@thicknessleft}{\getoptspecdimen}
+
+\def\fbox@thickness#1{%
+  \framethicknesstop=#1\relax
+  \framethicknessbottom=#1\relax
+  \framethicknessleft=#1\relax
+  \framethicknessright=#1\relax
+}
+
+\def\fbox@thicknesstop#1{%
+  \framethicknesstop=#1\relax
+}
+
+\def\fbox@thicknessbottom#1{%
+  \framethicknessbottom=#1\relax
+}
+
+\def\fbox@thicknessleft#1{%
+  \framethicknessleft=#1\relax
+}
+
+\def\fbox@thicknessright#1{%
+  \framethicknessright=#1\relax
+}
+
+
 @ \subsection{Préparation de tableaux}
 
 Ces commandes permettant la réalisation de tableaux basiques sont

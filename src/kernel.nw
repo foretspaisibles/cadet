@@ -2309,6 +2309,47 @@ contenir la commande~\fn{par}.
   \expandafter\endgroup\readline@N
 }
 
+@ \paragraph{Définition de commandes select}
+On utilise dans {\brTeX} de nombreuses commandes dont le préfixe est
+\fn{select}, elles ont souvent la forme générale suivante:
+\begin{example}
+\def\selectDOMAIN#1{%
+   si une macro selectDOMAIN@#1 existe alors on l'éxécute
+   sinon on éxécute selectDOMAIN@FALLBACK
+}
+\end{example}
+La procédure \fn{defselect} facilite la création de ces macros.
+
+@ \paracommand{\cs{defselect}\fa{domain}\fa{fallback}}
+
+Définit une procédure \fn{select}\fa{domain} qui prend un argument
+\fa{instance} et teste si \fn{select}\fa{domain}\fn{@}\fa{instance}
+exacte: dans ce cas le contrôle et passé à cette macro, dans le cas
+contraire, le contrôle est passé
+à~\fn{select}\fa{domain}\fn{@}\fa{fallback}.
+
+<<Assistance à la définition de macros>>=
+\def\defselect#1#2{%
+  \beginnext
+  \toksloadcsname select#1\to\rtA
+  \rtB{##1}%
+  \edef\next{\def\the\rtA\the\rtB{\noexpand\defselect@M{#1}{#2}{\the\rtB}}}%
+  \endnext
+}
+
+\def\defselect@M#1#2#3{%
+  \begingroup
+  \toksloadcsname select#1@#3\to\rtA
+  \toksloadcsname select#1@#2\to\rtB
+  \expandafter\ifx\the\rtA\relax
+    \writelog{Warning: select#1: variant #3 unavailable, falling
+  back to #2}%
+    \rtA\rtB
+  \fi
+  \expandafter\endgroup\the\rtA
+}
+
+
 @ \paragraph{Mémorisation des modificateurs}
 Il est parfois utile de fournir des formes spécialisées de la commande
 \fn{def}. Les commandes \fn{modifierssave}, \fn{modifiersload} et
@@ -2665,8 +2706,12 @@ Chaque argument optionnel est associé à un mot-clef et à une procédure
 de lecture d'argument, qui doit lire l'argument et l'écrire dans le
 registre~\va{getoptspecargument}.
 
+
 @ \paracommand{\cs{getoptspecargument}}
 Registre de type~\emph{token} utilisé par~\fn{getoptspec}.
+
+<<Assistance à la définition de macros>>=
+\newtoks\getoptspecargument
 
 @ \paracommand{%
   \cs{getoptspecunit},
@@ -2687,61 +2732,125 @@ tables~\va{getopspecunit} et~\va{getoptspecoptional} lient un
 mot-clef introduisant un argument optionnel à un \emph{callback}.
 La table~\va{getopspmandatory} lie un mot-clef introduisant un
 argument optionnel à un couple dont le premier terme est
-un~\emph{callback} et le second une procédure de lecture de l'argument
-qui écrit l'argument lu dans le registre~\va{getoptspecargument}.
+un~\emph{callback} et le second une \emph{procédure de lecture} de
+l'argument obligatoire.
 
+La convention d'appel de la procédure de lecture est la suivante:  la
+procédure ne modifie aucun registre sauf~\va{getoptspecargument}, elle
+écrit l'argument lu dans le registre~\va{getoptspecargument}, elle
+retire du flot d'entrée les~\emph{tokens} correspondant à l'argument
+qu'elle a lu.
+
+@ \paracommand{\cs{getoptspecreset}}
 La commande~\fn{getoptspecreset} assigne la liste vide à chacune de ces
 trois variables, on recommande aux utilisateurs de~\fn{getoptspec}
 d'utiliser~\fn{getoptspecreset} avant d'assigner des valeurs aux trois
 paramètres globaux précédents.
 
-@ \paracommand{\cs{getoptspecreset}}
-Initialise les listes~\va{getoptspecunit},
-\va{getoptspecoptional} et~\va{getoptspecmandatory} avec la liste vide.
+\begin{remark}
+Plusieurs macros, dont~\fn{selectgetoptspec}, présentent une interface
+de plus haut niveau pour la manipulation des
+variables~\va{getoptspecunit}, etc.
+\end{remark}
 
 <<Assistance à la définition de macros>>=
-\newtoks\getoptspecargument
-
 \def\getoptspecreset{%
-  \let\getoptspecunit\empty
+  \let\getoptspecvoid\empty
   \let\getoptspecmandatory\empty
-  \let\getoptspecoptional\empty
+  \let\getoptspecbracket\empty
 }
 
-@ \paracommand{%
-  \cs{getoptspeccount},
-  \cs{getoptspecdimen},
-  \cs{getoptspecskip},
-  \cs{getoptspectoks},
-  et~\cs{getoptspecfilename}%
-}
+@ On définit plusieurs procédures de lecture de l'argument, pouvant
+apparaître dans la liste~\fn{getoptspecmandatory}.  Ces définitions
+sont construites autour de~\fn{getoptspecregister}.
 
-Ces procédures lisent un nombre entier, une dimension, des paramètres
-de~\emph{glue}, une liste de~\emph{tokens} ou un nom de fichier et
-écrivent le résultat dans~\va{getoptspecargument}.
+@ \paracommand{\cs{getoptspecregister}\fa{register}}
 
-On peut écrire d'autres procédures de lecture d'argument.  Ces
-procédures ne doivent pas modifier les registres de~{\TeX},
-hormis~\va{getopstpecargument}, c'est pourquoi de nouvelles procédures
-de lecture d'argument devraient utiliser la
-construction~\fn{beginnext}-\fn{endnext} comme celles que nous
-définissons ici.
+L'appel~\cs{getoptspecregister}\fa{register} affecte la valeur
+de~\fa{register} grâce aux \emph{tokens} dans l'entrée et écrit cette
+valeur dans la liste de~\emph{tokens}~\va{getoptspecargument}.  Aucun
+autre registre que~\va{getoptspecargument} n'est modifié, pas
+même~\fa{register}.
 
 <<Assistance à la définition de macros>>=
 \def\getoptspecregister#1{%
- XXX
+  \beginnext
+  \def\getoptspecregister@N{%
+    \getoptspecregister@M{#1}%
+  }%
+  \afterassignment\getoptspecregister@N#1%
 }
 
+\def\getoptspecregister@M#1{%
+  \edef\next{%
+    \noexpand\getoptspecargument={\the#1}%
+    \noexpand\getoptspec@M
+  }%
+  \endnext
+}
 
+@ \paracommand{%
+  \cs{getoptspecdimen},
+  \cs{getoptspeccount},
+  \cs{getoptspecskip},
+  \cs{getoptspectoks}%
+}
 
-
-
+Procédures de lecture de l'argument, lisant respectivement une
+dimension, un nombre, une~\emph{glue} ou une liste de~\emph{tokens}.
 
 <<Assistance à la définition de macros>>=
-\def\getoptspec\to#1\then#2\done{%
-  \beginnext
-  \readtokens\getoptspec@P\to\rtA\then\getoptspec@L\done
+\def\getoptspecdimen{%
+  \getoptspecregister\rdA
 }
+
+\def\getoptspeccount{%
+  \getoptspecregister\rcA
+}
+
+\def\getoptspecskip{%
+  \getoptspecregister{\skip0}%
+}
+
+\def\getoptspectoks{%
+  \getoptspecregister\rtA%
+}
+
+
+@ \paracommand{\cs{getoptspec}\fa{callback}}
+
+Analyse les~\emph{tokens} en entrée pour reconnaître une specification
+d'arguments, décrite par les variables \va{getoptspecunit}, etc.  Le
+résultat de la spécification est une liste de \emph{tokens,} passée en
+argument à~\fa{callback}.
+
+<<Assistance à la définition de macros>>=
+\def\getoptspec#1{%
+  \beginnext
+  \rtA={}%
+  \rtD={#1}%
+  \getoptspecargument={}%
+  \getoptspec@M
+}
+
+\def\getoptspec@M{%
+  \testtoksempty\getoptspecargument
+  \iftoksempty\else
+  \beginnext
+  \edef\next{%
+    \noexpand\toksrappend{{\the\getoptspecargument}}%
+    \noexpand\to\noexpand\rtA
+  }%
+  \endnext
+  \getoptspecargument={}%
+  \fi
+  \readblanks\then\getoptspec@Z\done
+}
+
+\def\getoptspec@Z{%
+  \readtokens\getoptspec@P\to\rtB\then\getoptspec@L\done
+}
+
 
 \def\getoptspec@P#1{%
   \beginnext
@@ -2750,96 +2859,143 @@ définissons ici.
   \endnext
 }
 
+% getoptspec@A ALIST CALLBACK
+%
+%  ifflag
+%   true iff we already found a match in a previous list
+%
+%  next
+%   expands to an action to perform after that each list has been looked up
+%
+%  rtA
+%   contains the tokens gathered so far
+%
+%  rtB
+%   contains the key to look up in ALIST
+%
+%  rtD
+%   contains the callback from the invocation of getoptspec
 \def\getoptspec@A#1#2{%
   \ifflag\else
     \beginnext
-    \rtB={\toksloadalistvalue#1}%
-    \rtC={\to\rtB}%
-    \edef\next{\the\rtB{\the\rtA}\the\rtC}%
-    \endnext
-    \ifexception\else
-      \flagtrue
-      \rtD{#2}%
+    % We construct the call to `toksloadalistvalue'
+    %  where the key rtB is expanded
+    \rtA={\toksloadalistvalue#1}%
+    \rtC={\to\rtC}%
+    \edef\rmN{\the\rtA{\the\rtB}\the\rtC}%
+    \rmN
+    \ifexception
+      \let\next\empty
+    \else
+      % rtC contains the value matching the key rtB
+      \rtA={#2}%
+      \edef\next{%
+        \noexpand\def\noexpand\rmN{%
+          \noexpand\flagtrue
+          \the\rtA{\the\rtC}%
+        }%
+      }%
     \fi
+    \endnext
   \fi
 }
 
 \def\getoptspec@L{%
-  % We look for the identifier stored in rtA
-  % in the association lists getoptspecunit, getoptspecmandatory,
-  % getoptspecoptional.
+  % We look for the identifier stored in rtB
+  %  in the association lists getoptspecunit, getoptspecmandatory,
+  %  and getoptspecoptional.
   \flagfalse
-  \rtD{\getoptspec@E}%
-  \getoptspec@A\getoptspecunit\getoptspec@V
-  \getoptspec@A\getoptspecmandatory\getoptspec@M
-  \getoptspec@A\getoptspecoptional\getoptspec@B
-  \ifflag
-    \edef\next{%
-      \noexpand\readblanks
-      \noexpand\then
-      \the\rtD
-      \noexpand\done
-    }%
-  \else
-    % We did not find a match
-    %  and rtD = {\getoptspec@E}
-    \def\next{\the\rtD}%
-  \fi
-  \next
+  \def\rmN{\getoptspec@E}%
+  \getoptspec@A\getoptspecunit\getoptspec@U
+  \getoptspec@A\getoptspecmandatory\getoptspec@V
+  \getoptspec@A\getoptspecoptional\getoptspec@O
+  \rmN
 }
 
 \def\getoptspec@E{%
-  % We reached the end of the specification and
-  % put back the tokens stored in rtA on the input
-  \edef\next{\the\rtA}%
+  % We reached the end of the specification
+  %  and put back the tokens stored in rtB on the input
+  \edef\next{\the\rtD{\the\rtA}\the\rtB}%
   \endnext
 }
 
-\def\getoptspec@V{%
-  % Specifications without values
-  %  we give control to the callback
-  %  and start the whole thing again
-  \edef\next{\the\rtB}%
-  \endnext
-  \getoptspec
+\def\getoptspec@U#1{%
+  \toksrappend#1\to\rtA
+  \getoptspec@M
 }
 
-\def\getoptspec@M{%
-  % Specifications with a value
-  %  we expect the value linked with the key rtA
-  %  to call again readspec on its own
-  \edef\next{\the\rtB}%
-  \endnext
+\def\getoptspec@V#1{\getoptspec@W#1}
+
+\def\getoptspec@W#1#2{%
+  \toksrappend#1\to\rtA
+  #2%
 }
 
-\def\getoptspec@B{%
-  % Specifications with an optional bracket value
-  \getoptbracket\getoptspec@C
-}
 
-\def\getoptspec@C#1{%
-  \rtA={#1}%
-  \ifoptbracket
-    \edef\next{%
-      \noexpand\optbrackettrue\the\rtB{\the\rtA}%
+@ Nous définissons une interface de haut niveau pour manipuler les
+listes \va{getoptspecunit}, \va{getopspecmandatory}
+et~\va{getoptspecoptional}.  L'emploi de cette interface est illustré
+par dans la définition de la macro~\fn{fbox}.
+
+<<Assistance à la définition de macros>>=
+\let\selectgetoptspec@reset\getoptspecreset
+\defselect{getoptspec}{reset}
+
+\def\defgetoptspec#1{%
+  \cslet{getoptspec@#1@unit}\empty
+  \cslet{getoptspec@#1@mandatory}\empty
+  \cslet{getoptspec@#1@optional}\empty
+  \beginnext
+  \toksloadcsname{selectgetoptspec@#1}\to\rtA
+  \toksloadcsname{getoptspec@#1@unit}\to\rtB
+  \toksloadcsname{getoptspec@#1@mandatory}\to\rtC
+  \toksloadcsname{getoptspec@#1@optional}\to\rtD
+  \let\\\noexpand
+  \edef\next{%
+    \\\def\the\rtA{%
+      \\\let\\\getoptspecunit\the\rtB
+      \\\let\\\getoptspecmandatory\the\rtC
+      \\\let\\\getoptspecoptional\the\rtD
     }%
-  \else
-    \edef\next{%
-      \noexpand\optbracketfalse\the\rtB{}%
-    }%
-  \fi
+  }%
   \endnext
-  \getoptspec@S
 }
 
-\def\getoptspec@S{%
-  \readblanks\then\getoptspec\done
+\def\getoptspecunitadd#1#2#3{%
+  \beginnext
+  \toksloadcsname{getoptspec@#1@unit}\to\rtA
+  \rtB={#2}%
+  \rtC={#3}%
+  \let\\\noexpand
+  \edef\next{%
+    \\\listrappend{\the\rtB}{\the\rtC}\\\to\the\rtA
+  }%
+  \endnext
 }
 
-\def\getoptspec@R{%
-  \afterassignment\getoptspec@S
+\def\getoptspecmandatoryadd#1#2#3#4{%
+  \beginnext
+  \toksloadcsname{getoptspec@#1@mandatory}\to\rtA
+  \rtB={#2}%
+  \rtC={{#3}{#4}}%
+  \let\\\noexpand
+  \edef\next{%
+    \\\listrappend{\the\rtB}{\the\rtC}\\\to\the\rtA
+  }%
+  \endnext
 }
 
+\def\getoptspecoptionaladd#1#2#3{%
+  \beginnext
+  \toksloadcsname{getoptspec@#1@optional}\to\rtA
+  \rtB={#2}%
+  \rtC={#3}%
+  \let\\\noexpand
+  \edef\next{%
+    \\\listrappend{\the\rtB}{\the\rtC}\\\to\the\rtA
+  }%
+  \endnext
+}
 
 @ \subparagraph{Exemple d'utilisation de getoptspec}
 On définit la macro \fn{trial} qui reconnaît les spécifications dont
@@ -2861,7 +3017,7 @@ l'interprétation des tags à \fn{trial@A}.
   \def\getoptspecunit{\\{{alpha}{\trial@alpha}}\\{{beta}{\trial@beta}}}%
   \def\getoptspecmandatory{\\{{gamma}{\trial@gamma}}}%
   \def\getoptspecoptional{\\{{delta}{\trial@delta}}}%
-  \getoptspec
+  \getoptspec\relax
 }
 \end{example}
 On conclut enfin par une petite batterie d'essais.
@@ -2884,46 +3040,6 @@ Ces essais produisent la sortie suivante.
 ``Oh oh !'' cried baby Sally.
 \end{example}
 
-
-@ \paragraph{Définition de commandes select}
-On utilise dans {\brTeX} de nombreuses commandes dont le préfixe est
-\fn{select}, elles ont souvent la forme générale suivante:
-\begin{example}
-\def\selectDOMAIN#1{%
-   si une macro selectDOMAIN@#1 existe alors on l'éxécute
-   sinon on éxécute selectDOMAIN@FALLBACK
-}
-\end{example}
-La procédure \fn{defselect} facilite la création de ces macros.
-
-@ \paracommand{\cs{defselect}\fa{domain}\fa{fallback}}
-
-Définit une procédure \fn{select}\fa{domain} qui prend un argument
-\fa{instance} et teste si \fn{select}\fa{domain}\fn{@}\fa{instance}
-exacte: dans ce cas le contrôle et passé à cette macro, dans le cas
-contraire, le contrôle est passé
-à~\fn{select}\fa{domain}\fn{@}\fa{fallback}.
-
-<<Assistance à la définition de macros>>=
-\def\defselect#1#2{%
-  \beginnext
-  \toksloadcsname select#1\to\rtA
-  \rtB{##1}%
-  \edef\next{\def\the\rtA\the\rtB{\noexpand\defselect@M{#1}{#2}{\the\rtB}}}%
-  \endnext
-}
-
-\def\defselect@M#1#2#3{%
-  \begingroup
-  \toksloadcsname select#1@#3\to\rtA
-  \toksloadcsname select#1@#2\to\rtB
-  \expandafter\ifx\the\rtA\relax
-    \writelog{Warning: select#1: variant #3 unavailable, falling
-  back to #2}%
-    \rtA\rtB
-  \fi
-  \expandafter\endgroup\the\rtA
-}
 
 @ \subsection{Lecture des bibliothèques}
 Une bibliothèque est un ensemble de macros. Le noyau de \brTeX\ %
