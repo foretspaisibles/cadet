@@ -48,7 +48,7 @@ du papier.
 <<Déclaration des registres>>
 <<Table des formats usuels: définition>>
 <<Table des formats usuels: manipulation>>
-<<Mode paysage>>
+<<Présentation à l'italienne>>
 
 
 @ \subsection{Déclaration des registres}
@@ -69,9 +69,15 @@ procéder à ces modifications comme à l'appel à \fn{selectlayout}
 
 @ La sémantique des registres \va{paperwidth} et \va{paperheight} est
 la suivante: après leur règlage, la valeur de ces registres exprimées
-en unités vraies est constantes. Les unités vraies sont celles tenant
+en unités vraies est constante. Les unités vraies sont celles tenant
 compte du registre \va{mag}, lorsqu'on altère ce registre, il est donc
 nécessaire d'ajuster en conséquence les paramètres décrivant la page.
+
+On ne peut pas utiliser le mot-clef \emph{true} dans la déclaration
+des valeurs des registres~\va{paperheight} et~\va{paperwidth}, car
+l'utilisation de ce mot-clef interdit la modification ultérieure du
+registre~\va{mag} alors que le format initialise les
+registes~\va{paperheight} et~\va{paperwidth}.
 
 <<Déclaration des registres>>=
 \addhook{%
@@ -219,16 +225,15 @@ une erreur se produit.
   \error{selectpaperformat: nothing is known about \paperformat.}%
 }
 
-@
-\begin{remark}
-Remarquons bien que la procédure \fn{setpaperformat} ne fait que
+@ \begin{remark}
+Remarquons que la procédure \fn{setpaperformat} ne fait que
 modifier les valeurs des registres décrivant les dimensions du format
 de papier visé. Cette procédure ne recalcule pas automatiqument les
 paramètres de mise en page; il faut pour cela appeler explicitement la
 procédure~\fn{selectlayout}.
 \end{remark}
 
-@ \subsection{Mode paysage}
+@ \subsection{Présentation à l'italienne}
 
 La commande~\fn{setpaperlandscape} inverse les deux dimensions du
 format (présentation à l'italienne). Tout comme la
@@ -242,7 +247,7 @@ modifications. Une classe de document permettant les préparations à
 l'italienne devrait définir une procédure particulière, l'usage
 de~\fn{setpaperlandscape} par les scripteurs est donc découragé.
 
-<<Mode paysage>>=
+<<Présentation à l'italienne>>=
 \def\setpaperlandscape{%
   \beginnext
   \edef\next{%
