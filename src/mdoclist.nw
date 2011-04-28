@@ -103,53 +103,6 @@ procédure \emph{labelmake} sert à remplir cette boîte, elle peut
 \newmacro\labelprepare
 
 
-% @ La procédure \fn{newlistparameters} produit une macro dont le
-% texte de remplacement posiitonne les paramètres de préparation des
-% listes. Lors de la création de cette macro, son texte de remplacement
-% est vide, on peut ajouter des liaisons avec \fn{setlistparameters}.
-% Après évaluation des lignes suivantes,
-% \begin{example}
-%   \newlistparameters\mylist@P
-%   \setlistparameters\mylist@P\readlabel\readordinal
-% \end{example}
-% le texte de remplacement de \fn{mylist@p} contient
-% \verb|\let\readlabel=\readordinal|.
-
-% \begin{remark}
-%   Les registres signalés ci-dessus comme des \emph{macros} doivent
-%   avoir un texte de remplacement.
-% \end{remark}
-
-% <Paramètres de la préparation des listes>=
-% \def\newlistparameters#1{\let#1\empty}
-% \let\listparameters@m\empty
-% \let\listparameters@d\empty
-
-% \listrappend{\listbeginskip}\to\listparameters@m
-% \listrappend{\listinterskip}\to\listparameters@m
-% \listrappend{\listendskip}\to\listparameters@m
-% \listrappend{\listleftindent}\to\listparameters@d
-% \listrappend{\listrightindent}\to\listparameters@d
-% \listrappend{\readlabel}\to\listparameters@m
-% \listrappend{\labelindent}\to\listparameters@d
-% \listrappend{\labelwidth}\to\listparameters@d
-% \listrappend{\labelspace}\to\listparameters@d
-% \listrappend{\labelprepare}\to\listparameters@m
-
-% \def\setlistparameters#1#2#3{%
-%   \beginnext
-%   \toksloadcsexpansion#1\to\rtA
-%   \testlistmem\listparameters@m
-%   \iflistitem
-%     \toksrappend\let#2=#3\to\rtA
-%   \else
-%     \toksrappend#2=#3\to\rtA
-%   \fi
-%   \rtB{\def#1}%
-%   \edef\next{\the\rtB{\the\rtA}}%
-%   \endnext
-% }
-
 @ \subsection{Préparation des listes}
 
 La préparation des listes est réalisée par trois routines
