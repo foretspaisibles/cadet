@@ -2885,17 +2885,25 @@ Ces essais produisent la sortie suivante.
 \end{example}
 
 
-
-
 @ \paragraph{Définition de commandes select}
-On utilise dans \brTeX\ de nombreuses commandes dont le préfixe est
+On utilise dans {\brTeX} de nombreuses commandes dont le préfixe est
 \fn{select}, elles ont souvent la forme générale suivante:
 \begin{example}
-\def\selectDOMAIN#1
+\def\selectDOMAIN#1{%
    si une macro selectDOMAIN@#1 existe alors on l'éxécute
    sinon on éxécute selectDOMAIN@FALLBACK
+}
 \end{example}
-La procédure `defselect' facilite la création de ces macros.
+La procédure \fn{defselect} facilite la création de ces macros.
+
+@ \paracommand{\cs{defselect}\fa{domain}\fa{fallback}}
+
+Définit une procédure \fn{select}\fa{domain} qui prend un argument
+\fa{instance} et teste si \fn{select}\fa{domain}\fn{@}\fa{instance}
+exacte: dans ce cas le contrôle et passé à cette macro, dans le cas
+contraire, le contrôle est passé
+à~\fn{select}\fa{domain}\fn{@}\fa{fallback}.
+
 <<Assistance à la définition de macros>>=
 \def\defselect#1#2{%
   \beginnext
