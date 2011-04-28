@@ -23,7 +23,10 @@
 
 
 \newlanguage\locale@hyphenation@fr
-
-\begingroup\language=\locale@hyphenation@fr\input frhyph\endgroup
+\begingroup
+\language=\locale@hyphenation@fr
+\chardef\active=13
+\input loadhyph-fr
+\endgroup
 
 %%% End of file `hyphenation/fr.tex'
