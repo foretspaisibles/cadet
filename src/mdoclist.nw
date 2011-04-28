@@ -25,10 +25,12 @@
 
 @ \section {Listes à la mdoc}
 
-Les macros \emph{mdoc} utilisées par le système FreeBSD pour préparer
+Les macros \emph{mdoc} utilisées par certains systèmes de type UNIX,
+notamment FreeBSD, pour préparer
 les pages de manuel avec~\emph{groff} proposent un petit nombre de
-préparations de listes. Ce module propose des définitions permettant
-de réaliser des préparations imitant celles obtenus avec \emph{mdoc}.
+macros spécialisées dans la
+préparation de listes. Ce module propose des définitions permettant
+de réaliser des préparations imitant celles obtenus avec~\emph{mdoc}.
 
 Une liste est une succession de termes, chaque terme est introduit par
 une \emph{marque} et est formé d'un ou plusieurs alinéas. Les
@@ -47,7 +49,7 @@ type de marque utilisé:
   principalement dans les ouvrages techniques, chaque terme est
   introduit par un court texte.
 \end{description}
-Les anglicismes que \brTeX\ associse à ces trois listes sont
+Les anglicismes que {\brTeX} associse à ces trois listes sont
 respectivement \emph{roster}, \emph{enumeration}
 et~\emph{description}. L'anglicisme associé au terme marque tel
 qu'employé ci-dessus est~\emph{label}.
@@ -59,28 +61,37 @@ qu'employé ci-dessus est~\emph{label}.
 <<Listes à marque ordinale>>
 <<Listes à marque textuelle>>
 
+
 @ \subsection{Paramètres de la préparation des listes}
 
 La préparation des listes est influencée par les valeurs de plusieurs
 registres. Ces registres sont
 \begin{description}
-\item[beginlistskip] espace vertical précédant la liste (macro);
-\item[interlistskip] espace vertical séparant deux termes de la liste
-  (macro);
-\item[endlistskip] espace vertical succédant à la liste (macro);
-\item[listleftindent] régit la grandeur de la réserve apparaissant à
-  gauche des termes de la liste (dimension);
-\item[listrigthindent] régit la grandeur de la réserve apparaissant à
+\item[beginlistskip]
+  espace vertical précédant la liste (macro);
+\item[interlistskip]
+  espace vertical séparant deux termes de la liste (macro);
+\item[endlistskip]
+  espace vertical succédant à la liste (macro);
+\item[listleftindent]
+  régit la grandeur de la réserve apparaissant à gauche des termes de
+  la liste (dimension);
+\item[listrigthindent]
+  régit la grandeur de la réserve apparaissant à
   droite des termes de la liste (dimension);
-\item[readlabel] procédure dont le rôle est de lire la marque à
+\item[readlabel]
+  procédure dont le rôle est de lire la marque à
   utiliser pour introduire un terme de la liste (macro);
-\item[labelindent] espace horizontal précédant la marque (dimension);
-\item[labelwidth] largeur de la marque (dimension);
-\item[labelspace] espace horizontal succédant à la marque (dimension);
-\item[labelmake] régit la préparation de la marque pour le paragraphe
-  (macro);
-\item[labelprepare] régit la préparation de la marque pour la
-  structure (macro).
+\item[labelindent]
+  espace horizontal précédant la marque (dimension);
+\item[labelwidth]
+  largeur de la marque (dimension);
+\item[labelspace]
+  espace horizontal succédant à la marque (dimension);
+\item[labelmake]
+  régit la préparation de la marque pour le paragraphe (macro);
+\item[labelprepare]
+  régit la préparation de la marque pour la structure (macro).
 \end{description}
 
 La procédure \fn{labelprepare} est chargée de positionner une
@@ -116,6 +127,7 @@ préparer chaque terme de la liste. Notons cependant que la procédure
 \emph{itemprepare} n'est normalement pas utilisée directement mais à
 travers la macro~\fn{item}; ceci est expliqué en détail plus loin.
 
+
 @ \paragraph{Péparation des termes la liste}
 
 Chaque terme de la liste est introduit par la commande~\fn{item},
@@ -142,9 +154,9 @@ le contenu principal de la liste.
 }
 
 @ \begin{remark}
-  Pour préparer automatiquement une liste, on renseigne manuellement
-  la valeur de \va{itemlabel} et on utilise la procédure
-  \fn{itemprepare}.
+Pour préparer automatiquement une liste, on renseigne manuellement
+la valeur de \va{itemlabel} et on utilise la procédure
+\fn{itemprepare}.
 \end{remark}
 
 @ Les trois types de liste décrits plus haut utilisent des procédures
@@ -178,12 +190,9 @@ valeur \fn{readline}.
 \def\readnothing\to#1\then#2\done{#1{}#2}
 
 
-@ \paragraph{Marqueur des listes à marqueur constant}
+@ \paragraph{Marqueur des listes à marque fixe}
 
 Ce marqueur est défini par un paramètre régional, \emph{itemmark}.
-L'enregistrement administratif de la procédure \fn{itemmarkadjustment}
-se fait par le biais du fichier \emph{format.spec} et non avec la
-commande \fn{addlocaleadjustment}.
 
 <<Préparation des listes>>=
 \def\itemmarkadjustment#1#2{%
@@ -224,6 +233,7 @@ personnalisées, elle est utilisée pour définir les listes
   \csdef{end#1}{\par\endlist\endgroup\noindent\ignorespaces}
 }
 
+
 @ \subsection{Listes à marque fixe}
 
 Les listes à marque fixes peuvent utilisent la marque \fn{itemmark}
@@ -250,9 +260,9 @@ pour introduire les termes de la liste. Le texte de remplacement de
 @ \subsection{Listes à marque ordinale}
 
 Les listes à marque ordinale utilisent un symbole ordinal --- le
-$n$-ième symbole d'une collection donnée, par exemple l'alphabet ou
+$n$-ième symbole d'une collection donnée, par exemple l'alphabet latin ou
 l'ensemble des nombres entiers --- pour introduire chacun des termes
-de la liste. Il est fort utile de pouvoir facilement utiliser ces
+de la liste. Il est utile de pouvoir facilement utiliser ces
 symboles dans le texte, on recommande donc que la définition de
 procédures pour la préparation de listes à marqueur ordinal soit
 accompagnée de la définition d'une procédure permettant de la
