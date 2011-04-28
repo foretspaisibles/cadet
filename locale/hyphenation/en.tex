@@ -22,17 +22,11 @@
 % along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-\newlanguage\locale@hyphenation@en@GB
-\newlanguage\locale@hyphenation@en@US
 \newlanguage\locale@hyphenation@en
 
 \begingroup
-\language=\locale@hyphenation@en@GB
+\language=\locale@hyphenation@en
 \input loadhyph-en-gb
-\language=\locale@hyphenation@en@US
-\input loadhyph-en-us
 \endgroup
-
-\let\locale@hyphenation@en\locale@hyphenation@en@GB
 
 %%% End of file `hyphenation/en.tex'
