@@ -75,11 +75,13 @@
 % Tracing tokens
 %
 
-% \tracetokens #1\done
+% \tracetokens<text>\done
 %
-%  Trace this list of tokens.  The trace generated is a list of
+%  Trace the list of tokens <text>
+%
+%  The trace generated is a list of
 %  leftlines containing the meaning of each of the tokens encountered.
-
+%
 \begingroup
 \setcatcodeactive`\*
 \global\def\tracetokens@d{*tracetokens@d*}%
@@ -127,6 +129,27 @@
   \rcA0%
 }
 
+%
+% Showing tokens
+%
+
+% \showtoks<text>
+%
+%   Produce a line with literal <text>
+%
+\def\showtoks#1{%
+  \par
+  \smallskip
+  \beginnext
+  \def\rmA{#1}%
+  \toksloadcsmeaning\rmA\to\rtA\and\rtA
+  \edef\next{\noexpand\toksline{\the\rtA}}%
+  \endnext
+}
+
+\def\toksline#1{%
+  \vbox{\leftskip20pt\noindent\kern-20pt\tt#1}%
+}
 
 
 %

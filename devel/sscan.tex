@@ -268,7 +268,6 @@ boxes specifications.
 \testgetoptspec star[\P]width 12pt height 16pt depth 13pt{text}
 \testgetoptspec star [\P] width 12pt height 16pt depth 13pt{text}
 
-<<<<<<< HEAD
 
 \meaning\ignoreblanks@l
 \meaning\spacetoken
@@ -444,22 +443,6 @@ boxes specifications.
   \\{{star}{\test@star}}%
 }%
 
-\def\showtoks#1{%
-  \par
-  \smallskip
-  \beginnext
-  \def\rmA{#1}%
-  \toksloadcsmeaning\rmA\to\rtA\and\rtA
-  \edef\next{\noexpand\toksline{\the\rtA}}%
-  \endnext
-}
-
-\def\toksline#1{%
-  \vbox{\leftskip20pt\noindent\kern-20pt\tt#1}%
-}
-
-
-\tracingmacros=1
 \getoptspec\showtoks compact pomme
 \getoptspec\showtoks
  width 12pt
@@ -467,66 +450,7 @@ boxes specifications.
  height 12pt
  glue 12 pt plus 1fil minus 13.1mm
  iteration 13
- text={Oh la la ...}%
+ text {Oh la la ...}%
 \getoptspec\showtoks nomatch ``Oh Oh!''
 
-\tracingmacros=0
-
-% To demonstrate this ...
-%
-% \def\framebox{%
-
-
-
-
-\bye
-
-\def\getoptspec@U{%
-  % Specifications without values
-  %  we give control to the callback
-  %  and start the whole thing again
-  \edef\next{\the\rtB}%
-  \endnext
-  \getoptspec
-}
-
-\def\getoptspec@M{%
-  % Specifications with a value
-  %  we expect the value linked with the key rtA
-  %  to call again readspec on its own
-  \edef\next{\the\rtB}%
-  \endnext
-}
-
-\def\getoptspec@B{%
-  % Specifications with an optional bracket value
-  \getoptbracket\getoptspec@C
-}
-
-\def\getoptspec@C#1{%
-  \rtA={#1}%
-  \ifoptbracket
-    \edef\next{%
-      \noexpand\optbrackettrue\the\rtB{\the\rtA}%
-    }%
-  \else
-    \edef\next{%
-      \noexpand\optbracketfalse\the\rtB{}%
-    }%
-  \fi
-  \endnext
-  \getoptspec@S
-}
-
-\def\getoptspec@S{%
-  \readblanks\then\getoptspec\done
-}
-
-\def\getoptspec@R{%
-  \afterassignment\getoptspec@S
-}
-
-
-=======
->>>>>>> Reorganizing directory
 \bye
