@@ -2126,12 +2126,24 @@ l'argument de \cs{readblanks@P} qui est retiré du flot d'entrée.
 }
 
 
-@ Dans \cs{readblanks@S}, la recherche du paramètre supprime l'espace
-suivant la dernière lettre de l'identifiant la macro.
+@ Dans \cs{readblanks@S}, la recherche de la fin du nombre affecté
+dans le registre \va{rcA} supprime l'espace suivant la dernière lettre
+de l'identifiant la macro.
 
-<<Procédures d'analyse lexicale>>=
+Une version antérieure de la macro présentait une erreur intéressante:
+\begin{example}
 \long\def\readblanks@S#1{%
   \readblanks@M#1%
+}
+\end{example}
+Lorsque le premier token après l'espace supprimé ouvre un groupe, la
+définition montrée dans l'exemple remplace le groupe par son contenu,
+ce qui est erroné.
+
+<<Procédures d'analyse lexicale>>=
+\long\def\readblanks@S{%
+  \afterassignment\readblanks@M
+  \rcA0%
 }
 
 \def\readblanks@X{%

@@ -61,8 +61,10 @@
   \endgroup
 }
 
-\long\def\ignoreblanks@D#1{%
-  \ignoreblanks@M#1%
+\long\def\ignoreblanks@D{%
+  \afterassignment
+  \ignoreblanks@M
+  \rcA=0%
 }
 
 \long\def\ignoreblanks@I#1{%
@@ -99,6 +101,7 @@
 
 \traceignoreblanks{ \par A BC}
 \traceignoreblanks{A BC}
+\traceignoreblanks{ {U}V}
 
 
 \bye

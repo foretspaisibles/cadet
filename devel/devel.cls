@@ -72,6 +72,64 @@
 }
 
 %
+% Tracing tokens
+%
+
+% \tracetokens #1\done
+%
+%  Trace this list of tokens.  The trace generated is a list of
+%  leftlines containing the meaning of each of the tokens encountered.
+
+\begingroup
+\setcatcodeactive`\*
+\global\def\tracetokens@d{*tracetokens@d*}%
+\endgroup
+
+\def\tracetokens{%
+  \par
+  \begingroup
+  \let\done\tracetokens@d
+  \tracetokens@L
+}
+
+\def\tracetokens@L{%
+  \futurelet\tracetokens@t\tracetokens@M
+}
+
+\def\tracetokens@M{%
+  \ifx\tracetokens@t\tracetokens@d
+     \let\tracetokens@N\tracetokens@E
+  \else
+     \leftline{\meaning\tracetokens@t}%
+     \ifx\tracetokens@t\spacetoken
+        \let\tracetokens@N\tracetokens@S
+     \else
+        \let\tracetokens@N\tracetokens@I
+     \fi
+  \fi
+  \tracetokens@N
+}
+
+% @E End of the procedure
+\def\tracetokens@E#1{%
+  \endgroup
+}
+
+% @I Ignore the next token (non-space case)
+\def\tracetokens@I{%
+  \afterassignment\tracetokens@L
+  \let\rmA
+}
+
+% @S Ignore the next token (space case)
+\def\tracetokens@S{%
+  \afterassignment\tracetokens@L
+  \rcA0%
+}
+
+
+
+%
 % Private names
 %
 % This not very nice kludge allows us to stay in the private name
