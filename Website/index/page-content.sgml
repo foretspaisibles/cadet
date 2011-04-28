@@ -1,0 +1,54 @@
+<!--
+Local Variables:
+sgml-parent-document: ("../sgml/main.sgml" "html" "body" "div" ())
+ispell-dictionary: "british-ise"
+End:
+-->
+<h1 id="comparison">Comparison with other TeX formats</h1>
+
+<p>Bhrìd TeX is a format targeted at those who are not at ease with
+LaTeX and wish something more in the spirit of Plain TeX. In
+comparison with plain TeX, Bhrìd TeX offers the following:</p>
+<ul>
+	  <li>a complex macro library system, that can do tests
+	  against library version;</li>
+
+	  <li>a support for document class and document style
+	  libraries;</li>
+
+	  <li>a support for localization, the document class writer
+	  can easily load token registers and macro registers
+	  according to a locale variant pair;</li>
+
+	  <li>a support for a selection scheme, it allows font
+	  matching against independent criteria;</li>
+
+	  <li>a support for different object documents formats (DVI,
+	  PostScript, and PDF).</li>
+
+</ul>
+
+<p>However, Bhrìd TeX is not Plain TeX, neither an improved version of
+Plain TeX. It was completely written from scratch.</p>
+
+
+<h1 id="subversive">A format for niche printing</h1>
+
+<p>Bhrìd TeX is far less advanced than LaTeX, does not try to match
+it neither to replace it. It is however very usable, I rely on it
+systematically for my own private productions.</p>
+
+<p>As Bhrìd TeX is still experimental, I recommand you do not use
+Bhrìd TeX for your own productions, since its interface is still very
+malleable and you will probably not receive support for it. You are of
+course very welcome to play with Bhrìd TeX, to use it to discover TeX,
+and to take part in its development.</p>
+
+
+<h1>A Gna! hosted project</h1>
+
+<pre>
+Registration Date: Friday 03/14/2008 at 21:48
+License: GNU General Public License V3 or later
+Development Status: 3 - Alpha
+</pre>
