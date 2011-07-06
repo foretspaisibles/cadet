@@ -25,6 +25,7 @@
 PACKAGE = mg_lettre
 
 STYLE+=	dlleft.sty
+STYLE+= center.sty
 
 .include "bhrid.files.mk"
 
