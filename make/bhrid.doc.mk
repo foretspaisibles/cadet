@@ -29,6 +29,9 @@ PDFTEX = ${TEX}
 TEX.dvi = ${TEX}
 TEX.pdf = ${PDFTEX}
 
+# The PROGNAME variable influences the value of the TEXINPUTS variable.
+PROGNAME?= bhrid
+
 .if defined(BHRIDFORMAT)&&!empty(BHRIDFORMAT)&&!defined(FORMAT.bhrid)
 FORMAT.bhrid = ${BHRIDFORMAT}
 .endif
