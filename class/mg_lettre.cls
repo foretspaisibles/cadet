@@ -131,6 +131,7 @@
 
 \identdef{name}
 \identdef{phone}
+\identdef{mobile}
 \identdef{email}
 \identdef{date}
 \identdef{place}
@@ -148,6 +149,7 @@
 \def\lettreadjustment#1#2{%
   \csbindlocalecsname{Subject}{#1}{#2}\to{Subjectname}%
   \csbindlocalecsname{Phone}{#1}{#2}\to{Phonename}%
+  \csbindlocalecsname{Mobile}{#1}{#2}\to{Mobilename}%
   \csbindlocalecsname{Fax}{#1}{#2}\to{Faxname}%
   \csbindlocalecsname{EMail}{#1}{#2}\to{EMailname}%
   \csbindlocalecsname{CarbonCopy}{#1}{#2}\to{CarbonCopyname}%
@@ -252,6 +254,7 @@
 }
 \def\makename{\makeany\the@name\the@name}
 \def\makephone{\makeany\the@phone{\Phonename: \the@phone}}
+\def\makemobile{\makeany\the@mobile{\Mobilename: \the@mobile}}
 \def\makefax{\makeany\the@fax{\Faxname: \the@fax}}
 \def\makeemail{\makeany\the@email{\EMailname: {\tt\the@email}}}
 
@@ -292,7 +295,7 @@
   \endgroup
 }
 
-\def\makeheader@l{\\{phone}\\{fax}\\{email}}
+\def\makeheader@l{\\{phone}\\{mobile}\\{fax}\\{email}}
 \def\makeheader@P#1{%
   \beginnext
   \toksloadcsname{the@#1}\to\rtA
@@ -328,6 +331,7 @@
       \ifmakeheader
         \medskip
         \makephone\par
+        \makemobile\par
         \makefax\par
         %\makeemail
         % Il faut mettre l'adresse E-Mail ailleurs car elle prend
@@ -487,7 +491,9 @@
   \eightpoint
   \def\make@B{}%
   \def\make@E{\def\make@B{\enspace---\enspace}\let\make@E\empty}%
-  \noindent\hfil\makename\makephone\makefax\makeemail\hfil
+  \noindent\hfil\makename
+  \ifx\the@mobile\undefined\makephone\else\makemobile\fi
+  \makefax\makeemail\hfil
 }%
 
 
