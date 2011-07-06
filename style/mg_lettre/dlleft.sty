@@ -79,4 +79,40 @@
   }%
 }
 
+\def\closing{%
+  \endmode
+  \bigskip
+  \relaxmode
+  \noindent
+}
+
+\def\signature{%
+  \endmode
+  \ifx\the@sceal\undefined
+    \vskip 35 true mm     % Espace pour la signature
+  \else
+    \vbox to 35 true mm{%
+      \noindent
+      \parskip\z@
+      \rightskip\z@
+      \vfill
+      \noindent\image{\the@sceal}\hss
+      \vfill
+    }%
+    \nointerlineskip
+  \fi
+  \def\endmode{%
+    \par
+    \vskip\bigskipamount
+    \egroup
+    \relaxmode
+  }%
+  \vtop\bgroup
+    \noindent
+    \parindent\z@
+    \parskip\z@
+    \obeylines\ignorespaces
+}
+
+
 %%% End of file `dlleft.sty'

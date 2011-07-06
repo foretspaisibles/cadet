@@ -223,7 +223,7 @@
 % Les éléments makeaddress, makephone, makefax, makeemail servent à
 % préparer les éléments d'adresse.
 %
-% Les `makeaddress' et `makeaddressee' porduisent du matériel vertical
+% Les `makeaddress' et `makeaddressee' produisent du matériel vertical
 % (ils peuvent utilsier la commande `par') tandis que les autres
 % produisent du matériel horizontal.
 
@@ -273,7 +273,12 @@
     \hangindent=\itemindent
     \hangafter=1
     \raggedright
-    {\bf \Subjectname:\space\the@subject}%
+    {\bf
+      \ifx\Subjectname\empty\else
+      \Subjectname:\space
+      \fi
+      \the@subject
+    }%
     \par
     \endgroup
     \vskip2\baselineskip
@@ -284,6 +289,7 @@
 \def\makeaddressee{%
   \begingroup
   \elfpoint
+  \hyphenpenalty=10000
   \let\endline\par
   \ifx\the@addressee\undefined
     (No addressee)%
@@ -390,6 +396,7 @@
   \readline\to\rtA\then
     \advance\leftskip\lettermarginleft
     \advance\rightskip\lettermarginright
+    \twelvepoint
     \makesubject
     \noindent\the\rtA
     \smallskip
