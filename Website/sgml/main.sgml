@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" [
-<!ENTITY bhrid-current-version "1.4">
+<!ENTITY bhrid-current-version "prerelase">
 <!ENTITY bhrid-current-tarball-url "http://download.gna.org/bhrid/bhrid-&bhrid-current-version;.tar.bz2">
 <!ENTITY bhrid-current-tarball-name "bhrid-&bhrid-current-version;.tar.bz2">
 <!ENTITY bhrid-browse-source-code-url "http://svn.gna.org/viewcvs/bhrid/">
