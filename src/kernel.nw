@@ -2765,7 +2765,6 @@ apparaître dans la liste~\fn{getoptspecmandatory}.  Ces définitions
 sont construites autour de~\fn{getoptspecregister}.
 
 @ \paracommand{\cs{getoptspecregister}\fa{register}}
-
 L'appel~\cs{getoptspecregister}\fa{register} affecte la valeur
 de~\fa{register} grâce aux \emph{tokens} dans l'entrée et écrit cette
 valeur dans la liste de~\emph{tokens}~\va{getoptspecargument}.  Aucun
@@ -2818,11 +2817,16 @@ dimension, un nombre, une~\emph{glue} ou une liste de~\emph{tokens}.
 
 
 @ \paracommand{\cs{getoptspec}\fa{callback}}
-
 Analyse les~\emph{tokens} en entrée pour reconnaître une specification
 d'arguments, décrite par les variables \va{getoptspecunit}, etc.  Le
 résultat de la spécification est une liste de \emph{tokens,} passée en
 argument à~\fa{callback}.
+
+La procédure d'initialisation~\fn{getoptspec@M} branche sur le début
+de boucle~\fn{getoptspec@Z}.  La boucle consiste à rassembler les
+\emph{tokens} satisfaisant~\fn{getoptspec@P} puis à passer ces
+\emph{tokens} au corps de la boucle principale~\fn{getoptspec@L} qui
+procède à l'analyse.
 
 <<Assistance à la définition de macros>>=
 \def\getoptspec#1{%
@@ -2859,22 +2863,33 @@ argument à~\fa{callback}.
   \endnext
 }
 
-% getoptspec@A ALIST CALLBACK
-%
-%  ifflag
-%   true iff we already found a match in a previous list
-%
-%  next
-%   expands to an action to perform after that each list has been looked up
-%
-%  rtA
-%   contains the tokens gathered so far
-%
-%  rtB
-%   contains the key to look up in ALIST
-%
-%  rtD
-%   contains the callback from the invocation of getoptspec
+@ Le corps de la boucle principale~\fn{getoptspec@L} utilise la
+procédure auxiliaire~\fn{getoptspec@A}.
+
+Le protocole d'appel de~\fn{getoptspec@A} a deux arguments~\va{ALIST}
+et~\va{CALLBACK}.  Lorsque~\fn{getoptspec@A} est appellée les
+invariants suivants sont vrais:
+\begin{enumerate}
+\item
+\fn{ifflag} est vrai si, et seulement si, une correspondance a été
+trouvée dans une \va{ALIST} précedemment examinée.
+\item
+\fn{next} est la séquence de \emph{tokens} à effecture après que
+chaque \va{ALIST} a été examinée.
+\item
+\va{rtA} est la liste des \emph{tokens} assemblés par la procédure
+\fn{getoptspec}.
+\item
+\va{rtB} est la clef à rechercher dans~\va{ALIST}.
+\item
+\va{rtD}
+est le \emph{callback} enregistré pour~\emph{getoptspec}.
+\end{enumerate}
+
+L'argument \va{CALLBACK} indique quelle procédure effectuer avant la
+prochaine intération, si le motif de recherche est une clef
+de~\va{ALIST}.
+<<Assistance à la définition de macros>>=
 \def\getoptspec@A#1#2{%
   \ifflag\else
     \beginnext
@@ -2931,11 +2946,10 @@ argument à~\fa{callback}.
   #2%
 }
 
-
 @ Nous définissons une interface de haut niveau pour manipuler les
 listes \va{getoptspecunit}, \va{getopspecmandatory}
 et~\va{getoptspecoptional}.  L'emploi de cette interface est illustré
-par dans la définition de la macro~\fn{fbox}.
+plus loin par la définition de la macro~\fn{fbox}.
 
 <<Assistance à la définition de macros>>=
 \let\selectgetoptspec@reset\getoptspecreset
