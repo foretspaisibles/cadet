@@ -29,6 +29,9 @@ PDFTEX = ${TEX}
 TEX.dvi = ${TEX}
 TEX.pdf = ${PDFTEX}
 
+_TEX_SUFFIXES = .tex .cls .sty .mac
+
+
 # The PROGNAME variable influences the value of the TEXINPUTS variable.
 PROGNAME?= bhrid
 
