@@ -396,7 +396,6 @@
   \readline\to\rtA\then
     \advance\leftskip\lettermarginleft
     \advance\rightskip\lettermarginright
-    \twelvepoint
     \makesubject
     \noindent\the\rtA
     \smallskip
@@ -502,6 +501,16 @@
   \ifx\the@mobile\undefined\makephone\else\makemobile\fi
   \makefax\makeemail\hfil
 }%
+
+%
+% Styles
+%
+
+\def\style@center{%
+  \lettermarginleft=12.5 true mm
+  \lettermarginright=12.5 true mm
+  \relax
+}
 
 
 %
