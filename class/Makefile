@@ -23,7 +23,9 @@
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CLASS+=	mg_lettre.cls
+CLASS+=	mg_letter.cls
+CLASS+= mg_article.cls
+CLASS+= mg_examen.cls
 CLASS+=	mg_planche_exos.cls
 
 .include "bhrid.files.mk"

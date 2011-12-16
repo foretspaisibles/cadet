@@ -22,10 +22,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-PACKAGE = mg_lettre
+PACKAGE = mg_letter
 
 STYLE+=	dlleft.sty
-STYLE+= center.sty
 
 .include "bhrid.files.mk"
 

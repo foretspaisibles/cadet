@@ -1,4 +1,4 @@
-%%% mg_lettre.cls -- Bibliothèque pour la préparation de lettres
+%%% mg_letter.cls -- Bibliothèque pour la préparation de lettres
 
 % Author: Michael Grünewald
 % Date: Mar 13 nov 2007 10:14:38 CET
@@ -146,7 +146,7 @@
 % Paramètres régionaux
 %
 
-\def\lettreadjustment#1#2{%
+\def\letteradjustment#1#2{%
   \csbindlocalecsname{Subject}{#1}{#2}\to{Subjectname}%
   \csbindlocalecsname{Phone}{#1}{#2}\to{Phonename}%
   \csbindlocalecsname{Mobile}{#1}{#2}\to{Mobilename}%
@@ -156,7 +156,7 @@
   \csbindlocalecsname{Enclosings}{#1}{#2}\to{Enclosingsname}%
 }
 
-\addlocaleadjustment\lettreadjustment
+\addlocaleadjustment\letteradjustment
 \addlocalefacility{letter}
 
 %
@@ -520,4 +520,4 @@
 \selectlocalemainlocale
 \relaxmode
 
-%%% End of file `mg_lettre.cls'
+%%% End of file `mg_letter.cls'

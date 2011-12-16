@@ -24,7 +24,7 @@
 
 SUBDIR = generic
 SUBDIR+= mg_article
-SUBDIR+= mg_lettre
+SUBDIR+= mg_letter
 
 .include "bps.subdir.mk"
 
