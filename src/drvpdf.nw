@@ -80,8 +80,8 @@
   \let\\\boxloadimage@L
   \flagfalse
   \boxloadimage@l
+  \rtB={#2}%
   \ifflag
-    \rtB={#2}%
     \rtC={\imagewidth\z@\imageheight\z@}%
     \edef\next{%
       \noexpand\setbox\the\rtB=\noexpand\hbox{%
