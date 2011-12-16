@@ -24,7 +24,7 @@
 
 
 SUBDIR+= mg_article
-SUBDIR+= mg_lettre
+SUBDIR+= mg_letter
 SUBDIR+= mg_examen
 SUBDIR+= macro
 
