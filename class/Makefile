@@ -24,6 +24,7 @@
 
 
 CLASS+=	mg_letter.cls
+CLASS+=	mg_cover.cls
 CLASS+= mg_article.cls
 CLASS+= mg_examen.cls
 CLASS+=	mg_planche_exos.cls
