@@ -3551,10 +3551,14 @@ dont le nom est~\va{classname}.
 \outer\def\style{\readfilename\style@A}
 
 \def\style@A#1{%
-  \ifx\classname\undefined
+  \expandafter\testcs\csname style@#1\endcsname
+  \ifcs
+    \def\style@N{\csname style@#1\endcsname}%
+  \else\ifx\classname\undefined
     \def\style@N{\input #1.sty}%
   \else
     \edef\style@N{\noexpand\input\classname/#1.sty}%
+  \fi
   \fi
   \let\macro@M\macro@B
   \enableprivatenames
@@ -3562,6 +3566,19 @@ dont le nom est~\va{classname}.
   \disableprivatenames
   \let\macro@M\macro@A
   \ignorespaces
+}
+
+\csdef{style@12pt}{%
+  \def\setnormalsize{\fontsize=12 }%
+  \def\setsmallsize{\fontsize=11 }%
+  \def\setverysmallsize{\fontsize=9 }%
+  \def\setlargesize{\fontsize=14 }%
+  \def\setverylargesize{\fontsize=21 }%
+  \normalbaselineskip=15pt
+  \baselineskip=15pt
+  \twelvepoint
+  \topskip=1em
+  \relax
 }
 
 @ \subsection{Paramètres régionaux}
