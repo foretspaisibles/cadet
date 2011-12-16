@@ -45,7 +45,7 @@
   \relax
 }
 
-\addhook\selectmvsize{\the\textsize pt}\to\textsizeadjustments
+\addhook\selectmvsize{\the\fontsize pt}\to\fontsizehook
 
 \def\marvosym@table{%
   %
