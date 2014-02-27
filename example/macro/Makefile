@@ -26,6 +26,7 @@
 DOCS+= verbatim.tex
 DOCS+= zapfd.tex
 DOCS+= boxes.tex
+DOCS+= fonttable.tex
 
 .include "bhrid.project.mk"
 
