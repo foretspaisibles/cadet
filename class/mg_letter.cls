@@ -123,7 +123,7 @@
   \outer\csdef{#1}{%
     \readline\to\rtA\then
       \toksloadcsname{the@#1}\to\rtB
-      \edef\next{\noexpand\def\the\rtB{\the\rtA}}%
+      \edef\next{\noexpand\global\noexpand\def\the\rtB{\the\rtA}}%
       \next
     \done
   }%
