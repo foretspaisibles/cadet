@@ -1,6 +1,9 @@
-### format.spec -- Description des formats
+### Makefile
 
-# Copyright (C) 2006, 2013 Michael Grünewald
+# Author: Michael Grünewald
+# Date: Fri Apr  4 12:41:17 CEST 2014
+
+# Copyright (C) 2014 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Bhrìd TeX.
@@ -19,31 +22,13 @@
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Input_encoding: utf8
-Drivers_support: xdvi, pdf, ps
-Locales_support:
- fr_FR, de_DE, en_GB,
- fr_CA, fr_CH, fr_BE,
- de_CH, de_AT,
- en_CA, en_US, en_NZ
+DOCS+= encoding.tex
+DOCS+= case.tex
+DOCS+= write.tex
 
-Setup_locale: fr_FR
-Setup_paper: A4
-Setup_margin: 25mm, 25mm
+test: test.sh all
+	sh ./test.sh
 
-Fontes_support: fonttx, fonteufm
-Format_name: Londres
-Format_version: 0.pre
-Format: londres
+.include "bhrid.project.mk"
 
-Fontes_support: fontpx, fonteufm
-Format_name: Lutece
-Format_version: 0.pre
-Format: lutece
-
-Fontes_support: fontlm, fonteufm
-Format_name: Original
-Format_version: 0.pre
-Format: original
-
-### End of file `format.spec'
+### End of file `Makefile'

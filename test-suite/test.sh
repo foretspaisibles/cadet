@@ -1,6 +1,9 @@
-### format.spec -- Description des formats
+### test.sh -- Test suite for unicode encoding
 
-# Copyright (C) 2006, 2013 Michael Grünewald
+# Author: Michael Grünewald
+# Date: Fri Apr 11 19:41:57 CEST 2014
+
+# Copyright (C) 2014 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Bhrìd TeX.
@@ -18,32 +21,19 @@
 # You should have received a copy of the GNU General Public License
 # along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
+test_result='success'
 
-Input_encoding: utf8
-Drivers_support: xdvi, pdf, ps
-Locales_support:
- fr_FR, de_DE, en_GB,
- fr_CA, fr_CH, fr_BE,
- de_CH, de_AT,
- en_CA, en_US, en_NZ
+test-write()
+{
+    printf 'Test write '
+    if grep -q 'àáâãäåæçèéêëìíîïðñòóôöøùúûüÿþœß×÷' write.log; then
+	printf 'success\n'
+    else
+	printf 'failure\n'
+	test_sucess='failure'
+    fi
+}
 
-Setup_locale: fr_FR
-Setup_paper: A4
-Setup_margin: 25mm, 25mm
+test-write
 
-Fontes_support: fonttx, fonteufm
-Format_name: Londres
-Format_version: 0.pre
-Format: londres
-
-Fontes_support: fontpx, fonteufm
-Format_name: Lutece
-Format_version: 0.pre
-Format: lutece
-
-Fontes_support: fontlm, fonteufm
-Format_name: Original
-Format_version: 0.pre
-Format: original
-
-### End of file `format.spec'
+### End of file `test.sh'

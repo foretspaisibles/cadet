@@ -320,10 +320,10 @@
 \def ;{\puncsemicolon}
 
 
-\def ^^a6{\textScaron}%          	!Scaron
-\def ^^a8{\textscaron}%          	!scaron
-\def ^^b4{\textZcaron}%         Ž	!Zcaron
-\def ^^b8{\textzcaron}%         ž	!zcaron
+\def ^^a6{\textScaron}%         	!Scaron
+\def ^^a8{\textscaron}%         	!scaron
+\def ^^b4{\textZcaron}%         	!Zcaron
+\def ^^b8{\textzcaron}%         	!zcaron
 \def ^^bc{\textOE}%             Œ	!ligOE
 \def ^^bd{\textoe}%             œ	!ligoe
 \def ^^be{\textYdieresis}%      Ÿ	!Ydieresis

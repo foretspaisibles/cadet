@@ -1,11 +1,8 @@
-%%% hyphenation/fr.tex -- Chargement des motifs de césure pour le français
+%%% write.tex -- Testing conversion while writing files
 
-% Author: Michael Grünewald <michael.lebarbier@laposte.net>
-% Date: Mer 18 avr 2007 22:33:12 CEST
-
-% Copyright (C) 2006, 2013 Michael Grünewald
+% Copyright (C) 2014 Michael Grünewald
 % All rights reserved.
-%
+
 % This file is part of Bhrìd TeX.
 %
 % Bhrìd TeX is free software: you can redistribute it and/or modify
@@ -21,15 +18,11 @@
 % You should have received a copy of the GNU General Public License
 % along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-
-\newlanguage\locale@hyphenation@fr
-
+\null
 \begingroup
-\language=\locale@hyphenation@fr
-\catcode`\'=10
-\chardef\active=13
-\input conv-utf8-ec
-\input hyph-fr
+\disableinputencoding
+\message{àáâãäåæçèéêëìíîïðñòóôöøùúûüÿþœß×÷}
 \endgroup
+\bye
 
-%%% End of file `hyphenation/fr.tex'
+%%% End of file `write.tex'

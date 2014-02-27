@@ -514,6 +514,265 @@ utilise pour définir les liaisons des conventions `text'.
   \def\textdblquoteleft{"}%
   \def\textdblquoteright{"}%
   \misschardef\textdblquotebase
+  \def\textguillemetleft{^^ab}%
+  \def\textguillemetright{^^bb}%
+  \def\textdblquote{"}%
+  \def\textquoteright{'}%
+  \def\textquoteleft{`}%
+  %
+  % Punctuation marks
+  %
+  \def\textexclam{!}%
+  \def\textcomma{,}%
+  \def\textperiod{.}%
+  \def\textcolon{:}%
+  \def\textsemicolon{;}%
+  \def\textquestion{?}%
+  \def\textexclamdown{¡}%
+  \def\textquestiondown{¿}%
+  %
+  % Delimiters
+  %
+  \def\textparenleft{(}%
+  \def\textparenright{)}%
+  \def\textbracketleft{[}%
+  \def\textbracketright{]}%
+  \let\textbraceleft\bytebraceleft
+  \let\textbraceright\bytebraceright
+  %
+  % Dashes
+  %
+  \def\textendash{-}%
+  \def\textemdash{-}%
+  \def\texthyphen{-}%
+  \def\texthyphenchar{-}%
+  %
+  % Various Symbols
+  %
+  \misschardef\textvisiblespace%{"20!}%
+  \let\textnumbersign\bytenumbersign
+  \let\textdollar\bytedollar
+  \let\textpercent\bytepercent
+  \let\textampersand\byteampersand
+  \let\textastersik\byteasterisk
+  \def\textplus{+}%
+  \def\textslash{/}%
+  \def\textless{<}%
+  \def\textequal{=}%
+  \def\textgreater{>}%
+  \let\textat\byteat
+  \let\textbackslash\bytebackslash
+  % Le caractère \textcaret est un caractère comme un accent cironflexe
+  % mais plus large, le caractère à la position "5E de fontes de
+  % caractères Computer Modern est plutôt un accent cironcflexe.
+  \let\textcaret\bytecaret
+  \let\textunderscore\byteunderscore
+  \misschardef\textbar
+  \leytexttilde\bytetilde
+  % Le caractère \texttilde est un caractère comme une tilde
+  % mais plus large, le caractère à la position "7E de fontes de
+  % caractères Computer Modern est plutôt une tilde pour les accents.
+  \def\textsection{^^a7}%
+  \def\textsterling{^^a3}%
+  %
+  %
+  \let\textasciitilde\bytetilde
+  \let\textasciicaret\bytecaret
+  %
+  % Ligatures
+  %
+  \def\textIJ{IJ}%
+  \def\textij{ij}%
+  \def\textAE{^^c6}%
+  \def\textae{^^e6}%
+  \def\textOE{^^bc}%
+  \def\textoe{^^bd}%
+  \def\textEssZet{SS}%
+  \def\textesszet{^^df}%
+  %
+  % Letters with diacritics
+  %
+  \misschardef\textdotlessi
+  \misschardef\textdotlessj
+  \misschardef\textAbreve
+  \misschardef\textAogonek
+  \misschardef\textCacute
+  \misschardef\textCcaron
+  \misschardef\textDcaron
+  \misschardef\textEcaron
+  \misschardef\textEogonek
+  \misschardef\textGbreve
+  \misschardef\textLacute
+  \misschardef\textLcaron
+  \misschardef\textLslash
+  \misschardef\textNacute
+  \misschardef\textNcaron
+  \misschardef\textEng
+  \misschardef\textOhungarumlaut
+  \misschardef\textRacute
+  \misschardef\textRcaron
+  \misschardef\textSacute
+  \misschardef\textScaron
+  \misschardef\textScommaaccent
+  \misschardef\textTcaron
+  \misschardef\textTcommaaccent
+  \misschardef\textUhungarumlaut
+  \misschardef\textUring
+  \def\textYdieresis{^^be}%
+  \misschardef\textZacute
+  \def\textZcaron{^^b4}%
+  \misschardef\textZdotaccent
+  \misschardef\textIdotaccent
+  \misschardef\textdcroat
+  \misschardef\textabreve
+  \misschardef\textaogonek
+  \misschardef\textcacute
+  \misschardef\textccaron
+  \misschardef\textdcaron
+  \misschardef\textecaron
+  \misschardef\texteogonek
+  \misschardef\textgbreve
+  \misschardef\textlacute
+  \misschardef\textlcaron
+  \misschardef\textlslash
+  \misschardef\textnacute
+  \misschardef\textncaron
+  \misschardef\texteng
+  \misschardef\textohungarumlaut
+  \misschardef\textracute
+  \misschardef\textrcaron
+  \misschardef\textsacute
+  \misschardef\textscaron
+  \misschardef\textscommaaccent
+  \misschardef\texttcaron
+  \misschardef\texttcommaaccent
+  \misschardef\textuhungarumlaut
+  \misschardef\texturing
+  \misschardef\textydieresis
+  \misschardef\textzacute
+  \def\textzcaron{^^b8}%
+  \misschardef\textzdotaccent
+  \def\textAgrave{^^c0}%
+  \def\textAacute{^^c1}%
+  \def\textAcircumflex{^^c2}%
+  \def\textAtilde{^^c3}%
+  \def\textAdieresis{^^c4}%
+  \def\textAring{^^c5}%
+  \def\textCcedilla{^^c7}%
+  \def\textEgrave{^^c8}%
+  \def\textEacute{^^c9}%
+  \def\textEcircumflex{^^ca}%
+  \def\textEdieresis{^^cb}%
+  \def\textIgrave{^^cc}%
+  \def\textIacute{^^cd}%
+  \def\textIcircumflex{^^ce}%
+  \def\textIdieresis{^^cf}%
+  \def\textEth{^^d0}%
+  \def\textNtilde{^^d1}%
+  \def\textOgrave{^^d2}%
+  \def\textOacute{^^d3}%
+  \def\textOcircumflex{^^d4}%
+  \def\textOtilde{^^d5}%
+  \def\textOdieresis{^^d6}%
+  \def\textOslash{^^d8}%
+  \def\textUgrave{^^d9}%
+  \def\textUacute{^^da}%
+  \def\textUcircumflex{^^db}%
+  \def\textUdieresis{^^dc}%
+  \def\textYacute{^^dd}%
+  \def\textThorn{^^de}%
+  \def\textagrave{^^e0}%
+  \def\textaacute{^^e1}%
+  \def\textacircumflex{^^e2}%
+  \def\textatilde{^^e3}%
+  \def\textadieresis{^^e4}%
+  \def\textaring{^^e5}%
+  \def\textccedilla{^^e7}%
+  \def\textegrave{^^e8}%
+  \def\texteacute{^^e9}%
+  \def\textecircumflex{^^ea}%
+  \def\textedieresis{^eb}%
+  \def\textigrave{^^ec}%
+  \def\textiacute{^^ed}%
+  \def\texticircumflex{^^ee}%
+  \def\textidieresis{^^ef}%
+  \def\texteth{^^f0}%
+  \def\textntilde{^^f1}%
+  \def\textograve{^^f2}%
+  \def\textoacute{^^f3}%
+  \def\textocircumflex{^^f4}%
+  \def\textotilde{^^f5}%
+  \def\textodieresis{^^f6}%
+  \def\textoslash{^^f8}%
+  \def\textugrave{^^f9}%
+  \def\textuacute{^^fa}%
+  \def\textucircumflex{^^fb}%
+  \def\textudieresis{^^fc}%
+  \def\textyacute{^^fd}%
+  \def\textthorn{^^fe}%
+  %
+  % Uccode et lccode
+  %
+  \lccode"A6="A8 \uccode"A8="A6
+  \lccode"B4="B8 \uccode"B8="B4
+  \lccode"BC="BD \uccode"BD="BC
+  \lccode"BE="FF \uccode"FF="BE
+  \lccode"C0="E0 \uccode"E0="C0
+  \lccode"C1="E1 \uccode"E1="C1
+  \lccode"C2="E2 \uccode"E2="C2
+  \lccode"C3="E3 \uccode"E3="C3
+  \lccode"C4="E4 \uccode"E4="C4
+  \lccode"C5="E5 \uccode"E5="C5
+  \lccode"C6="E6 \uccode"E6="C6
+  \lccode"C7="E7 \uccode"E7="C7
+  \lccode"C8="E8 \uccode"E8="C8
+  \lccode"C9="E9 \uccode"E9="C9
+  \lccode"CA="EA \uccode"EA="CA
+  \lccode"CB="EB \uccode"EB="CB
+  \lccode"CC="EC \uccode"EC="CC
+  \lccode"CD="ED \uccode"ED="CD
+  \lccode"CE="EE \uccode"EE="CE
+  \lccode"CF="EF \uccode"EF="CF
+  \lccode"D0="F0 \uccode"F0="D0
+  \lccode"D1="F1 \uccode"F1="D1
+  \lccode"D2="F2 \uccode"F2="D2
+  \lccode"D3="F3 \uccode"F3="D3
+  \lccode"D4="F4 \uccode"F4="D4
+  \lccode"D5="F5 \uccode"F5="D5
+  \lccode"D6="F6 \uccode"F6="D6
+  \lccode"D8="F8 \uccode"F8="D8
+  \lccode"D9="F9 \uccode"F9="D9
+  \lccode"DA="FA \uccode"FA="DA
+  \lccode"DB="FB \uccode"FB="DB
+  \lccode"DC="FC \uccode"FC="DC
+  \lccode"DD="FD \uccode"FD="DD
+  \lccode"DE="FE \uccode"FE="DE
+}
+
+
+\csdef{selectconventiontext@utf8}{%
+  %
+  % Accents
+  %
+  \def\textgrave{`}%
+  \def\textacute{'}%
+  \def\textcircumflex{^}%
+  \def\texttilde{~}%
+  \misschardef\textdieresis
+  \def\texthungar{"}%
+  \misschardef\textring
+  \misschardef\textcaron
+  \misschardef\textbreve
+  \misschardef\textmacron
+  \misschardef\textdotaccent
+  \misschardef\textcedilla
+  \misschardef\textogonek
+  %
+  % Quote marks
+  %
+  \def\textdblquoteleft{"}%
+  \def\textdblquoteright{"}%
+  \misschardef\textdblquotebase
   \def\textguillemetleft{«}%
   \def\textguillemetright{»}%
   \def\textdblquote{"}%

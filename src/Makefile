@@ -38,6 +38,7 @@ SRCS+= convcomp.nw
 SRCS+= convpunc.nw
 SRCS+= convmath.nw
 SRCS+= latin9.nw
+SRCS+= utf8.nw
 SRCS+= setup.nw
 
 SRCS+= bhridcore.nw
@@ -67,9 +68,16 @@ TEXINPUTS+= ${TEXINPUTS.epsf:/epsf.tex=}
 TEXINPUTS+= ${PROJECTBASE}/contrib
 TEXINPUTS+= :
 
+
+# TEXTRANSLATE
+#  Translation file
+#
+# Example of values: natural, cp227.
+TEXTRANSLATE=	natural
+
 TEX = /usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g} pdftex -halt-on-error
-#INITEX = ${TEX} -ini -translate-file=natural.tcx
-INITEX = ${TEX} -ini -translate-file=cp227.tcx
+INITEX = ${TEX} -ini -translate-file=${TEXTRANSLATE}.tcx
+
 
 ### 1. Cibles principales
 
