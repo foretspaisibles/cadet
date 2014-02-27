@@ -3551,8 +3551,15 @@ dont le nom est~\va{classname}.
 \outer\def\style{\readfilename\style@A}
 
 \def\style@A#1{%
-  \expandafter\testcs\csname style@#1\endcsname
-  \ifcs
+  \beginnext
+  \expandafter\let\expandafter\style@a\csname style@#1\endcsname
+  \ifx\style@a\relax
+    \def\next{\flagfalse}%
+  \else
+    \def\next{\flagtrue}%
+  \fi
+  \endnext
+  \ifflag
     \def\style@N{\csname style@#1\endcsname}%
   \else\ifx\classname\undefined
     \def\style@N{\input #1.sty}%
