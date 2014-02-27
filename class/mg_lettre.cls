@@ -334,41 +334,41 @@
 
 % Annotations
 
-\def\annotation@L#1{%
+\def\annotations@L#1{%
   \noindent\llap{#1\qquad}%
 }
 
-\def\annotation@A#1#2{%
+\def\annotations@A#1#2{%
   \endmode
   \bigskip
-  #1\annotation@L{#2}%
+  #1\annotations@L{#2}%
 }
 
-\def\annotation@B#1#2{%
+\def\annotations@B#1#2{%
   \readline\to\rtA\then
-    \annotation@A{#1}{#2}%
+    \annotations@A{#1}{#2}%
   \done
 }
 
-\def\annotation@C#1{%
+\def\annotations@C#1{%
   \readline\to\rtA\then
     \rtB={#1}%
     \beginnext
-    \edef\next{\noexpand\annotation@A{\the\rtB}{\the\rtA}}%
+    \edef\next{\noexpand\annotations@A{\the\rtB}{\the\rtA}}%
     \endnext
   \done
 }
 
-\def\annotation{%
-  \annotation@C\linesmode
+\def\annotations{%
+  \annotations@C\linesmode
 }
 
-\def\enclosings{\annotation@B\linesmode{P.j.}}
+\def\enclosings{\annotations@B\linesmode{P.j.}}
 
-\def\carboncopy{\annotation@B\linesmode{C.c.}}
+\def\carboncopy{\annotations@B\linesmode{C.c.}}
 
 \def\postscriptum{%
-  \annotation@B\normalmode{PS:}%
+  \annotations@B\normalmode{PS:}%
 }
 
 \addhook\endmode\to\endhook
