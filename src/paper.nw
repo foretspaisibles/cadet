@@ -106,7 +106,7 @@ les noms des formats et les valeurs des couples~$(\mathrm{largeur},
 Les fichiers de paramètres régionaux peuvent certainement contribuer à
 enrichir cette table (voir \fn{paperformatadd}\/).
 
-La RFC2346 présente des recommendations à mettre en ½uvre lors du
+La RFC2346 présente des recommendations à mettre en œuvre lors du
 choix du format d'une publication éléctronique.
 
 ftp://ftp.isi.edu/in-notes/rfc2346.txt

@@ -585,8 +585,8 @@ utilise pour définir les liaisons des conventions `text'.
   \def\textij{ij}%
   \def\textAE{Æ}%
   \def\textae{æ}%
-  \def\textOE{¼}%
-  \def\textoe{½}%
+  \def\textOE{Œ}%
+  \def\textoe{œ}%
   \def\textEssZet{SS}%
   \def\textesszet{ß}%
   %
@@ -618,9 +618,9 @@ utilise pour définir les liaisons des conventions `text'.
   \misschardef\textTcommaaccent
   \misschardef\textUhungarumlaut
   \misschardef\textUring
-  \def\textYdieresis{¾}%
+  \def\textYdieresis{Ÿ}%
   \misschardef\textZacute
-  \def\textZcaron{´}%
+  \def\textZcaron{Ž}%
   \misschardef\textZdotaccent
   \misschardef\textIdotaccent
   \misschardef\textdcroat
@@ -650,7 +650,7 @@ utilise pour définir les liaisons des conventions `text'.
   \misschardef\texturing
   \misschardef\textydieresis
   \misschardef\textzacute
-  \def\textzcaron{¸}%
+  \def\textzcaron{Ž}%
   \misschardef\textzdotaccent
   \def\textAgrave{À}%
   \def\textAacute{Á}%

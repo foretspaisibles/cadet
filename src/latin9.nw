@@ -280,8 +280,8 @@
 %      par quelques chose d'approprié.
 \def ^^aa{\superscript{}{a}}% ª
 \def ^^ac{\undefined}% logical not
-\def ^^ad{\undefined}% ­
-\def ^^af{\undefined}% ¯
+\def ^^ad{\undefined}%
+\def ^^af{\undefined}%
 \def ^^b0{\superscript{}{o}}% exponant o
 \def ^^b1{\undefined}% plusminus
 \def ^^b2{\undefined}% power two
@@ -320,13 +320,13 @@
 \def ;{\puncsemicolon}
 
 
-\def ^^a6{\textScaron}%         ¦	!Scaron
-\def ^^a8{\textscaron}%         ¨	!scaron
-\def ^^b4{\textZcaron}%         ´	!Zcaron
-\def ^^b8{\textzcaron}%         ¸	!zcaron
-\def ^^bc{\textOE}%             ¼	!ligOE
-\def ^^bd{\textoe}%             ½	!ligoe
-\def ^^be{\textYdieresis}%      ¾	!Ydieresis
+\def ^^a6{\textScaron}%          	!Scaron
+\def ^^a8{\textscaron}%          	!scaron
+\def ^^b4{\textZcaron}%         Ž	!Zcaron
+\def ^^b8{\textzcaron}%         ž	!zcaron
+\def ^^bc{\textOE}%             Œ	!ligOE
+\def ^^bd{\textoe}%             œ	!ligoe
+\def ^^be{\textYdieresis}%      Ÿ	!Ydieresis
 \def ^^c0{\textAgrave}%         À	Agrave
 \def ^^c1{\textAacute}%         Á	Aacute
 \def ^^c2{\textAcircumflex}%    Â	Acircumflex

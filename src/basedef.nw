@@ -1275,7 +1275,7 @@ des alinéas et le retrait d'alinéa est nul.
 \let\fn\va
 
 % ti#1
-% Pour le titre d'un livre, d'une ½uvre.
+% Pour le titre d'un livre, d'une œuvre.
 
 <<Préparations spéciales>>=
 \def\ti#1{{\sl#1}}

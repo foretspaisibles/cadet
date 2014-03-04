@@ -460,7 +460,7 @@ Les quatre symboles suivants sont \va{endgraf}, \va{endline},
 \va{bgroup} et \va{egroup} qui sont des liaisons vers les primitives
 \fn{par} et \fn{cr}, et vers les symboles contrôlant l'ouverture et la
 fermeture des groupes.  Ces symboles sont d'un usage fort courant
-lorsqu'on écrit des macros, des définitions supplémentaires de ce
+lorsqu'on écrit des macros, des définitions supplémentaires de ce
 genre peuvent être insérées ici.
 
 On peut considérer que la macro~\fn{undefined}, qui n'est jamais
