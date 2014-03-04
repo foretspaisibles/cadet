@@ -3,7 +3,7 @@
 # Author: Michael Grünewald <michael.lebarbier@laposte.net>
 # Date: Dim 17 déc 2006 18:16:26 CET
 
-# Copyright (C) 2006, 2013 Michael Grünewald
+# Copyright (C) 2006, 2014 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Bhrìd TeX.
@@ -60,13 +60,12 @@ MANUAL+= orientation.tex
 
 TEXMFDIST = /usr/local/share/texmf-dist
 
-TEXINPUTS.frhyph!= kpsewhich frhyph.tex
 TEXINPUTS.epsf!= kpsewhich epsf.tex
 
 TEXINPUTS = .
 TEXINPUTS+= ..
-TEXINPUTS+= ${TEXINPUTS.hyphen:/frhyph.tex=}
 TEXINPUTS+= ${TEXINPUTS.epsf:/epsf.tex=}
+TEXINPUTS+= ${PROJECTBASE}/contrib
 
 TEX = /usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g} pdftex -halt-on-error
 #INITEX = ${TEX} -ini -translate-file=natural.tcx
