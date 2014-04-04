@@ -63,9 +63,9 @@ TEXMFDIST = /usr/local/share/texmf-dist
 TEXINPUTS.epsf!= kpsewhich epsf.tex
 
 TEXINPUTS = .
-TEXINPUTS+= ..
 TEXINPUTS+= ${TEXINPUTS.epsf:/epsf.tex=}
 TEXINPUTS+= ${PROJECTBASE}/contrib
+TEXINPUTS+= :
 
 TEX = /usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g} pdftex -halt-on-error
 #INITEX = ${TEX} -ini -translate-file=natural.tcx
