@@ -31,19 +31,18 @@ Setup_locale: fr_FR
 Setup_paper: A4
 Setup_margin: 25mm, 25mm
 
+Format_version: @version@
+
 Fontes_support: fonttx, fonteufm
 Format_name: Londres
-Format_version: 0.pre
 Format: londres
 
 Fontes_support: fontpx, fonteufm
 Format_name: Lutece
-Format_version: 0.pre
 Format: lutece
 
 Fontes_support: fontlm, fonteufm
 Format_name: Original
-Format_version: 0.pre
 Format: original
 
 ### End of file `format.spec'
