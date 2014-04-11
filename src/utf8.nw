@@ -142,7 +142,7 @@
 \def^^c3{\unicodepointeleven^^c3}
 \def^^c5{\unicodepointeleven^^c5}
 \def^^c8{\unicodepointeleven^^c8}
-\def^^e2{\unicodepointsixteen^^c2}
+\def^^e2{\unicodepointsixteen^^e2}
 
 \def\uchardef#1#2{\csdef{U+#1}{#2}}
 
