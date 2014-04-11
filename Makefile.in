@@ -31,8 +31,8 @@ SUBDIR+= macro
 SUBDIR+= class
 SUBDIR+= style
 SUBDIR+= make
-#SUBDIR+= paper
-#SUBDIR+= example
+SUBDIR+= paper
+SUBDIR+= example
 SUBDIR+= locale
 
 PREFIX?= @prefix@

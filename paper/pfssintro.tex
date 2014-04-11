@@ -21,7 +21,6 @@
 % You should have received a copy of the GNU General Public License
 % along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-
 \class bhridpaper
 \macro zapfd
 \title Introduction à la sélection des fontes
@@ -34,7 +33,7 @@
 \def\fontsample#1#2{%
    \hbox{\disableconventionpunc#1\selectfontsize{38}%
    \testdriver{dvips}\ifdriver\special{color push CadetBlue}\fi
-   #2\relax
+   {#2}\relax
    \testdriver{dvips}\ifdriver\special{color pop}\fi
    }%
 }
@@ -148,38 +147,38 @@ car il faut en effet considérer comme distinctes les lettres munies de
 signes diacritiques --- par exemple l'accent grave et la cédille ---
 et les lettres naturelles. Avec cette façon de compter, \em{u, ü
 \em{et}~ù} sont donc trois lettres distinctes entre elles. Les signes
-\em{æ} et \em{½} doivent aussi être comptés, la ligature entre
+\em{æ} et \em{œ} doivent aussi être comptés, la ligature entre
 l'\em{o} et l'\em{e} n'est pas un simple effet esthétique mais produit
-bien un signe différent: on écrit~\em{½uvre} mais~\em{coercitif}, et
-les orthographes~\em{oeuvre} et~\em{c½rcitif} sont fausses. Une fonte
+bien un signe différent: on écrit~\em{œuvre} mais~\em{coercitif}, et
+les orthographes~\em{oeuvre} et~\em{cœrcitif} sont fausses. Une fonte
 destinée à composer un texte, comme un courrier ou un roman, doit donc
 posséder un grand nombre de lettres, en voici quelques unes:
 
 \sampleline{%
-\fontsample\rm f\hfil
-\fontsample\rm ¼\hfil
-\fontsample\rm ÿ\hfil
-\fontsample\rm g%
+\fontsample\rm{f}\hfil
+\fontsample\rm{¼}\hfil
+\fontsample\rm{ÿ}\hfil
+\fontsample\rm{g}%
 }
 
 À coté des lettres, il faut pour composer un texte un grand nombre de
 signes de poncutation, dont voici quelques uns:
 
 \sampleline{%
-\fontsample\rm «\hfil%»
-\fontsample\rm{---}\hfil
-\fontsample\rm ;\hfil
-\fontsample\rm ?%
+\fontsample\rm{«}\hfil
+\fontsample\rm{—}\hfil
+\fontsample\rm{;}\hfil
+\fontsample\rm{?}%
 }
 
 Dans un texte ordinaire se trouvent enfin des chiffres, et une grande
 variété d'autres signes:
 
 \sampleline{%
-\fontsample\rm 7\hfil
-\fontsample\rm *\hfil
-\fontsample\rm \dag\hfil
-\fontsample\rm \P%
+\fontsample\rm{7}\hfil
+\fontsample\rm{*}\hfil
+\fontsample\rm{†}\hfil
+\fontsample\rm{¶}%
 }
 
 Des compositions spécialisées nécessitent l'utilisation de caractères
@@ -213,9 +212,9 @@ que nous appelons~\em{domaines}. Voici la liste de ces domaines:
 
 \item Domaine des lettres
   Les caractères figurant dans ce domaine sont toutes les lettres,
-  comme~\em{f}, \em ¼, \em ÿ et~\em g, ainsi que les chiffres arabes
-  et les signes de ponctuation tels que~\em«, \em{---}, \em{;}
-  et\em{?}%.%»
+  comme~\em{f}, \em{¼}, \em{ÿ} et~\em{g}, ainsi que les chiffres arabes
+  et les signes de ponctuation tels que~\em{«}, \em{—}, \em{;}
+  et~\em{?}
 
 \item Domaine compagnon
   Le domaine compagnon est le domaine des symboles accompagant le
@@ -280,7 +279,7 @@ s'adapte mal à la multiplication des situations analogues.
 Une bien meilleure manière de résoudre ce problème est de sélectionner
 la fonte métrique devant être mise en vigueur à tel instant au moyen
 de paramètres décrivant cette fonte plutôt qu'au moyen d'un nom de
-fichier. Pour mettre en ½uvre cette solution, on établit une table de
+fichier. Pour mettre en œuvre cette solution, on établit une table de
 correspondance entre les noms externes des fontes métriques et des
 paramètres décrivant ces fontes métriques, et on définit une procédure
 capable de mettre en vigueur l'utilisation d'une fonte mérique à
@@ -632,7 +631,7 @@ découragée.
 
 Ce paragraphe présente la procédure d'ajustement des paramètres
 définies par la bibliothèque~\pa{pfssadj}. Rappelons que la procédure
-d'ajustement est mise en ½uvre par~\fn{fontswitch},
+d'ajustement est mise en œuvre par~\fn{fontswitch},
 \fn{fontloadfontswitch} et~\fn{toksloadfontswitch} lorsque les
 paramètres de description de fonte ne correspondent pas aux paramètres
 d'enregistrement d'une fonte avec~\fn{fontbind}. La bibliothèque
