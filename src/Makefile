@@ -69,14 +69,8 @@ TEXINPUTS+= ${PROJECTBASE}/contrib
 TEXINPUTS+= :
 
 
-# TEXTRANSLATE
-#  Translation file
-#
-# Example of values: natural, cp227.
-TEXTRANSLATE=	natural
-
 TEX = /usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g} pdftex -halt-on-error
-INITEX = ${TEX} -ini -translate-file=${TEXTRANSLATE}.tcx
+INITEX = ${TEX} -ini -8bit
 
 
 ### 1. Cibles principales
