@@ -3,7 +3,7 @@
 # Author: Michael Grünewald <michael.lebarbier@laposte.net>
 # Date: Dim 17 déc 2006 18:16:26 CET
 
-# Copyright (C) 2006, 2014 Michael Grünewald
+# Copyright (C) 2006-2014 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Bhrìd TeX.

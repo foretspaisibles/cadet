@@ -2,9 +2,8 @@
 
 % Author: Michael Grünewald
 % Date: Thu Mar  2 23:02:39 GMT 2006
-% Copyright: (C) 2006, 2013 Michael Grünewald
 
-% Copyright (C) 2006, 2013 Michael Grünewald
+% Copyright (C) 2006-2014 Michael Grünewald
 % All rights reserved.
 %
 % This file is part of Bhrìd TeX.

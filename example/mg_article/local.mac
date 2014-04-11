@@ -1,6 +1,6 @@
 %%% local.mac -- Hye Emacs this is a -*- plain-tex -*- file!
 
-% Copyright (C) 2006, 2013 Michael Grünewald
+% Copyright (C) 2006-2014 Michael Grünewald
 % All rights reserved.
 
 \def\nm#1{#1}

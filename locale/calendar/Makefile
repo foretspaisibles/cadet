@@ -2,11 +2,10 @@
 
 # Author: Michael Grünewald
 # Date: Dim 28 mar 2010 22:28:22 CEST
-# Copyright: (C) 2006, 2013 Michael Grünewald
 
 # $Id: Makefile 14 2008-04-27 07:48:56Z michi $
 
-# Copyright (C) 2006, 2013 Michael Grünewald
+# Copyright (C) 2006-2014 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Bhrìd TeX.
