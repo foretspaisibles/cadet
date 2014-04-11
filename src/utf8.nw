@@ -138,6 +138,14 @@
   \endnext
 }
 
+\def\unicodepointsixteen#1#2#3{%
+  \beginnext
+  \toksloadunicodepointsixteen#1#2#3\to\rtA
+  \toksloaduchar\the\rtA\to\rtB
+  \edef\next{\the\rtB}%
+  \endnext
+}
+
 \def^^c2{\unicodepointeleven^^c2}
 \def^^c3{\unicodepointeleven^^c3}
 \def^^c5{\unicodepointeleven^^c5}
