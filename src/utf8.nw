@@ -112,7 +112,7 @@
   \ifnum\rcA>"FF\relax
     \rtA={0}%
   \fi
-  \ifnum\rcA>"FFFF\relax
+  \ifnum\rcA>"FFF\relax
     \rtA={}%
   \fi
   \toksloadhex\rcA\to\rtB
