@@ -257,7 +257,7 @@
 \uchardef{2010}{\texthyphen}% - HYPHEN
 \uchardef{2013}{\textendash}% – EN DASH
 \uchardef{2014}{\textemdash}% — EM DASH
-\uchardef{20AC}{\compeuro}% — EURO SIGN
+\uchardef{20AC}{\compeuro}% € EURO SIGN
 \uchardef{2020}{\dag}% † DAGGER
 \uchardef{2021}{\ddag}% ‡ DOUBLE DAGGER
 
