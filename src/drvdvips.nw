@@ -62,12 +62,56 @@
 
 \input epsf
 
+
+\newdimen\imageheight
+\newdimen\imagewidth
+
+\def\boxloadimage@l{%
+  \\{mps}\\{eps}%
+}
+
+\def\boxloadimage@L#1{%
+  \beginnext
+  \edef\next{\noexpand\testexists{\the\rtA.#1}}%
+  \endnext
+  \ifexists
+    \beginnext
+    \edef\next{\rtA={\the\rtA.#1}}%
+    \endnext
+    \let\\\ignore
+    \flagtrue
+  \fi
+}
+
+
 \def\boxloadimage#1\to#2{%
+  \beginnext
+  \rtA={#1}%
+  \let\rmA\empty
+  \let\rmB\empty
   \ifdim\imagewidth>0pt\epsfxsize=\imagewidth\fi
   \ifdim\imageheight>0pt\epsfysize=\imageheight\fi
-  \setbox#2=\hbox{\epsfbox{#1.eps}}%
   \imagewidth\z@
   \imageheight\z@
+  \let\\\boxloadimage@L
+  \flagfalse
+  \boxloadimage@l
+  \rtB={#2}%
+  \ifflag
+    \edef\next{%
+      \noexpand\setbox\the\rtB=\noexpand\hbox{%
+        \noexpand\epsfbox{\the\rtA}%
+      }%
+    }%
+  \else
+    \edef\next{%
+      \noexpand\setbox\the\rtB=\noexpand\hbox{Image #1 not found}%
+    }%
+  \fi
+  \endnext
+}
+
+\def\boxloadimage#1\to#2{%
 }
 
 \def\libraryname{kifimage}

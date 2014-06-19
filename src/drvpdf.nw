@@ -77,18 +77,18 @@
   \let\rmB\empty
   \ifdim\imagewidth>0pt\edef\rmA{ width \the\imagewidth}\fi
   \ifdim\imageheight>0pt\edef\rmB{ height \the\imageheight}\fi
+  \imagewidth\z@
+  \imageheight\z@
   \let\\\boxloadimage@L
   \flagfalse
   \boxloadimage@l
   \rtB={#2}%
   \ifflag
-    \rtC={\imagewidth\z@\imageheight\z@}%
     \edef\next{%
       \noexpand\setbox\the\rtB=\noexpand\hbox{%
         \noexpand\pdfximage\rmA\rmB{\the\rtA}%
         \pdfrefximage\pdflastximage
       }%
-      \the\rtC
     }%
   \else
     \edef\next{%
