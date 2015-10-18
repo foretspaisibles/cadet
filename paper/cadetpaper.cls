@@ -1,8 +1,5 @@
 %%% cadetpaper.cls -- CADET TeX Documentation Paper
 
-% Author: Michael Grünewald
-% Date: Wed Sep 27 00:00:01 CEST 2006
-
 % Cette bibliothèque de macros permet de préparer les `papiers' pour
 % la documentation de Cadet TeX.
 

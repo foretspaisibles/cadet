@@ -1,8 +1,5 @@
 ### cadet.doc.mk -- Préparation de documents avec Cadet TeX
 
-# Author: Michael Grünewald
-# Date: Dim  9 sep 2007 20:33:08 CEST
-
 # Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #

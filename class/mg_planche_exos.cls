@@ -1,8 +1,5 @@
 %%% mg_planche_exos.cls -- Planches d'exos
 
-% Author: Michael Grünewald
-% Date: Thu Mar  2 23:02:39 GMT 2006
-
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
 %

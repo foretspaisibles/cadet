@@ -1,7 +1,5 @@
 %%% mg_article.cls -- Bibliothèque pour la préparation d'articles
 
-% Author: Michael Grünewald
-% Date: Sam  1 mar 2008 10:31:36 CET
 %
 
 % Copyright © 2001–2015 Michael Grünewald

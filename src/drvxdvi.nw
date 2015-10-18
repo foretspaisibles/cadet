@@ -1,8 +1,5 @@
 %%% drvxdvi.nw -- Pilote pour la sortie XDVI -*- LaTeX -*-
 
-% Author: Michael Grünewald <michael.lebarbier@laposte.net>
-% Date: Sam 24 mar 2007 12:02:40 CET
-
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
 %

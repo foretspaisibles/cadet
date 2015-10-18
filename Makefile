@@ -1,8 +1,5 @@
 ### Makefile -- Cadet, un format pour TeX
 
-# Author: Michael Grünewald
-# Date: Tue Feb 21 22:34:46 GMT 2006
-
 # Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #

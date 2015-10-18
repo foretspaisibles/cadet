@@ -1,8 +1,5 @@
 ### cadet.project.mk -- Utiliser CADET pour préparer des documents
 
-# Author: Michael Grünewald
-# Date: Mon Sep 11 18:01:50 CEST 2006
-
 # Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #

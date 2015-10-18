@@ -1,8 +1,5 @@
 ### Makefile -- Directives BSD Make pour les fichiers de style
 
-# Author: Michael Grünewald
-# Date: Dim 15 mar 2009 09:42:47 CET
-
 # Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #

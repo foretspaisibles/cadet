@@ -1,8 +1,5 @@
 ### Makefile
 
-# Author: Michael Grünewald
-# Date: Lun 16 oct 2006 08:22:38 CEST
-
 # Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #

@@ -1,8 +1,5 @@
 ### test.sh -- Test suite for unicode encoding
 
-# Author: Michael Grünewald
-# Date: Fri Apr 11 19:41:57 CEST 2014
-
 # Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #

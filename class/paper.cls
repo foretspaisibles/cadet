@@ -1,8 +1,5 @@
 %%% paper.cls -- Papiers divers
 
-% Author: Michael Grünewald
-% Date: Wed Aug 16 00:30:25 CEST 2006
-
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
 %

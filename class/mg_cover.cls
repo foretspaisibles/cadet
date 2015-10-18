@@ -1,8 +1,5 @@
 %%% mg_cover.cls -- Bibliothèque pour la préparation de lettres de motivation
 
-% Author: Michael Grünewald
-% Date: Mar 13 nov 2007 10:14:38 CET
-
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
 %
