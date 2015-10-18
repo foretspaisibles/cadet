@@ -4,7 +4,7 @@
 % Date: Sam  1 mar 2008 10:31:36 CET
 %
 
-% Copyright (C) 2006-2014 Michael Grünewald
+% Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
 %
 % This file is part of Cadet TeX.

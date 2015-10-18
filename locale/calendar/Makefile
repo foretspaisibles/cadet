@@ -5,7 +5,7 @@
 
 # $Id: Makefile 14 2008-04-27 07:48:56Z michi $
 
-# Copyright (C) 2006-2014 Michael Grünewald
+# Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Cadet TeX.

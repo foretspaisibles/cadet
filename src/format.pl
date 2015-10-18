@@ -1,6 +1,6 @@
 ### format.pl -- Process the Format Specification
 
-# Copyright (C) 2006-2014 Michael Grünewald
+# Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Cadet TeX.

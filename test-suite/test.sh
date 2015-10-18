@@ -3,7 +3,7 @@
 # Author: Michael Grünewald
 # Date: Fri Apr 11 19:41:57 CEST 2014
 
-# Copyright (C) 2014 Michael Grünewald
+# Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Cadet TeX.

@@ -6,7 +6,7 @@
 % Cette bibliothèque de macros permet de préparer les `papiers' pour
 % la documentation de Cadet TeX.
 
-% Copyright (C) 2006-2014 Michael Grünewald
+% Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
 %
 % This file is part of Cadet TeX.
