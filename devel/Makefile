@@ -5,4 +5,4 @@ DOCS+= ignoreblanks.tex
 
 SRCS+= devel.cls
 
-.include "bhrid.project.mk"
+.include "cadet.project.mk"

@@ -1,4 +1,4 @@
-%%% fontes.tex -- Utiliser FSS pour BHRID TeX
+%%% fontes.tex -- Utiliser FSS pour CADET TeX
 
 % Author: Michael Grünewald
 % Date: Thu Sep 14 21:40:38 CEST 2006
@@ -6,33 +6,33 @@
 % Copyright (C) 2006-2014 Michael Grünewald
 % All rights reserved.
 %
-% This file is part of Bhrìd TeX.
+% This file is part of Cadet TeX.
 %
-% Bhrìd TeX is free software: you can redistribute it and/or modify
+% Cadet TeX is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
 %
-% Bhrìd TeX is distributed in the hope that it will be useful,
+% Cadet TeX is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+% along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-\class bhridpaper
+\class cadetpaper
 \enablehverbatim
 
-\title Les fontes de caractères et BHRID \TeX
+\title Les fontes de caractères et CADET \TeX
 \author Michael Grünewald
 
 Nous présentons l'utilisation des fontes de caractères avec Sugar
 Cane. Ces explications sont destinées aux préparateurs de classes de
 documents, et sont probablement inutiles à l'utilisateur ordinaire.
 
-Pour utiliser une fonte avec BHRID \TeX, il faut lier son nom externe,
+Pour utiliser une fonte avec CADET \TeX, il faut lier son nom externe,
 le radical du fichier TFM utilisé par \TeX, avec une description
 symbolique de cette fonte. Cette opération est la déclaration de la
 fonte, il s'agit d'une inscription administrative. Une fois cette
@@ -85,7 +85,7 @@ s'éloigne singulièrement de celle des fontes destinées au texte.
 Pour produire le résultat escompté, certaines commandes doivent
 sélectionner une fonte à la disposition des caractères appropriée, par
 exemple les commandes produisant un signe de section, etc. Les valeurs
-utilisées par BHRID \TeX\ pour la disposition des caractères sont les
+utilisées par CADET \TeX\ pour la disposition des caractères sont les
 suivantes.
 \beginlist\tag
 \item{T1}	text 1
@@ -105,7 +105,7 @@ suivantes.
 \item{Lxx}	local encoding
 \endlist
 Nous utilisons des identificateurs formés de un à trois caractères,
-tous les identificateurs sont réservés par BHRID \TeX, hormis les
+tous les identificateurs sont réservés par CADET \TeX, hormis les
 identificateurs à trois lettres dont la première est un~\li{L} qui
 sont réservés pour l'utilisateur.
 
@@ -165,7 +165,7 @@ Nous utilisons les noms courts suivants pour les formes de caractères
 Les italiques droites ne sont pas normalement utilisées, mais elles
 sont présentes avec \TeX\ afin d'insister sur la différence de dessin
 entre les caractères italiques et les caractères romains. La forme de
-caractères~\li{u} n'est pas utilisée dans BHRID~\TeX, mais elle cet
+caractères~\li{u} n'est pas utilisée dans CADET~\TeX, mais elle cet
 identifiant lui est réservée.
 
 
@@ -197,7 +197,7 @@ proviennent de la même fonderie.
 
 \formalpar Sélection d'une fonte
 
-La commande~|\fontwish T1/lmr/m/n/10pt \as\tenrm| demande à BHRID \TeX
+La commande~|\fontwish T1/lmr/m/n/10pt \as\tenrm| demande à CADET \TeX
 de trouver une fonte resemblant le plus possible à la fonte dont la
 description est donnée, et fait de |\tenrm| une séquence de contrôle
 déclenchant l'utilisation de la fonte obtenue. Si, par exemple, la
@@ -206,7 +206,7 @@ fichier \li{cork-lrm10}, un résultat équivalent peut être obtenu par
 |\font\tenrm=cork-lmr10|.
 
 On peut demander une fonte sans préciser explicitement tous les
-paramètres la décrivant. Pour cela, BHRID \TeX\ prévoit cinq commandes
+paramètres la décrivant. Pour cela, CADET \TeX\ prévoit cinq commandes
 \begincode
 \fontpage
 \fontfamily
@@ -222,9 +222,9 @@ fonte particulière au moyen de la forme spéciale
 \begincode
 \fontwish\selection\as\tenrm
 \endcode
-la séquence |\selection| n'est pas réservée par BHRID \TeX, elle peut
+la séquence |\selection| n'est pas réservée par CADET \TeX, elle peut
 être utilisée dans des jeux de macros, mais elle revêt ici une
-signification spéciale. Au début d'un \em{job} traité avec BHRID \TeX,
+signification spéciale. Au début d'un \em{job} traité avec CADET \TeX,
 tout se passe comme si les commandes
 \begincode
 \fontpage{T1}
@@ -242,7 +242,7 @@ avaient été évaluées; dans ce contexte, l'appel
 \fontwish T1/lmr/m/n/10pt \as\tenrm
 \endcode
 Certaines macros peuvent modifier les fontes utilisées pour préparer
-le texte avec BHRID \TeX\ et la famille de caractères romains en
+le texte avec CADET \TeX\ et la famille de caractères romains en
 vigueur peut porter un nom court différent de~\li{lmr}. Une macro
 arrangeant les choses pour que des fontes différentes soient utilisées
 doit redéfinir les séquences
@@ -257,7 +257,7 @@ pour qu'elles représentent les noms courts appropriés.
 
 Les paramètres de sélection des fontes sont restaurés à la fin du
 groupe en cours. Il peut néanmoins être utile de sauvegarder
-l'ensemble de ces paramètres, BHRID \TeX\ prévoit donc une commande de
+l'ensemble de ces paramètres, CADET \TeX\ prévoit donc une commande de
 sauvegarde et une commande de restauration, on dit par exemple
 \begincode
 \fontselectionsave\myselection
@@ -272,7 +272,7 @@ fin du niveau de groupement courant.
 \formalpar Noms pour les commandes modifiant les paramètres %
  de sélection des fontes
 
-BHRID \TeX\ réserve la séquence |\fontcurrent|, elle est utilisée par
+CADET \TeX\ réserve la séquence |\fontcurrent|, elle est utilisée par
 la commande |\fontselect|, dont la définition est
 \begincode
 \def\fontselect{\fontwish\selection\as\fontcurrent\fontcurrent}
@@ -302,7 +302,7 @@ commande~|\fontmatch|. La déclaration
 \stop
 \endcode
 enregistre administrativement~$8$ fichiers de fontes \TeX\ dans le
-système BHRID \TeX, la commande |\fontmatch| est ainsi faite qu'elle
+système CADET \TeX, la commande |\fontmatch| est ainsi faite qu'elle
 permet de déclarer plusieurs fichiers en même temps lorsque dans leurs
 descriptions, seule varie la taille nominale.
 
@@ -1063,7 +1063,7 @@ les commandes~|\fontselectionsave| et~|\fontselectionload|.
 
 \formalpar Familles pour le mode mathématique
 
-Les familles suivantes sont proposées par BHRID \TeX\ pour composer les
+Les familles suivantes sont proposées par CADET \TeX\ pour composer les
 variables dans le mode mathématique:
 \beginlist\tag\literal
 \item{\string\rm} Romaines, famille |z@|;
@@ -1160,7 +1160,7 @@ situations, par exemple
 \belmaj
 On obtient ces majusucules dans le mode mathématique grâce à la
 commande~|\cal|, comme par exemple dans~|{\cal F}|. Les fontes
-préchargées dans~BHRID~\TeX\ proposent plusieurs jeux de belles
+préchargées dans~CADET~\TeX\ proposent plusieurs jeux de belles
 majuscules, on choisit ce jeu avec la commande~|\selectmathcal|, les
 appels possibles sont
 \begincode

@@ -1,7 +1,7 @@
 *.latex
 *.tex
 *.fmt
-!bhridman.tex
+!cadetman.tex
 !orientation.tex
-bhridman.out
+cadetman.out
 format.spec

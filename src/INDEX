@@ -1,9 +1,9 @@
-INDEX -- Index des fichiers de BHRID TeX
+INDEX -- Index des fichiers de CADET TeX
 
 Copyright (C) 2006-2014 Michael Grünewald
 
 
-Le format BHRID TeX est réparti dans un nombre toujours croissant de
+Le format CADET TeX est réparti dans un nombre toujours croissant de
 fichiers. Ce fichier aide à se repérer dans cet ensemble en regroupant
 les fichiers par thématiques.
 
@@ -53,7 +53,7 @@ fontcmmt.tex	Déclarations pour les tables de symboles des fontes
 3. FORMAT
 
 setup.tex	Les dernières choses effectuées avant le `dump'.
-bhrid_dvips.tex	Format avec le `backend' dvips.
-bhrid_pdf.tex	Format avec le `backend' pdf.
+cadet_dvips.tex	Format avec le `backend' dvips.
+cadet_pdf.tex	Format avec le `backend' pdf.
 drvdvips.tex    Pilote pour le `backend' dvips.
 drvpdf.tex	Pilote pour le `backend' pdf.

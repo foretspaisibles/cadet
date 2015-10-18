@@ -6,20 +6,20 @@
 % Copyright (C) 2006-2014 Michael Grünewald
 % All rights reserved.
 %
-% This file is part of Bhrìd TeX.
+% This file is part of Cadet TeX.
 %
-% Bhrìd TeX is free software: you can redistribute it and/or modify
+% Cadet TeX is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
 %
-% Bhrìd TeX is distributed in the hope that it will be useful,
+% Cadet TeX is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+% along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
 \class paper
@@ -28,7 +28,7 @@
 \title Préparation du texte du paragraphe
 \author Michael \nm{Grünewald}
 
-Nous décrivons les services que rend BHRID~\TeX\ dans la préparation du
+Nous décrivons les services que rend CADET~\TeX\ dans la préparation du
 texte du paragraphe.
 
 
@@ -143,11 +143,11 @@ par~|\selectlocale|.
 
 \formalpar Modification temporaire des paramètres de l'algorithme
 
-BHRID~\TeX\ offre une commande |\pargroup| qui ouvre un groupe et le
+CADET~\TeX\ offre une commande |\pargroup| qui ouvre un groupe et le
 referme à la fin d'un paragraphe; il est ainsi possible de modifier
 temporairement les paramètres de l'algorithme de découpe des lignes en
 vue de traiter un paragraphe particulièrement difficile. De façon
-complémentaire, BHRID~\TeX\ définit trois commandes~|\paragraphtricky|,
+complémentaire, CADET~\TeX\ définit trois commandes~|\paragraphtricky|,
 |\paragraphhard|, |\paragraphnasty| qui altèrent ces paramètres de
 façon légèrement permissive pour~|\paragraphtricky|, jusqu'à être très
 permissif avec~|\paragraphnasty|. On écrit par exemple
@@ -328,7 +328,7 @@ image, un exemple~de~code.
 Une liste est un affichage spécialisé formé de courts paragraphes
 introduits usuellement par une \em{marque}, comme un tiret ou une
 pastille, ou par un~\em{tag}, ces dernières listes sont fort courantes
-dans les manuels techniques. BHRID~\TeX\ propose des commandes pour la
+dans les manuels techniques. CADET~\TeX\ propose des commandes pour la
 préparation des listes qui tentent de reproduire les facilités
 introduites par \xr{groff_mdoc(7)} et utilisées pour la rédaction
 des pages du manuel en ligne de~FreeBSD.
@@ -414,7 +414,7 @@ est produit par
 \item The second case is smilar.
 \endlist
 \endcode
-La dernière présentation de liste proposée par BHRID~\TeX\ introduit
+La dernière présentation de liste proposée par CADET~\TeX\ introduit
 une entrée par une étiquette, un~\em{tag}; ces listes apparaissent
 notamment dans les manuels techniques. Par exemple
 \begindisplay
@@ -677,7 +677,7 @@ des traitements supplémentaires peuvent profiter des marquages
 abstraits, comme par exemple la préparation d'un index des noms cités,
 si tous les noms sont marqués de façon convenable.
 \endlist
-BHRID \TeX\ rend quelques services pour le marquage abstrait que nous
+CADET \TeX\ rend quelques services pour le marquage abstrait que nous
 discutons ci-dessous.
 
 

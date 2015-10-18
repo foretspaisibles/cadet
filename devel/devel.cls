@@ -157,7 +157,7 @@
 %
 % This not very nice kludge allows us to stay in the private name
 % space after we left the class file.
-\let\bhrid@disableprivatenames=\disableprivatenames
+\let\cadet@disableprivatenames=\disableprivatenames
 \def\disableprivatenames{%
-  \let\disableprivatenames\bhrid@disableprivatenames
+  \let\disableprivatenames\cadet@disableprivatenames
 }

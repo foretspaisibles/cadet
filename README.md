@@ -1,6 +1,6 @@
-# Bhrìd TeX — An experimental format for TeX
+# Cadet TeX — An experimental format for TeX
 
-Bhrìd TeX started in 2001 as an experimental format whose general
+Cadet TeX started in 2001 as an experimental format whose general
 design should follow milestones settled by plain TeX while adding some
 higher level features common in other formats and missing in plain
 TeX.

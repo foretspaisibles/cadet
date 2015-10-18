@@ -1,4 +1,4 @@
-%%% btfonts.tex -- BHRID TeX fonts
+%%% btfonts.tex -- CADET TeX fonts
 
 % Author: Michael Grünewald
 % Date: Wed Sep 27 00:00:01 CEST 2006
@@ -6,32 +6,32 @@
 % Copyright (C) 2006-2014 Michael Grünewald
 % All rights reserved.
 %
-% This file is part of Bhrìd TeX.
+% This file is part of Cadet TeX.
 %
-% Bhrìd TeX is free software: you can redistribute it and/or modify
+% Cadet TeX is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
 %
-% Bhrìd TeX is distributed in the hope that it will be useful,
+% Cadet TeX is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+% along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-\class bhridpaper
+\class cadetpaper
 \enablehverbatim
 
-\title les Fontes de caractères de BHRID \TeX
+\title les Fontes de caractères de CADET \TeX
 \author Michael Grünewald
 
-Lorsqu'on rédige un mansucrit avec BHRID \TeX, il est utile de savoir
+Lorsqu'on rédige un mansucrit avec CADET \TeX, il est utile de savoir
 quels symboles sont à disposition, et comment les insérer dans le
 manuscrit. Si la plupart des conventions établies par le {\sl \TeX
 book} pour la saisie des documents dans le chapitre~$9$ {\it \TeX's
-Roman Fonts} restent valables pour BHRID \TeX, des modifications ont
+Roman Fonts} restent valables pour CADET \TeX, des modifications ont
 été nécessaires pour utiliser les fontes Latin Modern à la place des
 fontes Computer Modern.
 
@@ -71,7 +71,7 @@ et~|\tlchardef\theTextLatinLetterA=65|.
 Dans votre manuscrit, les caractères |A-Z|, |a-z| et |0-9| jouent leur
 propre rôle, ainsi que certaines marques de ponctuation
 |( ) [ ] ` ' - * / . , @|.
-Les marques |; : ! ?| sont traitées spécialement par BHRID
+Les marques |; : ! ?| sont traitées spécialement par CADET
 \TeX\ qui place automatiquement les espaces nécessaires avant ces
 caractères, en accord avec les usages linguistiques en vigueur; pour
 obtenir le bon résultat, ces marques ne doivent être précédées par
@@ -111,7 +111,7 @@ exemple~\hbox{3+2=5} contre~$3+2 = 5$ avec le mode mathématique.
 
 Remarquons finalement que les chiffres peuvent produire un résultat
 différent si vous utilisez le mode mathématique ou le mode texte pour
-les saisir. Cela n'est pas le cas avec BHRID \TeX, mais des fichiers de
+les saisir. Cela n'est pas le cas avec CADET \TeX, mais des fichiers de
 macros peuvent créer ce comportement dissymétrique; dans ce cas suivez
 les recommendations de la documentation sur ce point.
 
@@ -125,7 +125,7 @@ dans le mode texte.
 \formalpar Autres caractères du jeu ASCII
 
 Les caractères |$ # % &| %$
-jouent un rôle particulier pour BHRID \TeX, on peut les représenter
+jouent un rôle particulier pour CADET \TeX, on peut les représenter
 dans un manuscrit par les séquences respectives~|\$ \# \% \&|. Les
 caractères |\ { } ^ _ ~| jouent également un rôle spécial, mais leur
 prence dans un texte est inhabituelle; on peut les obtenir par des
@@ -171,7 +171,7 @@ fois que la parole change de personnage dans ce dialogue.
 
 \formalpar Sur le code Latin 9
 
-BHRID \TeX\ accepte comme entrée un fichier codé avec le jeu Latin~9,
+CADET \TeX\ accepte comme entrée un fichier codé avec le jeu Latin~9,
 ou ISO~8859~15, ce format interprète alors correctement les codes de
 caractères hors du domaine ASCII, ocuppant les positions dans
 l'intervalle~128--255.
@@ -199,7 +199,7 @@ notation}, comme expliqué dans le {\sl\TeX book}~pp.~46--48.
 \formalpar Accents
 
 Si le code Latin~9 comprend bon nombre de caractères accentués,
-certains peuvent manquer, et BHRID \TeX\ permet d'utiliser le mécanisme
+certains peuvent manquer, et CADET \TeX\ permet d'utiliser le mécanisme
 familier aux utilisateurs de PLAIN \TeX:
 \begindisplay
 \relax
@@ -299,7 +299,7 @@ xx trademark
 \endchartable
 Vous obtenez également le symbole~\$ par~|\$|. Dans PLAIN \TeX\ le
 symbole \sterling\ peut être obtenu avec un signe dollar lorsqu'une
-fonte italique est active, ceci n'est pas vrai dans BHRID \TeX.
+fonte italique est active, ceci n'est pas vrai dans CADET \TeX.
 
 
 \formalpar Caractères hors liste
@@ -334,7 +334,7 @@ déjà utilisés; et d'ajouter les définitions
 \endcode
 à votre manuscrit. Pour modifier le comportement de ces séquences il
 suffit alors d'altérer ces définitions, au lieu de modifier les noms
-|\tsborn| \em{etc.} utilisés par BHRID~\TeX, ce qui provoque un
+|\tsborn| \em{etc.} utilisés par CADET~\TeX, ce qui provoque un
 comportement indéfini et ne doit être effectué sous aucun prétexte:
 les macros peuvent donc utiliser les noms |\ts...| et |\tl...| avec la
 certitude que ceux-cis font ce qui leur est demandé.

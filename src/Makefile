@@ -1,76 +1,73 @@
-### Makefile -- Bhrìd TeX Makefile
-
-# Author: Michael Grünewald <michael.lebarbier@laposte.net>
-# Date: Dim 17 déc 2006 18:16:26 CET
+### Makefile -- Cadet TeX Makefile
 
 # Copyright (C) 2006-2014 Michael Grünewald
 # All rights reserved.
 #
-# This file is part of Bhrìd TeX.
+# This file is part of Cadet TeX.
 #
-# Bhrìd TeX is free software: you can redistribute it and/or modify
+# Cadet TeX is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Bhrìd TeX is distributed in the hope that it will be useful,
+# Cadet TeX is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+# along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
+
+SRCS+=			kernel.nw
+SRCS+=			calendar.nw
+SRCS+=			basedef.nw
+SRCS+=			mdoclist.nw
+SRCS+=			paper.nw
+SRCS+=			output.nw
+SRCS+=			image.nw
+SRCS+=			pfss.nw
+SRCS+=			pfssadj.nw
+SRCS+=			pfssmath.nw
+SRCS+=			convent.nw
+SRCS+=			convtext.nw
+SRCS+=			convcomp.nw
+SRCS+=			convpunc.nw
+SRCS+=			convmath.nw
+SRCS+=			latin9.nw
+SRCS+=			utf8.nw
+SRCS+=			setup.nw
+
+SRCS+=			cadetcore.nw
+
+SRCS+=			fontaps.nw
+SRCS+=			fontcmm.nw
+SRCS+=			fontcmmt.nw
+SRCS+=			fonttx.nw
+SRCS+=			fontpx.nw
+SRCS+=			fontlm.nw
+SRCS+=			fonteufm.nw
+
+SRCS+=			drvxdvi.nw
+SRCS+=			drvdvips.nw
+SRCS+=			drvpdf.nw
+
+MANUAL+=		cadetman.tex
+MANUAL+=		cadetman.sty
+MANUAL+=		orientation.tex
+
+TEXMFDIST=		/usr/local/share/texmf-dist
+
+TEXINPUTS.epsf!=	kpsewhich epsf.tex
+
+TEXINPUTS=		.
+TEXINPUTS+=		${TEXINPUTS.epsf:/epsf.tex=}
+TEXINPUTS+=		${SRCDIR}
+TEXINPUTS+=		${SRCDIR}/contrib
+TEXINPUTS+=		:
 
 
-SRCS+= kernel.nw
-SRCS+= calendar.nw
-SRCS+= basedef.nw
-SRCS+= mdoclist.nw
-SRCS+= paper.nw
-SRCS+= output.nw
-SRCS+= image.nw
-SRCS+= pfss.nw
-SRCS+= pfssadj.nw
-SRCS+= pfssmath.nw
-SRCS+= convent.nw
-SRCS+= convtext.nw
-SRCS+= convcomp.nw
-SRCS+= convpunc.nw
-SRCS+= convmath.nw
-SRCS+= latin9.nw
-SRCS+= utf8.nw
-SRCS+= setup.nw
-
-SRCS+= bhridcore.nw
-
-SRCS+= fontaps.nw
-SRCS+= fontcmm.nw
-SRCS+= fontcmmt.nw
-SRCS+= fonttx.nw
-SRCS+= fontpx.nw
-SRCS+= fontlm.nw
-SRCS+= fonteufm.nw
-
-SRCS+= drvxdvi.nw
-SRCS+= drvdvips.nw
-SRCS+= drvpdf.nw
-
-MANUAL+= bhridman.tex
-MANUAL+= bhridman.sty
-MANUAL+= orientation.tex
-
-TEXMFDIST = /usr/local/share/texmf-dist
-
-TEXINPUTS.epsf!= kpsewhich epsf.tex
-
-TEXINPUTS = .
-TEXINPUTS+= ${TEXINPUTS.epsf:/epsf.tex=}
-TEXINPUTS+= ${PROJECTBASE}/contrib
-TEXINPUTS+= :
-
-
-TEX = /usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g} pdftex -halt-on-error
-INITEX = ${TEX} -ini -8bit
+TEX=			/usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g} pdftex -halt-on-error
+INITEX=			${TEX} -ini -8bit
 
 
 ### 1. Cibles principales
@@ -99,15 +96,15 @@ CLEANFILES = ${FORMAT:.fmt=.tex} ${FORMAT}
 
 ### 3. Préparation des formats
 
-_AUTO_FORMAT!= perl format.pl -l format.spec
+_AUTO_FORMAT!= (cd ${.CURDIR} && perl format.pl -l format.spec)
 _AUTO_DRIVER+= ${SRCS:Mdrv*:S/.nw//:S/drv//}
 
 .for format in ${_AUTO_FORMAT}
 .for driver in ${_AUTO_DRIVER}
 FORMAT+= ${format}_${driver}.fmt
 ${format}_${driver}.fmt: ${format}_${driver}.tex drv${driver}.tex
-${format}_${driver}.tex: format.spec
-	perl format.pl -m format.spec -f ${format} -d ${driver} > ${.TARGET}
+${format}_${driver}.tex: format.spec format.pl
+	perl ${.ALLSRC:M*.pl} -m ${.ALLSRC:M*.spec} -f ${format} -d ${driver} > ${.TARGET}
 REALCLEANFILES+= ${format}_${driver}.tex
 .endfor
 .endfor
@@ -150,25 +147,25 @@ CLEANFILES+= ${file}
 	notangle ${.ALLSRC} > ${.TARGET}
 
 .if defined(DRAFT)
-bhridman.dvi: ${MANUAL} ${LTXFILES}
-	latex -halt-on-error bhridman
+cadetman.dvi: ${MANUAL} ${LTXFILES}
+	latex -halt-on-error cadetman
 .else
-bhridman.dvi: ${MANUAL} ${LTXFILES}
-	latex -halt-on-error bhridman
-	latex -halt-on-error bhridman
-	latex -halt-on-error bhridman
-bhridman.pdf: ${MANUAL} ${LTXFILES}
-	pdflatex -halt-on-error bhridman
-	pdflatex -halt-on-error bhridman
-	pdflatex -halt-on-error bhridman
+cadetman.dvi: ${MANUAL} ${LTXFILES}
+	latex -halt-on-error cadetman
+	latex -halt-on-error cadetman
+	latex -halt-on-error cadetman
+cadetman.pdf: ${MANUAL} ${LTXFILES}
+	pdflatex -halt-on-error cadetman
+	pdflatex -halt-on-error cadetman
+	pdflatex -halt-on-error cadetman
 .endif
 
-do-doc: bhridman.dvi
+do-doc: cadetman.dvi
 .if !defined(DRAFT)
-do-doc: bhridman.pdf
+do-doc: cadetman.pdf
 .endif
 
-.for file in bhridman.dvi bhridman.pdf bhridman.log bhridman.aux bhridman.toc
+.for file in cadetman.dvi cadetman.pdf cadetman.log cadetman.aux cadetman.toc
 .if exists(${file})
 CLEANFILES+= ${file}
 .endif
@@ -185,9 +182,9 @@ CLEANFILES+= ${file}
 #
 # "make.own.mk" est inclus par "make.init.mk".
 
-DOC+= bhridman.dvi
+DOC+= cadetman.dvi
 .if !defined(DRAFT)
-DOC+= bhridman.pdf
+DOC+= cadetman.pdf
 .endif
 
 ### Mktexlsr positinstallatoire
@@ -204,12 +201,12 @@ clean:
 	rm -f ${CLEANFILES}
 .endif
 
-.include "bhrid.files.mk"
+.include "cadet.files.mk"
 .include "bps.init.mk"
 .include "bps.files.mk"
 .include "bps.clean.mk"
 .include "bps.usertarget.mk"
 
-install: doc
+#install: doc
 
 ### End of file `Makefile'

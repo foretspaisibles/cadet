@@ -6,28 +6,28 @@
 % Copyright (C) 2006-2014 Michael Grünewald
 % All rights reserved.
 %
-% This file is part of Bhrìd TeX.
+% This file is part of Cadet TeX.
 %
-% Bhrìd TeX is free software: you can redistribute it and/or modify
+% Cadet TeX is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
 %
-% Bhrìd TeX is distributed in the hope that it will be useful,
+% Cadet TeX is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+% along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
 \section{Fichier convent.nw}
 <<*>>=
 
-% Ce fichier définit les conventions utilisées dans BHRID TeX pour
+% Ce fichier définit les conventions utilisées dans CADET TeX pour
 % associer les caractères des fichiers source avec ceux des
-% fontes. Lorsque BHRID TeX interprète un fichier source, il détermine
+% fontes. Lorsque CADET TeX interprète un fichier source, il détermine
 % quels caractères figurent dans le document final au moyen d'une
 % `convention' d'entrée.
 
@@ -67,12 +67,12 @@
 %
 
 % On donne dans cette section une vue d'ensemble des arrangements
-% opérés par BHRID TeX pour attribuer aux séquences de contrôle en
+% opérés par CADET TeX pour attribuer aux séquences de contrôle en
 % entrée la signification qui cause la production du caractère
 % souhaité quelque soit la fonte active.
 
 % Notons 'INPUT' une supposée séquence de contrôle figurant dans
-% l'entrée de BHRID TeX. Il peut s'agir d'un caractère actif ou d'une
+% l'entrée de CADET TeX. Il peut s'agir d'un caractère actif ou d'une
 % séquence spéciale comme 'AA' ou 'P' ou 'S' ou 'ss', etc. Selon qu'on
 % souhaite utiliser tel ou tel jeu de fontes, il faut que 'ss' renvoie
 % au caractère CTS/"A7 pour les fontes Latin Modern (page/charcode) ou
@@ -292,7 +292,7 @@
 
 \def\TeX{T\kern-.1667em\lower.5ex\hbox{E}\kern-.125emX}
 
-\def\brTeX{Bhrìd\penalty\@M\ \TeX}
+\def\brTeX{Cadet\penalty\@M\ \TeX}
 
 \def\texname@AmS{{\the\textfont2 A}\kern-.1667em\lower.5ex\hbox
         {\the\textfont2 M}\kern-.125em{\the\textfont2 S}}

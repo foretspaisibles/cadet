@@ -1,4 +1,4 @@
-%%% kernel.nw -- BHRID Kernel -*- LaTeX -*-
+%%% kernel.nw -- CADET Kernel -*- LaTeX -*-
 
 % Author: Michael Grünewald <michael.lebarbier@laposte.net>
 % Date: Sam 16 déc 2006 13:43:04 CET
@@ -6,20 +6,20 @@
 % Copyright (C) 2006-2014 Michael Grünewald
 % All rights reserved.
 %
-% This file is part of Bhrìd TeX.
+% This file is part of Cadet TeX.
 %
-% Bhrìd TeX is free software: you can redistribute it and/or modify
+% Cadet TeX is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
 %
-% Bhrìd TeX is distributed in the hope that it will be useful,
+% Cadet TeX is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Bhrìd TeX.  If not, see <http://www.gnu.org/licenses/>.
+% along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
 \section{Noyau}
@@ -276,7 +276,7 @@ programme, un message de progression est imprimé sur le terminal. Le
 message d'ouverture est le suivant:
 
 <<Message de progression: ouverture>>=
-\message{Preloading a Bhrìd format:}
+\message{Preloading a Cadet format:}
 
 @ Les définitions de tous les messages de progression sont rassemblées
 ci-dessous.
@@ -363,20 +363,20 @@ caractères.
 
 @ \paracommand{\cs{dospecials}}
 La procédure \fn{dospecials} peut être utilisée pour effectuer quelque
-chose sur tous les caractères ayant un \emph{catcode} spécial dans Bhrìd
+chose sur tous les caractères ayant un \emph{catcode} spécial dans Cadet
 \TeX\ (à l'exception de l'ascii NULL, de TAB, de FORMFEED, LINEFEED,
 RETURN et DELETE). Pour effectuer un traitement su chacun de ces
 caractères, on définit la procédure~\fn{do}.
 
 Cette procédure traite plus de caractères que celle de
-\emph{plain}~\TeX, car les signes de ponctuation sont actifs dans Bhrìd
+\emph{plain}~\TeX, car les signes de ponctuation sont actifs dans Cadet
 \TeX, et certaines bibliothèques ne pensent pas à ajuster leurs code de
 catégorie. C'est notamment le cas de `epsf' qui n'ajuste pas le code
 de catégorie du deux-points sur~12 avant de traiter son fichier
 d'entrée.
 
 Remarque: cette procédure est définie dans \emph{plain} \TeX, sa présence
- augmente la compatibilité de Bhrìd \TeX et de \emph{plain} \TeX. Sans ce
+ augmente la compatibilité de Cadet \TeX et de \emph{plain} \TeX. Sans ce
  désir de compatibilité, elle porterait un nom différent et serait
  programmée autrement, avec des listes et la commande~[[\\]].
 
