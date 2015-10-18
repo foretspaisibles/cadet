@@ -62,13 +62,14 @@ TEXINPUTS.epsf!=	kpsewhich epsf.tex
 TEXINPUTS=		.
 TEXINPUTS+=		${TEXINPUTS.epsf:/epsf.tex=}
 TEXINPUTS+=		${SRCDIR}
+TEXINPUTS+=		${SRCDIR}/src
 TEXINPUTS+=		${SRCDIR}/contrib
 TEXINPUTS+=		:
 
-
-TEX=			/usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g} pdftex -halt-on-error
-INITEX=			${TEX} -ini -8bit
-
+TEXENV=			/usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g}
+INITEX=			${TEXENV} pdftex -halt-on-error -ini -8bit
+LATEX=			${TEXENV} latex -halt-on-error
+PDFLATEX=		${TEXENV} pdflatex -halt-on-error
 
 ### 1. Cibles principales
 
@@ -148,16 +149,16 @@ CLEANFILES+= ${file}
 
 .if defined(DRAFT)
 cadetman.dvi: ${MANUAL} ${LTXFILES}
-	latex -halt-on-error cadetman
+	${LATEX} cadetman
 .else
 cadetman.dvi: ${MANUAL} ${LTXFILES}
-	latex -halt-on-error cadetman
-	latex -halt-on-error cadetman
-	latex -halt-on-error cadetman
+	${LATEX} cadetman
+	${LATEX} cadetman
+	${LATEX} cadetman
 cadetman.pdf: ${MANUAL} ${LTXFILES}
-	pdflatex -halt-on-error cadetman
-	pdflatex -halt-on-error cadetman
-	pdflatex -halt-on-error cadetman
+	${PDFLATEX} cadetman
+	${PDFLATEX} cadetman
+	${PDFLATEX} cadetman
 .endif
 
 do-doc: cadetman.dvi
