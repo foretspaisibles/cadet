@@ -9,8 +9,8 @@
 *.ps
 *.eps
 .cookie.*
-/Makefile
+/Makefile.local
+/Makefile.config
 /autom4te.cache/
 /config.status
 /configure
-/Wiki/
