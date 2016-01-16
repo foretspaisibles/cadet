@@ -22,7 +22,7 @@ PROJECT=		cadet
 VERSION=		1.0.0
 OFFICER=		michipili@gmail.com
 
-SUBDIR=			src
+SUBDIR=			manual
 SUBDIR+=		macro
 SUBDIR+=		class
 SUBDIR+=		style

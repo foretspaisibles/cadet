@@ -47,36 +47,3 @@ Ce document a été produit à l'aide du logiciel~\emph{noweb}, un outil
 de programmation lettrée, et de~{\LaTeX}.
 
 \tableofcontents
-\part{Présentation de \brTeX}
-\input{orientation.tex}
-\part{Noyau}
-\input{kernel.latex}
-\input{basedef.latex}
-\part{Bibliothèques de base}
-\input{mdoclist.latex}
-\input{paper.latex}
-\input{output.latex}
-\input{pfss.latex}
-\input{pfssadj.latex}
-\input{pfssmath.latex}
-\part{Convention de saisie}
-\input{convcomp.latex}
-\input{convent.latex}
-\input{convmath.latex}
-\input{convpunc.latex}
-\input{convtext.latex}
-\part{Bibliothèques de fontes}
-\input{fontcmm.latex}
-\input{fontcmmt.latex}
-\input{fontlm.latex}
-\input{fontaps.latex}
-\input{fonteufm.latex}
-\input{fontpx.latex}
-\input{fonttx.latex}
-\part{Formats}
-\input{cadetcore.latex}
-\input{drvdvips.latex}
-\input{drvpdf.latex}
-\input{setup.latex}
-\input{latin9.latex}
-\end{document}
