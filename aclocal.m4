@@ -16,8 +16,10 @@ dnl
 dnl You should have received a copy of the GNU General Public License
 dnl along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-AC_INIT([src/cadetman.tex])
-AC_NEED_PROG([noweb], [notangle])
-AC_SUBST([version], [$(sed -n -e '/^VERSION/s/VERSION=[[:space:]]*//p' Makefile)])
-AC_CONFIG_FILES([Makefile.config src/format.spec])
-AC_OUTPUT
+# AC_NEED_PROG([INFORMAL PROGRAM NAME], [PROGRAM NAME])
+# -----------------------------------------------------
+AC_DEFUN([AC_NEED_PROG],
+[AC_CHECK_PROG([has_$2], [$2], [yes], [no])
+if test "x$has_$2" = 'xno'; then
+  AC_MSG_ERROR([*** $1 not found.])
+fi;])
