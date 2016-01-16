@@ -55,8 +55,6 @@ MANUAL+=		cadetman.tex
 MANUAL+=		cadetman.sty
 MANUAL+=		orientation.tex
 
-TEXMFDIST=		/usr/local/share/texmf-dist
-
 TEXINPUTS.epsf!=	kpsewhich epsf.tex
 
 TEXINPUTS=		.
