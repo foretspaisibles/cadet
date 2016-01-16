@@ -22,6 +22,7 @@ PREFIX?=		${prefix}
 EXEC_PREFIX?=		${exec_prefix}
 DATAROOTDIR?=		${datarootdir}
 TEXMFDIR?=		${prefix}/share/texmf
+TEXMFEPSFPATH?=		@cadet_epsfpath@
 
 # Local Variables:
 # mode: makefile

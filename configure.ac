@@ -17,7 +17,10 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_INIT([src/cadetman.tex])
+AC_NEED_PROG([pdftex], [pdftex])
+AC_NEED_PROG([kpsewhich], [kpsewhich])
 AC_NEED_PROG([noweb], [notangle])
 AC_SUBST([version], [$(sed -n -e '/^VERSION/s/VERSION=[[:space:]]*//p' Makefile)])
+CADET_EPSFPATH
 AC_CONFIG_FILES([Makefile.config src/format.spec])
 AC_OUTPUT

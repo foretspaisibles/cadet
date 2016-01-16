@@ -55,10 +55,8 @@ MANUAL+=		cadetman.tex
 MANUAL+=		cadetman.sty
 MANUAL+=		orientation.tex
 
-TEXINPUTS.epsf!=	kpsewhich epsf.tex
-
 TEXINPUTS=		.
-TEXINPUTS+=		${TEXINPUTS.epsf:/epsf.tex=}
+TEXINPUTS+=		${TEXMFEPSFPATH}
 TEXINPUTS+=		${SRCDIR}
 TEXINPUTS+=		${SRCDIR}/src
 TEXINPUTS+=		${SRCDIR}/contrib

@@ -23,3 +23,21 @@ AC_DEFUN([AC_NEED_PROG],
 if test "x$has_$2" = 'xno'; then
   AC_MSG_ERROR([*** $1 not found.])
 fi;])
+
+
+# CADET_EPSFPATH
+# --------------
+# Check for an epsf.tex file that can be read by TeX and
+# store its path in cadet_epsfpath.
+
+AC_DEFUN([CADET_EPSFPATH],
+[AC_CACHE_CHECK([for EPS macros], cadet_cv_epsfpath,
+[dnl
+  cadet_cv_epsfpath=$(kpsewhich epsf.tex || echo no)
+  if test "x${cadet_cv_epsfpath}" = 'xno'; then
+    AC_MSG_ERROR([*** file epsf.tex not found]);
+  else
+    cadet_cv_epsfpath="${cadet_cv_epsfpath%/epsf.tex}"
+  fi;])
+  cadet_epsfpath="${cadet_cv_epsfpath}"
+  AC_SUBST([cadet_epsfpath])])
