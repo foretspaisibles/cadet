@@ -20,7 +20,10 @@
 
 
 \section{Fichier convent.nw}
-<<*>>=
+<<convent.tex>>=
+<<Convention de codage>>
+
+<<Convention de codage>>=
 
 % Ce fichier définit les conventions utilisées dans CADET TeX pour
 % associer les caractères des fichiers source avec ceux des
@@ -177,10 +180,10 @@
 % `ponctuation'. La ponctuation `a un rôle un peu bizarre parce
 % qu'elle s'appuie sur `text' pour définir ses liaisons.
 
-\input convtext
-\input convcomp
-\input convmath
-\input convpunc
+%% \input convtext
+%% \input convcomp
+%% \input convmath
+%% \input convpunc
 
 % On continue avec les conventions de saisie pour le mode
 % mathématique. Ces conventions s'appuient sur le module `pfssmath'

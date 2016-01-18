@@ -32,26 +32,27 @@ TEXFORMATS = ${WRKDIR}/src
 INPUTS.amsfonts!= dirname `kpsewhich amssym.tex`
 INPUTS.null!= dirname `kpsewhich null.tex`
 
-TEXINPUTS = .
-TEXINPUTS+= ${CADETBASEDIR}
-TEXINPUTS+= ${CADETBASEDIR}/class
-TEXINPUTS+= ${CADETBASEDIR}/macro
-TEXINPUTS+= ${WRKDIR}/macro
-TEXINPUTS+= ${CADETBASEDIR}/style
-TEXINPUTS+= ${CADETBASEDIR}/contrib
-TEXINPUTS+= ${INPUTS.amsfonts}
-TEXINPUTS+= ${INPUTS.null}
+TEXFORMATS=		${WRKDIR}/format
+
+TEXINPUTS=		.
+TEXINPUTS+=		${CADETBASEDIR}
+TEXINPUTS+=		${CADETBASEDIR}/class
+TEXINPUTS+=		${CADETBASEDIR}/macro
+TEXINPUTS+=		${WRKDIR}/macro
+TEXINPUTS+=		${CADETBASEDIR}/style
+TEXINPUTS+=		${CADETBASEDIR}/contrib
+TEXINPUTS+=		${INPUTS.amsfonts}
+TEXINPUTS+=		${INPUTS.null}
 
 .if defined(CADETFORMAT)&&!empty(CADETFORMAT)&&!defined(FORMAT.cadet)
 FORMAT.cadet = ${CADETFORMAT}
 .endif
 
-FORMAT.cadet?= original
-FORMAT.ps?= ${FORMAT.cadet}_dvips
-FORMAT.pdf?= ${FORMAT.cadet}_pdf
-FORMAT.dvi?= ${FORMAT.cadet}_xdvi
-
-FORMAT.tex?= ${FORMAT.cadet}_xdvi
+FORMAT.cadet?=		london
+FORMAT.ps?=		${FORMAT.cadet}_dvips
+FORMAT.pdf?=		${FORMAT.cadet}_pdf
+FORMAT.dvi?=		${FORMAT.cadet}_xdvi
+FORMAT.tex?=		${FORMAT.cadet}_xdvi
 
 
 TEX= pdftex

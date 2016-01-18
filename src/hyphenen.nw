@@ -20,7 +20,7 @@
 
 
 \section{Fichier hyphenen.nw}
-<<*>>=
+<<hyphenen.tex>>=
 
 \newlanguage\hyphen@en
 \begingroup\language=\hyphen@en\input hyphen\endgroup

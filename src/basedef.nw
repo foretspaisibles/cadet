@@ -54,7 +54,7 @@ redéfinies par toutes les classes de document. On y touve également
 des fonctions pour le marquage symbolique du texte, de façon
 semblable à celle proposée par la bibliothèque `mdoc' (de troff).
 
-<<*>>=
+<<Définitions de base>>=
 <<Manipulation des espaces et des pénalités>>
 <<Manipulation des paramètres de l'alinéa>>
 <<Préparation de boîtes spéciales>>

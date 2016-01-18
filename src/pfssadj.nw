@@ -20,7 +20,7 @@
 
 
 \section{Fichier pfssadj.nw}
-<<*>>=
+<<Plain Font Selection Scheme>>=
 
 % Ce fichier réalise une fonction `fontswitchadjust' pour le module
 % pfss. C'est cette fonction qui et appelée lorsque l'utilisateur

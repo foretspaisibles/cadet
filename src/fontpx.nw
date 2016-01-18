@@ -20,7 +20,7 @@
 
 
 \section{Fichier fontpx.nw}
-<<*>>=
+<<fontpx.tex>>=
 
 % Ce module réalise l'inscription de la collection de fontes PX
 % de Young Ryu auprès du système CADET TeX. La collection de fontes PX

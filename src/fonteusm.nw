@@ -20,7 +20,7 @@
 
 
 \section{Fichier fonteusm.nw}
-<<*>>=
+<<fonteusm.tex>>=
 
 % Ce fichier procède aux déclarations nécessaires à l'utilisation des
 % fontes Euler Script (eusm) de Hermann Zapf. Ces déclarations

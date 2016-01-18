@@ -20,14 +20,14 @@
 
 
 \section{Fichier drvpdf.nw}
-<<*>>=
+<<drvpdf.tex>>=
 
 \setdriver{pdf}
 \pdfoutput=1
 
 @ \paragraph{Insertion du format de la page dans le fichier produit}
 
-<<*>>=
+<<drvpdf.tex>>=
 \def\dvipsshipoutpapersize{%
   \global\let\dvipsshipoutpapersize\relax
   \global\pdfpagewidth\paperwidth
@@ -45,7 +45,7 @@
 
 @ \paragraph{Insertion d'une image}
 
-<<*>>=
+<<drvpdf.tex>>=
 \newdimen\imageheight
 \newdimen\imagewidth
 

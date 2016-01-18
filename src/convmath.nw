@@ -20,7 +20,7 @@
 
 
 \section{Fichier convmath.nw}
-<<*>>=
+<<Convention de codage>>=
 
 \input fontcmmt
 

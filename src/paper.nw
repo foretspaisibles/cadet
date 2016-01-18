@@ -19,7 +19,7 @@
 % along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-\section{Dimensions du papier utilisé}
+\section{Dimensions du papier}
 Ce module réalise des procédures définissant un cadre pour
 l'utilisation de formats de papiers variés pour la composition des
 documents.
@@ -40,7 +40,7 @@ nouvelles tailles de papier.
 La procédure \fn{setpaperlandscape} échange la hauteur et la largeur
 du papier.
 
-<<*>>=
+<<Dimensions du papier>>=
 <<Déclaration des registres>>
 <<Table des formats usuels: définition>>
 <<Table des formats usuels: manipulation>>

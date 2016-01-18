@@ -23,7 +23,7 @@
 
 On réalise un calendrier perpétuel.
 
-<<*>>=
+<<Calendrier>>=
 \def\calendaradjustment#1#2{%
   \csbindlocalecs{dayname}{#1}{#2}\to\calendar@dayname
   \csbindlocalecs{monthname}{#1}{#2}\to\calendar@monthname

@@ -26,7 +26,7 @@ de documents nécessitant une procédure plus complexe doivent définir
 leur propre procédure.
 
 
-<<*>>=
+<<Output routine>>=
 %
 % A propos de hoffset et voffset
 %

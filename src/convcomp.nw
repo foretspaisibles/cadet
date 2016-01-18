@@ -20,7 +20,7 @@
 
 
 \section{Fichier convcomp.nw}
-<<*>>=
+<<Convention de codage>>=
 
 %
 % Convention pour les compagnons du texte

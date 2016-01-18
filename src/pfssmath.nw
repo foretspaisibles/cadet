@@ -20,7 +20,7 @@
 
 
 \section{Fichier pfssmath.nw}
-<<*>>=
+<<Plain Font Selection Scheme>>=
 
 % L'utilisation des fontes avec le mode mathématique demande des
 % aménagements particuliers, fort différents de ceux utilisés pour le

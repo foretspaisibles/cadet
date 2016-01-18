@@ -20,7 +20,7 @@
 
 
 \section{Fichier utf8.nw}
-<<*>>=
+<<utf8.tex>>=
 \setcatcodeletter\:
 \csdef{byte:c2}{^^c2}
 \csdef{byte:c3}{^^c3}

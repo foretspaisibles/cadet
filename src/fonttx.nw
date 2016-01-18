@@ -20,7 +20,7 @@
 
 
 \section{Fichier fonttx.nw}
-<<*>>=
+<<fonttx.tex>>=
 
 % Ce module réalise l'inscription de la collection de fontes TX
 % de Young Ryu auprès du système CADET TeX. La collection de fontes TX

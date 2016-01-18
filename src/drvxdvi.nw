@@ -20,7 +20,7 @@
 
 
 \section{Fichier drvxdvi.nw}
-<<*>>=
+<<drvxdvi.tex>>=
 
 \setdriver{xdvi}
 

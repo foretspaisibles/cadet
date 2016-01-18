@@ -87,7 +87,7 @@ coutume en vigueur au moyen de \fn{selectlocale}.
 \item[Initialisation des paramètres de \TeX]
 \end{description}
 
-<<*>>=
+<<Kernel>>=
 <<Catcodes>>
 <<Constantes>>
 <<Registres>>

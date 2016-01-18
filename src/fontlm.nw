@@ -20,7 +20,7 @@
 
 
 \section{Fichier fontlm.nw}
-<<*>>=
+<<fontlm.tex>>=
 
 % Ce fichier contient les déclarations permettant d'utiliser les
 % fontes Latin Modern avec le PFSS. On peut consulter avec profit

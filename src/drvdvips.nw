@@ -20,7 +20,7 @@
 
 
 \section{Fichier drvdvips.nw}
-<<*>>=
+<<drvdvips.tex>>=
 
 \setdriver{dvips}
 

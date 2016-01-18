@@ -20,7 +20,7 @@
 
 
 \section{Fichier fonteufm.nw}
-<<*>>=
+<<fonteufm.tex>>=
 
 % Ce fichier procède aux déclarations nécessaires à l'utilisation des
 % fontes Euler Fraktur (eufm) de Hermann Zapf. Ces déclarations

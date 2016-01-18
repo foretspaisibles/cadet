@@ -23,6 +23,7 @@ VERSION=		1.0.0
 OFFICER=		michipili@gmail.com
 
 SUBDIR=			manual
+SUBDIR+=		format
 SUBDIR+=		macro
 SUBDIR+=		class
 SUBDIR+=		style

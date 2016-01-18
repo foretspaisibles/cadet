@@ -20,7 +20,7 @@
 
 
 \section{Fichier hyphende.nw}
-<<*>>=
+<<hyphende.tex>>=
 
 % Pour la langue allemande, il existe deux ensembles de motifs de
 % césure. Le premier ensemble est valable pour les textes rédigés avec

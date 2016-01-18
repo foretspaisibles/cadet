@@ -64,7 +64,7 @@ La profondeur de la boîte résultante est toujours nulle.
 @ \subsection{Interface utilisateur}
 
 
-<<*>>=
+<<image.tex>>=
 \begingroup
 \testlibraryloaded{kifimage}
 \iflibraryloaded
@@ -80,14 +80,14 @@ La profondeur de la boîte résultante est toujours nulle.
 Insère une boîte horizontale représentant~\va{external\_file} dans la
 liste courante.
 
-<<*>>=
+<<image.tex>>=
 \def\image#1{{\boxloadimage#1\to\rbA\box\rbA}}
 
 @ \paracommand{\fn{imagedisplay}\fa{external\_file}}
 
 Insère une boîte horizontale représentant~\va{external\_file} dans un
 affichage.
-<<*>>=
+<<image.tex>>=
 \def\imagedisplay#1{$$\image{#1}$$}
 
 @

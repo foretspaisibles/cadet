@@ -20,7 +20,7 @@
 
 
 \section{Fichier convpunc.nw}
-<<*>>=
+<<Convention de codage>>=
 
 %
 % Convention pour la ponctuation

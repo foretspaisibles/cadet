@@ -33,16 +33,28 @@ Setup_margin: 25mm, 25mm
 
 Format_version: @version@
 
+# The format using a Times font, is named London to honour the
+# London city, where Times New Roman designer Victor Lardent worked.
+
 Fontes_support: fonttx, fonteufm
-Format_name: Londres
-Format: londres
+Format_name: London
+Format: london
+
+
+# The format using a Palatino-style font is named Darmstadt to honour
+# the home city of Hermann Zapf, designer of Palatino.
 
 Fontes_support: fontpx, fonteufm
-Format_name: Lutece
-Format: lutece
+Format_name: Darmstadt
+Format: darmstadt
+
+
+# The format using a Latin Modern font, is named Stanford to honour
+# the Stanford university, where Latin Modern designer Donald
+# Knuth worked.
 
 Fontes_support: fontlm, fonteufm
-Format_name: Original
-Format: original
+Format_name: Stanford
+Format: stanford
 
 ### End of file `format.spec'

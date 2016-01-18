@@ -50,7 +50,7 @@ respectivement \emph{roster}, \emph{enumeration}
 et~\emph{description}. L'anglicisme associé au terme marque tel
 qu'employé ci-dessus est~\emph{label}.
 
-<<*>>=
+<<Listes à la mdoc>>=
 <<Paramètres de la préparation des listes>>
 <<Préparation des listes>>
 <<Listes à marque fixe>>

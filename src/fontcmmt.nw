@@ -19,7 +19,7 @@
 % along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 \section{Fichier fontcmmt.nw}
-<<*>>=
+<<fontcmmt.tex>>=
 
 % Ce module procède aux réglages nécessaires à l'utilisation du mode
 % mathématique de TeX. Il suppose que les familles 0, 1, 2, et 3 du

@@ -201,7 +201,7 @@ un mémoire, de façon à pouvoir le restaurer; de construire des listes
 de tokens à partir des valeurs de ces registres; et enfin d'asssocier
 des fontes externes à un ensemble de valeurs des paramètres de fontes.
 
-<<*>>=
+<<Plain Font Selection Scheme>>=
 <<Manipulation des paramètres des fontes>>
 <<Liaison des paramètres à une fonte externe>>
 <<Sélection de la fonte active>>
@@ -611,7 +611,7 @@ lorsque~\fn{selectfont} est utilisée. Ce~\emph{hook} permet par
 exemple à des modules de commander l'ajustement des interlignes en
 fonction de la taille nominale de la fonte principale.
 
-<<*>>=
+<<Plain Font Selection Scheme>>=
 \newhook\fontsizehook
 
 @ \paracommand{\fn{selectfont}}
@@ -627,7 +627,7 @@ Modifie la fonte active en demandant une fonte de la taille \fa{size}
 pt. Cette fonction traite \va{fontsizehook} après avoir modifié
 \va{fontsize}.
 
-<<*>>=
+<<Plain Font Selection Scheme>>=
 \def\selectfont{\runhook\fontsizehook\fontswitch}
 
 \def\selectfontsize#1{%
@@ -640,7 +640,7 @@ etc. permettant de choisir la taille du corps de texte. Les
 définitions suivantes permettent d'utiliser ces commandes
 dans~\brTeX.
 
-<<*>>=
+<<Plain Font Selection Scheme>>=
 \def\twelvepoint{\selectfontsize{12}}
 \def\elfpoint{\selectfontsize{11}}
 \def\tenpoint{\selectfontsize{10}}
@@ -667,7 +667,7 @@ Ces commandes vont en couple: une première variante modifie la valeur
 du registre~\va{fontsize} et la seconde variante procède à cette
 modification puis la valide par un appel à~\fn{selectfont}.
 
-<<*>>=
+<<Plain Font Selection Scheme>>=
 \def\setnormalsize{\fontsize=10 }%
 \def\setsmallsize{\fontsize=9 }%
 \def\setverysmallsize{\fontsize=7 }%
@@ -723,7 +723,7 @@ Demande l'utilisation de la fonte \emph{normale}, la fonte de base
 avec laquelle est composé le document. La définition de
 \fn{setnormalfont} est à la charge du format utilisé.
 
-<<*>>=
+<<Plain Font Selection Scheme>>=
 \def\normalfont{\setnormalfont\setnormalsize\selectfont}
 \let\setnormalfont\undefined
 

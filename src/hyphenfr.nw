@@ -19,7 +19,7 @@
 % along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 \section{Fichier hyphenfr.nw}
-<<*>>=
+<<hyphenfr.tex>>=
 
 \newlanguage\hyphen@fr
 \begingroup\language=\hyphen@fr\input frhyph\endgroup

@@ -20,7 +20,7 @@
 
 
 \section{Fichier fontrsfs.nw}
-<<*>>=
+<<fontrsfs.tex>>=
 
 
 % Ce fichier procède aux déclarations nécessaires à l'utilisation des

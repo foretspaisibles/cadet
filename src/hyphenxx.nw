@@ -20,7 +20,7 @@
 
 
 \section{Fichier hyphenxx.nw}
-<<*>>=
+<<hyphenxx.tex>>=
 
 % Ce fichier installe des tables de division des mots. On sélectionne
 % la table à activer de façon explicite au moyen de la commande de

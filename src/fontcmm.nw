@@ -28,7 +28,7 @@ liées à des fontes particulières.
 La fin du fichier lit les définitions de caractères pour ces fontes
 dans le fichier \pa{fontcmmt}
 
-<<*>>=
+<<fontcmm.tex>>=
 %
 % Computer Math Roman
 %

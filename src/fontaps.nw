@@ -20,7 +20,7 @@
 
 
 \section{Fichier fontaps.nw}
-<<*>>=
+<<fontaps.tex>>=
 
 % Ce fichier contient les déclarations nécessaires à l'utilisation des
 % fontes `Adobe PostScript' pour la préparation des textes'. La
