@@ -83,7 +83,7 @@ USES+=			noweb
 
 TEXENV?=		/usr/bin/env TEXINPUTS=${TEXINPUTS:Q:S/\\ /:/g}
 INITEX?=		${TEXENV} pdftex -halt-on-error -ini -8bit
-FILESDIR?=		${datarootdir}/texmf-local/web2c
+FILESDIR?=		${TEXMFDIR}/web2c
 
 
 CADET_FORMAT!=		(cd ${SRCDIR}/src && perl format.pl -l format.spec)

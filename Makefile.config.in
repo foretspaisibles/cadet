@@ -21,7 +21,7 @@ mandir?=		@mandir@
 PREFIX?=		${prefix}
 EXEC_PREFIX?=		${exec_prefix}
 DATAROOTDIR?=		${datarootdir}
-TEXMFDIR?=		${prefix}/share/texmf
+TEXMFDIR?=		${datarootdir}/texmf
 TEXMFEPSFPATH?=		@cadet_epsfpath@
 
 # Local Variables:
