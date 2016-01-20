@@ -1,6 +1,6 @@
 ### cadet.doc.mk -- Préparation de documents avec Cadet TeX
 
-# Copyright © 2001–2015 Michael Grünewald
+# Copyright © 2001–2016 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Cadet TeX.
@@ -21,25 +21,26 @@
 
 # Confer `tex.doc.mk'.
 
-TEX = pdftex
-PDFTEX = ${TEX}
-TEX.dvi = ${TEX}
-TEX.pdf = ${PDFTEX}
+TEX?=			pdftex
+PDFTEX?=		pdftex
+TEX.dvi?=		${TEX}
+TEX.ps?=		${TEX}
+TEX.pdf?=		${PDFTEX}
 
-_TEX_SUFFIXES = .tex .cls .sty .mac
+_TEX_SUFFIXES=		.tex .cls .sty .mac
 
 
 # The PROGNAME variable influences the value of the TEXINPUTS variable.
-PROGNAME?= cadet
+PROGNAME?=		cadet
 
 .if defined(CADETFORMAT)&&!empty(CADETFORMAT)&&!defined(FORMAT.cadet)
-FORMAT.cadet = ${CADETFORMAT}
+FORMAT.cadet=		${CADETFORMAT}
 .endif
 
-FORMAT.cadet?= original
-FORMAT.dvi?= ${FORMAT.cadet}_xdvi
-FORMAT.ps?= ${FORMAT.cadet}_dvips
-FORMAT.pdf?= ${FORMAT.cadet}_pdf
+FORMAT.cadet?=		darmstadt
+FORMAT.dvi?=		${FORMAT.cadet}_xdvi
+FORMAT.ps?=		${FORMAT.cadet}_dvips
+FORMAT.pdf?=		${FORMAT.cadet}_pdf
 
 .include "tex.doc.mk"
 
