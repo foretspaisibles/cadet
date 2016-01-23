@@ -48,7 +48,7 @@ TEXINPUTS+=		${INPUTS.null}
 FORMAT.cadet = ${CADETFORMAT}
 .endif
 
-FORMAT.cadet?=		london
+FORMAT.cadet?=		stanford
 FORMAT.ps?=		${FORMAT.cadet}_dvips
 FORMAT.pdf?=		${FORMAT.cadet}_pdf
 FORMAT.dvi?=		${FORMAT.cadet}_xdvi
