@@ -1,8 +1,6 @@
-%%% mg_article.cls -- Bibliothèque pour la préparation d'articles
+%%% cadet_article.cls -- Bibliothèque pour la préparation d'articles
 
-%
-
-% Copyright © 2001–2015 Michael Grünewald
+% Copyright © 2001–2016 Michael Grünewald
 % All rights reserved.
 %
 % This file is part of Cadet TeX.
@@ -246,4 +244,4 @@
 
 \auxinput
 
-%%% End of file `mg_article.cls'
+%%% End of file `cadet_article.cls'

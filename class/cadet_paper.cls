@@ -1,4 +1,4 @@
-%%% paper.cls -- Papiers divers
+%%% cadet_paper.cls -- Papiers divers
 
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
@@ -356,4 +356,4 @@
 
 \ifexists{paperrc}\input paperrc \fi
 
-%%% End of file `paper.cls'
+%%% End of file `cadet_paper.cls'

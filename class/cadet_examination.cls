@@ -1,6 +1,4 @@
-%%% mg_examen.cls -- Feuillets d'examens
-
-%
+%%% cadet_examination.cls -- Feuillets d'examens
 
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
@@ -212,4 +210,4 @@
 \def\begindirectives{\begingroup\it}
 \def\enddirectives{\par\endgroup\medskip}
 
-%%% End of file `mg_examen.cls'
+%%% End of file `cadet_examination.cls'

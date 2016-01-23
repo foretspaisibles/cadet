@@ -1,4 +1,4 @@
-%%% mg_cover.cls -- Bibliothèque pour la préparation de lettres de motivation
+%%% cadet_cover.cls -- Bibliothèque pour la préparation de lettres de motivation
 
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
@@ -476,4 +476,4 @@
 \selectlocalemainlocale
 \relaxmode
 
-%%% End of file `mg_cover.cls'
+%%% End of file `cadet_cover.cls'

@@ -1,4 +1,4 @@
-%%% mg_planche_exos.cls -- Planches d'exos
+%%% cadet_exercise_sheet.cls -- Planches d'exos
 
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
@@ -96,4 +96,4 @@
 
 \ifexists{eheader}\input eheader\fi
 
-%%% End of file `mg_planche_exos.cls'
+%%% End of file `cadet_exercise_sheet.cls'

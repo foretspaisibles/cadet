@@ -1,4 +1,4 @@
-### Makefile -- Directives BSD Make pour les fichiers de style
+### Makefile
 
 # Copyright © 2001–2015 Michael Grünewald
 # All rights reserved.
@@ -18,10 +18,24 @@
 # You should have received a copy of the GNU General Public License
 # along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-PACKAGE = mg_letter
 
-STYLE+=	dlleft.sty
+DOCUMENT=		galley.tex
 
-.include "cadet.files.mk"
+SRCS+=			galley.tex
+SRCS+=			gsssr.tex
+SRCS+=			local.mac
+SRCS+=			agraf.tex
+SRCS+=			appbor.tex
+SRCS+=			gsssr.tex
+SRCS+=			radjsl2.tex
+SRCS+=			rsm2sl2.tex
+SRCS+=			rstdsl2.tex
+SRCS+=			torcn.tex
+SRCS+=			torrep.tex
+SRCS+=			torsg.tex
+
+CLEANFILES+=		galley.aux
+
+.include "cadet.project.mk"
 
 ### End of file `Makefile'

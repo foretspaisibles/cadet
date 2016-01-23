@@ -19,9 +19,9 @@
 # along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-SUBDIR+=		mg_article
-SUBDIR+=		mg_letter
-SUBDIR+=		mg_examen
+SUBDIR+=		cadet_article
+SUBDIR+=		cadet_letter
+SUBDIR+=		cadet_examen
 SUBDIR+=		macro
 
 .include "generic.subdir.mk"

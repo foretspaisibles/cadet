@@ -1,6 +1,6 @@
 ### Makefile -- Directives BSD Make pour les fichiers de classes
 
-# Copyright © 2001–2015 Michael Grünewald
+# Copyright © 2001–2016 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Cadet TeX.
@@ -19,11 +19,12 @@
 # along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CLASS+=	mg_letter.cls
-CLASS+=	mg_cover.cls
-CLASS+= mg_article.cls
-CLASS+= mg_examen.cls
-CLASS+=	mg_planche_exos.cls
+CLASS+=			cadet_article.cls
+CLASS+=			cadet_cover.cls
+CLASS+=			cadet_examination.cls
+CLASS+=			cadet_exercise_sheet.cls
+CLASS+=			cadet_letter.cls
+CLASS+=			cadet_paper.cls
 
 .include "cadet.files.mk"
 

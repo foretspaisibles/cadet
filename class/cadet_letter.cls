@@ -1,4 +1,4 @@
-%%% mg_letter.cls -- Bibliothèque pour la préparation de lettres
+%%% cadet_letter.cls -- Bibliothèque pour la préparation de lettres
 
 % Copyright © 2001–2015 Michael Grünewald
 % All rights reserved.
@@ -517,4 +517,4 @@
 \selectlocalemainlocale
 \relaxmode
 
-%%% End of file `mg_letter.cls'
+%%% End of file `cadet_letter.cls'

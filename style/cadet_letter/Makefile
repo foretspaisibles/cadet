@@ -18,10 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-PACKAGE = mg_article
+PACKAGE=		cadet_letter
 
-STYLE+=	Lutece.sty
-STYLE+=	Original.sty
+STYLE+=			dlleft.sty
 
 .include "cadet.files.mk"
 

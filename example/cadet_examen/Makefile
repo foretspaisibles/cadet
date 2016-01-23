@@ -18,11 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-DOCUMENT+= ccont1.tex
-DOCUMENT+= ccont1_cr.tex
-FIGS+= figure.mp
+DOCUMENT+=		ccont1.tex
+DOCUMENT+=		ccont1_cr.tex
+FIGS+=			figure.mp
 
-MPTEX=pdftex --fmt=${FORMAT.cadet}_xdvi
+MPTEX=			pdftex --fmt=${FORMAT.cadet}_xdvi
 
 .include "cadet.project.mk"
 
