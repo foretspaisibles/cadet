@@ -21,6 +21,8 @@
 
 # Confer `tex.doc.mk'.
 
+TEXMFDIR?=		${datarootdir}/texmf-local
+
 TEX?=			pdftex
 PDFTEX?=		pdftex
 TEX.dvi?=		${TEX}

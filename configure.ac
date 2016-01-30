@@ -21,6 +21,11 @@ AC_NEED_PROG([pdftex], [pdftex])
 AC_NEED_PROG([kpsewhich], [kpsewhich])
 AC_NEED_PROG([noweb], [notangle])
 AC_SUBST([version], [$(sed -n -e '/^VERSION/s/VERSION=[[:space:]]*//p' Makefile)])
+AC_SUBST([texmfroot], [$(kpsewhich -expand-var='${TEXMFROOT}')])
+AC_SUBST([texmflocal], [$(kpsewhich -expand-var='${TEXMFLOCAL}')])
 CADET_EPSFPATH
+CADET_TEXMFCNF
+CADET_TEXLIVEUPDATECNF
+
 AC_CONFIG_FILES([Makefile.config src/format.spec])
 AC_OUTPUT

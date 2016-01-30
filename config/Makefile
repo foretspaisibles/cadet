@@ -1,6 +1,6 @@
-### Makefile -- Cadet, un format pour TeX
+### Makefile
 
-# Copyright © 2001–2015 Michael Grünewald
+# Copyright © 2001–2016 Michael Grünewald
 # All rights reserved.
 #
 # This file is part of Cadet TeX.
@@ -18,26 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
 
-PROJECT=		cadet
-VERSION=		1.0.0
-OFFICER=		michipili@gmail.com
+CNF=			15cadet.cnf
 
-SUBDIR=			manual
-SUBDIR+=		format
-SUBDIR+=		macro
-SUBDIR+=		class
-SUBDIR+=		style
-SUBDIR+=		make
-SUBDIR+=		paper
-SUBDIR+=		example
-SUBDIR+=		locale
-SUBDIR+=		config
-
-post-install:
-
-.include "generic.project.mk"
-
-post-install: do-update-cnf
-post-install: do-mktexlsr
+.include "cadet.files.mk"
 
 ### End of file `Makefile'

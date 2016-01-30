@@ -24,7 +24,6 @@ __<project.init.mk>:
 
 APPLICATION?=		cadet
 APPLICATIONDIR?=	/cadet
-TEXMFDIR?=		${PREFIX}/share/texmf
 
 .include "bps.init.mk"
 .include "bps.own.mk"

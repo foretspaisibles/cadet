@@ -21,8 +21,16 @@ mandir?=		@mandir@
 PREFIX?=		${prefix}
 EXEC_PREFIX?=		${exec_prefix}
 DATAROOTDIR?=		${datarootdir}
-TEXMFDIR?=		${datarootdir}/texmf
+TEXMFDIR?=		@texmflocal@
 TEXMFEPSFPATH?=		@cadet_epsfpath@
+TEXMFCNF?=		@cadet_texmfcnf@
+TEXMFUPDATECNF:=	@cadet_texliveupdatecnf@
+
+do-mktexlsr:
+	mktexlsr ${TEXMFDIR}
+
+do-update-cnf:
+	${TEXMFUPDATECNF} texmf.cnf
 
 # Local Variables:
 # mode: makefile

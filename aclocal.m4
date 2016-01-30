@@ -41,3 +41,35 @@ AC_DEFUN([CADET_EPSFPATH],
   fi;])
   cadet_epsfpath="${cadet_cv_epsfpath}"
   AC_SUBST([cadet_epsfpath])])
+
+
+# CADET_TEXMFCNF
+# --------------
+# Check for the path to texmf configuration directory.
+
+AC_DEFUN([CADET_TEXMFCNF],
+[AC_CACHE_CHECK([texmf configuration path], cadet_cv_texmfcnf,
+[dnl
+  cadet_cv_texmfcnf=$(kpsewhich --expand-var='${TEXMFCNF}' || echo no)
+  if test "x${cadet_cv_texmfcnf}" = 'xno'; then
+    AC_MSG_ERROR([*** texmf configuration path not found]);
+  fi;])
+  cadet_texmfcnf="${cadet_cv_texmfcnf}"
+  AC_SUBST([cadet_texmfcnf])])
+
+
+# CADET_TEXLIVEUPDATECNF
+# ----------------------
+# Check for the path to the texlive-update-cnf tool.
+
+AC_DEFUN([CADET_TEXLIVEUPDATECNF],
+[AC_CACHE_CHECK([texlive-update-cnf tool], cadet_cv_texliveupdatecnf,
+[dnl
+  cadet_cv_texliveupdatecnf=$(kpsewhich --expand-var='${TEXMFCNF}' || echo /nonexistant)
+  cadet_cv_texliveupdatecnf="${cadet_cv_texliveupdatecnf%/etc*}/libexec/texlive-update-cnf"
+  if ! test -x "${cadet_cv_texliveupdatecnf}"; then
+    cadet_cv_texliveupdatecnf="no";
+    AC_MSG_ERROR([*** texmf configuration path not found]);
+  fi;])
+  cadet_texliveupdatecnf="${cadet_cv_texliveupdatecnf}"
+  AC_SUBST([cadet_texliveupdatecnf])])
