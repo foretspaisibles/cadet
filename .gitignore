@@ -9,6 +9,8 @@
 *.ps
 *.eps
 .cookie.*
+.depend*
+.product
 /Makefile.local
 /Makefile.config
 /autom4te.cache/
