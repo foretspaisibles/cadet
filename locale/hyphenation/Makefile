@@ -1,22 +1,17 @@
 ### Makefile
 
-# Copyright © 2001–2015 Michael Grünewald
-# All rights reserved.
-#
+# Cadet TeX (https://github.com/foretspaisibles/cadet)
 # This file is part of Cadet TeX.
 #
-# Cadet TeX is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Cadet TeX is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright © 2001–2021 Michaël Le Barbier
+# All rights reserved.
+
+# This software is governed by the CeCILL-B license under French law and
+# abiding by the rules of distribution of free software.  You can  use,
+# modify and/ or redistribute the software under the terms of the CeCILL-B
+# license as circulated by CEA, CNRS and INRIA at the following URL
+# "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
+
 
 
 PACKAGE = hyphenation

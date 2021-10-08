@@ -1,20 +1,15 @@
-dnl Copyright © 2001–2016 Michael Grünewald
-dnl All rights reserved.
-dnl
+dnl Cadet TeX (https://github.com/foretspaisibles/cadet)
 dnl This file is part of Cadet TeX.
 dnl
-dnl Cadet TeX is free software: you can redistribute it and/or modify
-dnl it under the terms of the GNU General Public License as published by
-dnl the Free Software Foundation, either version 3 of the License, or
-dnl (at your option) any later version.
-dnl
-dnl Cadet TeX is distributed in the hope that it will be useful,
-dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-dnl GNU General Public License for more details.
-dnl
-dnl You should have received a copy of the GNU General Public License
-dnl along with Cadet TeX.  If not, see <http://www.gnu.org/licenses/>.
+dnl Copyright © 2001–2021 Michaël Le Barbier
+dnl All rights reserved.
+
+dnl This software is governed by the CeCILL-B license under French law and
+dnl abiding by the rules of distribution of free software.  You can  use,
+dnl modify and/ or redistribute the software under the terms of the CeCILL-B
+dnl license as circulated by CEA, CNRS and INRIA at the following URL
+dnl "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
+
 
 AC_INIT([src/cadetmanbegin.nw])
 AC_NEED_PROG([pdftex], [pdftex])
