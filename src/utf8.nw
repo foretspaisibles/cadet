@@ -249,10 +249,12 @@
 \uchardef{2010}{\texthyphen}% - HYPHEN
 \uchardef{2013}{\textendash}% – EN DASH
 \uchardef{2014}{\textemdash}% — EM DASH
+\uchardef{201C}{\puncdblquoteleft}% “ LEFT DOUBLE QUOTATION MARK
+\uchardef{201D}{\puncdblquoteright}% ” RIGHT DOUBLE QUOTATION MARK
 \uchardef{20AC}{\compeuro}% € EURO SIGN
 \uchardef{2020}{\dag}% † DAGGER
 \uchardef{2021}{\ddag}% ‡ DOUBLE DAGGER
-
+\uchardef{2026}{\dots}% … HORIZONTAL ELLIPSIS
 
 %%% UCCODE & LCCODE
 

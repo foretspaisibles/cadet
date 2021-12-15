@@ -12,8 +12,6 @@
 % license as circulated by CEA, CNRS and INRIA at the following URL
 % "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
-
-
 \section{Noyau}
 
 Le noyau de \brTeX\ définit des services et des primitives pour un
@@ -2219,12 +2217,20 @@ On utilise l'indicateur \fn{ifreadgroups} pour déterminer si
 C'est un exemple d'utilisation de la commande `readtokens'.
 
 
-@ \paracommand{\cs{readfilename}\fa{callback}}
-Lit un nom de fichiers dans le flots en entrée et le passe en
-argument de \fa{callback}.
+@ \paracommand{%
+  \cs{readfilename}\cs{to}\fa{toks\_register}\cs{then}\fa{token\_list}\cs{done}%
+}
+Lit un nom de fichier dans le flot d'entrée qui est stocké dans
+\fa{toks\_register} et supprimé de l'entrée.
 
 Pendant la lecture, les groupes sont lus comme faisant partie du nom
 de fichier, ce qui permet de lire un nom de fichier avec des espaces.
+
+@ \paracommand{%
+  \cs{callwithfilename}\fa{control\_sequence}%
+}
+Lit un nom de fichier dans le flot d'entrée, ce nom est utilisé comme
+argument pour appeler \fa{control\_sequence}.
 
 <<Procédures d'analyse lexicale>>=
 \def\readfilename@P#1{%
@@ -2234,22 +2240,35 @@ de fichier, ce qui permet de lire un nom de fichier avec des espaces.
   \ifcat 1\noexpand#1\let\next\@true\fi
   \endnext
 }
+
 \def\readfilename@I{%
   \let\\\setcatcodeother
   \\\_\\\/\\\:\\\~\\\,\\\.%
-  \\\0\\\1\\\2\\\3\\\5\\\5\\\6\\\7\\\8\\\9%
-}
-\def\readfilename#1{%
-   \beginnext
-   \readfilename@I
-   \rtA{#1}%
-   \readgroupstrue
-   \readtokens\readfilename@P\to\rtB\then\readfilename@A\done
+  \\\0\\\1\\\2\\\3\\\4\\\5\\\6\\\7\\\8\\\9%
 }
 
 \def\readfilename@A{%
-  \edef\next{\the\rtA{\the\rtB}}%
+  \edef\next{\the\rtA={\the\rtB}\the\rtC}%
   \endnext
+}
+
+\def\readfilename\to#1\then#2\done{%
+  \beginnext
+  \rtA={#1}%
+  \rtC={#2}%
+  \readgroupstrue
+  \readfilename@I
+  \readtokens\readfilename@P\to\rtB\then\readfilename@A\done
+}
+
+\def\callwithfilename#1{%
+  \beginnext
+  \readfilename\to\rtA\then
+    \edef\next{%
+      \noexpand#1{\the\rtA}%
+    }%
+  \endnext
+  \done
 }
 
 @ \subsection{Assistance à la définition de macros}
@@ -3156,7 +3175,7 @@ liaisons suivantes sont en vigueur: le nom de la biliothèque dans
 \def\readlibraryversiontest\then#1\done{%
   \begingroup
   \def\library@c{#1}%
-  \readfilename\library@B
+  \callwithfilename\library@B
 }
 
 \def\library@B#1{%
@@ -3296,7 +3315,7 @@ et~\va{libraryversion} sont~\emph{undefined}.
 \def\library@H#1\version#2.#3\stop{\library@A{#1}{#2}{#3}}
 
 \newif\iflibraryloaded
-\outer\def\testlibraryloaded{\readfilename\testlibraryloaded@A}
+\outer\def\testlibraryloaded{\callwithfilename\testlibraryloaded@A}
 
 \def\testlibraryloaded@A#1{%
   \begingroup
@@ -3426,7 +3445,7 @@ des noms différents.
 \end{remark}
 
 <<Bibliothèques>>=
-\def\macro{\readfilename\macro@M}
+\def\macro{\callwithfilename\macro@M}
 
 \def\macro@A#1{%
   \let\macro@M\macro@B
@@ -3517,7 +3536,7 @@ variables~\va{libraryname} et~\va{libraryversion}.
   \ignorespaces
 }
 
-\outer\def\class{\readfilename\class@A}
+\outer\def\class{\callwithfilename\class@A}
 
 \def\class@E{%
   \errhelp{It is the second time you call the `class' procedure, that
@@ -3544,7 +3563,7 @@ commandes~\fn{style} recherchent le fichier de style dans un dossier
 dont le nom est~\va{classname}.
 
 <<Bibliothèques>>=
-\outer\def\style{\readfilename\style@A}
+\outer\def\style{\callwithfilename\style@A}
 
 \def\style@A#1{%
   \beginnext

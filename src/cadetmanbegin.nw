@@ -14,7 +14,7 @@
 \documentclass{article}
 \usepackage{cadetman}
 \title{Description de Cadet~\TeX}
-\author{Michael Grünewald}
+\author{Michaël Le Barbier}
 \begin{document}
 \maketitle
 Le logiciel~{\brTeX} est un outil de préparation de documents. Combiné
